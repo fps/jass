@@ -3,8 +3,8 @@
 
 #include <boost/shared_ptr.hpp>
 
-class disposable_base {
-
+struct disposable_base {
+	virtual ~disposable_base() { }
 };
 
 typedef boost::shared_ptr<disposable_base> disposable_base_ptr;

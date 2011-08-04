@@ -4,13 +4,20 @@
 #include "disposable_base.h"
 #include "heap.h"
 
+#include <iostream>
+
 template <class T>
 struct disposable : public disposable_base {
 	T t;
 
-	disposable(const T &t = T()) : t(t) { 
-		heap::get()->disposables.push_back(disposable_base_ptr(this));
+	static disposable_base_ptr create(const T& t = T()) {
+		return disposable_base_ptr(heap::get()->add(disposable_base_ptr(new disposable(t))));
 	}
+
+	private:
+		disposable(const T &t = T()) : t(t) { 
+			std::cout << "disposable" << std::endl;
+		}
 };
 
 
