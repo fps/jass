@@ -16,8 +16,6 @@
 #include "disposable.h"
 #include "generator.h"
 
-void test_stuff();
-
 //! a fixed maximum number of generators..
 //std::vector<disposable_generator_ptr> generators(128);
 disposable_generator_ptr generators[128];
@@ -36,13 +34,15 @@ boost::shared_ptr<
 	disposable_generator_vector
 > disposable_generator_vector_ptr;
 
+//! disposable vector holding generators
 disposable_generator_vector_ptr gens = disposable_generator_vector::create(generator_vector(128));
 
-//! The ringbuffer for the commands that have to be passed to the process callback
 typedef 
 ringbuffer<
 		boost::function<void(void)> 
 > command_ringbuffer;
+
+//! The ringbuffer for the commands that have to be passed to the process callback
 command_ringbuffer rb(1);
 
 bool quit = false;
@@ -51,11 +51,6 @@ void signal_handler(int sig) {
 	std::cout << "got signal to quit" << std::endl;
 	quit = true;
 }
-
-template <class T>
-struct foo {
-	T t;
-};
 
 int main(int argc, char **argv) {
 	//! Make sure the heap instance is created
