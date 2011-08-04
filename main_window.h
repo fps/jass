@@ -44,6 +44,7 @@ class main_window : public QMainWindow {
 			engine_(e)
 		{
 
+			#if 0
 			for (int i = 0; i < 2; ++i) {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
@@ -56,7 +57,7 @@ class main_window : public QMainWindow {
 				engine_.commands.write(assign(engine_.gens->t[i], p));
 				sleep(2);
 			}
-
+			#endif
 
 			setWindowTitle("jass - jack simple sampler");
 
