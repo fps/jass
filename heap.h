@@ -7,7 +7,7 @@
 #include "disposable_base.h"
 
 struct heap {
-	std::list<disposable_base_ptr> disposables;
+	std::list<boost::shared_ptr<disposable_base> > disposables;
 
 	static heap* instance;
 
@@ -16,13 +16,14 @@ struct heap {
 		return (instance = new heap());
 	}
 
-	disposable_base_ptr add(disposable_base_ptr d) {
+	template <class T>
+	T add(T d) {
 		disposables.push_back(d);
 		return d;
 	}
 
 	void cleanup() {
-		for (std::list<disposable_base_ptr>::iterator it = disposables.begin(); it != disposables.end(); ++it) {
+		for (std::list<boost::shared_ptr<disposable_base> >::iterator it = disposables.begin(); it != disposables.end(); ++it) {
 			if (it->unique()) {
 				std::cout << "erase" << std::endl;
 				it = disposables.erase(it);
