@@ -39,23 +39,24 @@ int main(int argc, char **argv) {
 	//! Set up signal handler so we can cleanup nicely
 	signal(2, signal_handler);
 
-	engine e;
+	{
+		engine e;
 
-	main_window w;
-	w.show();
+		main_window w(e);
+		w.show();
 
-	//! Make sure the heap cleanup is called regularly
-	qfunctor f(boost::bind(&heap::cleanup, heap::get()));
-	QTimer timer;
-	timer.setInterval(1000);
-	timer.connect(&timer, SIGNAL(timeout()), &f, SLOT(exec()));
-	timer.start();
+		//! Make sure the heap cleanup is called regularly
+		qfunctor f(boost::bind(&heap::cleanup, heap::get()));
+		QTimer timer;
+		timer.setInterval(1000);
+		timer.connect(&timer, SIGNAL(timeout()), &f, SLOT(exec()));
+		timer.start();
 
-	q_application.exec();
-
+		q_application.exec();
+	}
 	std::cout << "exiting" << std::endl;
 
-	delete heap::get();
+	// delete heap::get();
 
 	return 0;
 }

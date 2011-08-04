@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 #include <jack/jack.h>
 
@@ -87,9 +88,10 @@ struct generator {
 
 	void process(float *out_0, float *out_1, jack_nframes_t nframes) {
 		for (unsigned int i = 0; i < nframes; ++i) {
+			assert((voices.voices[0].frame + i) % sample_ptr->t.data_0.size() < sample_ptr->t.data_0.size());
 			float s = sample_ptr->t.data_0[(voices.voices[0].frame + i) % sample_ptr->t.data_0.size()];
-			out_0[i] += s;
-			out_1[i] += s;
+			out_0[i] += 0.2 * s;
+			out_1[i] += 0.2 * s;
 		}
 		voices.voices[0].frame = (voices.voices[0].frame + nframes) % sample_ptr->t.data_0.size();
 	}

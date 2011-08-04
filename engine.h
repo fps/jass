@@ -2,6 +2,7 @@
 #define JASS_ENGINE_HH
 
 #include <vector>
+#include <algorithm>
 
 #include <jack/jack.h>
 
@@ -43,8 +44,7 @@ struct engine {
 		commands(1024),
 		gens(disposable_generator_vector::create(generator_vector(128))) 
 	{
-		gens->t[0] = disposable_generator::create(generator(disposable_sample::create(sample("/media/b74d014a-92ba-4835-b559-64a7bd913819/Samples.old/DrumKits/Club basic/C_Kick.wav"))));
-
+		heap *h = heap::get();
 
 		jack_client = jack_client_open("jass", JackNullOption, 0);
 		out_0 = jack_port_register(jack_client, "out_0", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
@@ -64,6 +64,10 @@ struct engine {
 		float *out_1_buf = (float*)jack_port_get_buffer(out_1, nframes);
 		float *midi_in_buf = (float*)jack_port_get_buffer(midi_in, nframes);
 
+		//! zero the buffers first
+		std::fill(out_0_buf, out_0_buf + nframes, 0);
+		std::fill(out_1_buf, out_1_buf + nframes, 0);
+
 		//! Execute commands passed in through ringbuffer
 		while(commands.can_read()) { commands.read()(); }
 
@@ -76,10 +80,5 @@ struct engine {
 	}
 };
 
-extern "C" {
-	int process_callback(jack_nframes_t frames, void *p) {
-		((engine*)p)->process(frames);
-	}
-}
 
 #endif
