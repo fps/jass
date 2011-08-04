@@ -16,7 +16,7 @@ void test_stuff();
 //! a fixed maximum number of generators..
 std::vector<disposable_generator_ptr> generators(128);
 
-ringbuffer<boost::shared_ptr<disposable<boost::function< return_type(param_type1,param_type2,param_type3)>> > > rb;
+//ringbuffer<boost::shared_ptr<disposable<boost::function< return_type(param_type1,param_type2,param_type3)>> > > rb;
 
 
 bool quit = false;
