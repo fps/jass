@@ -1,9 +1,11 @@
 #include <jack/jack.h>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
+#include <boost/bind.hpp>
 
+#include "sample.h"
 #include "ringbuffer.h"
-#include "disposable_ringbuffer.h"
+#include "disposable.h"
 
 struct foo {
 	int x;
@@ -16,12 +18,23 @@ struct foo {
 		x = f.x;
 	}
 
+	~foo() {
+		std::cout << "~foo" << std::endl;
+	}
+
 	foo& operator=(const foo &f) {
 		x = f.x;
 		std::cout << "=" << std::endl;
 		return *this;
 	}
+
+	void print_x() {
+		std::cout << "x: " << x << std::endl;
+	}
 };
+
+//typedef disposable<foo> disposable_foo;
+//typedef boost::shared_ptr<disposable<foo> > foo_ptr;
 
 int main(int argc, char **argv) {
 	
@@ -38,4 +51,11 @@ int main(int argc, char **argv) {
 			std::cout << f->x << std::endl;
 		}
 	}
+
+	ringbuffer<disposable_base_ptr> rb2(10);
+	disposable_base_ptr ptr(new disposable<foo>(foo(-99)));
+
+	rb2.write(ptr);
+
+	heap::get()->cleanup();
 }
