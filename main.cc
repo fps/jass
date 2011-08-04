@@ -17,7 +17,7 @@
 #include "assign.h"
 
 #include "main_window.h"
-#include "timed_functor.h"
+#include "qfunctor.h"
 
 #include "engine.h"
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 	w.show();
 
 	//! Make sure the heap cleanup is called regularly
-	timed_functor f(boost::bind(&heap::cleanup, heap::get()));
+	qfunctor f(boost::bind(&heap::cleanup, heap::get()));
 	QTimer timer;
 	timer.setInterval(1000);
 	timer.connect(&timer, SIGNAL(timeout()), &f, SLOT(exec()));
