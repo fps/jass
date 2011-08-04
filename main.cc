@@ -1,14 +1,12 @@
-#include <jack/jack.h>
 #include <iostream>
 #include <vector>
+#include <functional>
+
 #include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
-#include <boost/mem_fn.hpp>
 
-
-#include <functional>
-
+#include <jack/jack.h>
 
 #include "signal.h"
 
@@ -16,6 +14,7 @@
 #include "ringbuffer.h"
 #include "disposable.h"
 #include "generator.h"
+#include "assign.h"
 
 //! a fixed maximum number of generators..
 //std::vector<disposable_generator_ptr> generators(128);
@@ -43,21 +42,6 @@ void signal_handler(int sig) {
 	quit = true;
 }
 
-template<class U, class T>
-struct assign_fun {
-	U &u;
-	T &t;
-
-	assign_fun(U &u, T& t) : u(u), t(t) { }
-
-	void operator()() { u = t; }
-};
-
-template<class U, class T>
-assign_fun<U,T> 
-assign(U &u,  T& t) {
-	return assign_fun<U, T>(u, t);
-}
 
 int main(int argc, char **argv) {
 	//! Make sure the heap instance is created
@@ -66,30 +50,20 @@ int main(int argc, char **argv) {
 	//! Set up signal handler so we can cleanup nicely
 	signal(2, signal_handler);
 
-	#if 0
-		test_stuff();
-	#endif
-
 	std::cout << "madness" << std::endl;
 	disposable_generator_ptr e = gens->t[0];
 	// std::cout << "x " << p->t.low_velocity << std::endl;
 	// p->t.low_velocity = 234;
 
-	disposable_generator_ptr p = disposable_generator::create();
+	disposable_generator_ptr p = disposable_generator::create(generator());
 	p->t.low_velocity  = 322;
+
 	rb.write(assign(gens->t[0], p));
 	rb.read()();
+
 	std::cout << "x " << gens->t[0]->t.low_velocity << std::endl;
 
-	//rb.write(assign(gens->t[0], p));
-	//boost::bind(assign(gens->t[0]))
-	//int x,y;
-	//boost::bind((ref(x).operator=(ref(y))));
-	//boost::bind((boost::phoenix::arg_names::_1 = boost::phoenix::arg_names::_2), x, y);
-	//boost::bind((boost::phoenix::arg_names::_1 = boost::phoenix::arg_names::_2), gens->t[0], p);
-
-	//rb.write(boost::bind((arg1 = arg2), (gens->t[0],p));
-
+	//! loop and garbage collect..
 	while(!quit) {
 		heap::get()->cleanup();
 		sleep(1);

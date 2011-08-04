@@ -14,6 +14,10 @@ struct disposable : public disposable_base {
 		return boost::shared_ptr<disposable<T> >(heap::get()->add(boost::shared_ptr<disposable<T> >(new disposable<T>(t))));
 	}
 
+	T& operator*() const {
+		return t;
+	}
+
 	private:
 		disposable(const T &t = T()) : t(t) { 
 			std::cout << "disposable" << std::endl;
