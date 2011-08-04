@@ -18,12 +18,14 @@ struct heap {
 
 	template <class T>
 	T add(T d) {
+		std::cout << "heap::add()" << std::endl;
 		disposables.push_back(d);
 		return d;
 	}
 
 	void cleanup() {
 		for (std::list<boost::shared_ptr<disposable_base> >::iterator it = disposables.begin(); it != disposables.end(); ++it) {
+			std::cout << "ref count " << it->use_count() << std::endl;
 			if (it->unique()) {
 				std::cout << "erase" << std::endl;
 				it = disposables.erase(it);

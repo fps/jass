@@ -2,6 +2,7 @@
 #define GENERATOR_HH
 
 #include <vector>
+#include <iostream>
 
 #include "disposable.h"
 
@@ -28,6 +29,15 @@ struct generator {
 
 	//! resulting velocity is velocity_factor * (velocity - high_velocity)/(high_velocity - low_velocity)
 	double velocity_factor;
+
+	virtual ~generator() { std::cout << "~generator()" << std::endl; }
+
+	generator() { std::cout << "generator()" << std::endl; }
+
+	generator(const generator& g) {
+		std::cout << "generator(const generator& g)" << std::endl;
+		*this = g;
+	}
 };
 
 typedef boost::shared_ptr<disposable<generator> > disposable_generator_ptr;

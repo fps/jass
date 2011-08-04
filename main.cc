@@ -53,13 +53,7 @@ int main(int argc, char **argv) {
 		test_stuff();
 	#endif
 	
-
-
-	//std::vector<foo<int> > v;
-	//boost::bind(&foo<int>::operator=, &v[0], _1)(foo<int>());
-	
-	//disposable_generator_ptr p(new generator());
-
+	{
 	generator g;
 	g.low_velocity = 111;
 
@@ -73,6 +67,73 @@ int main(int argc, char **argv) {
 
 	rb.read()();
 
+	g.low_velocity = 110;
+
+	rb.write(
+		boost::bind(
+			&disposable_generator_ptr::operator=<disposable<generator> >, 
+			&generators[0], 
+			disposable<generator>::create(g)
+		)
+	);
+
+	rb.read()();
+
+	g.low_velocity = 109;
+
+	rb.write(
+		boost::bind(
+			&disposable_generator_ptr::operator=<disposable<generator> >, 
+			&generators[0], 
+			disposable<generator>::create(g)
+		)
+	);
+
+	rb.read()();
+
+	g.low_velocity = 108;
+
+	rb.write(
+		boost::bind(
+			&disposable_generator_ptr::operator=<disposable<generator> >, 
+			&generators[0], 
+			disposable<generator>::create(g)
+		)
+	);
+
+	rb.read()();
+
+	rb.write(
+		boost::bind(
+			&disposable_generator_ptr::operator=<disposable<generator> >, 
+			&generators[0], 
+			disposable<generator>::create(g)
+		)
+	);
+
+	rb.read()();
+
+	rb.write(
+		boost::bind(
+			&disposable_generator_ptr::operator=<disposable<generator> >, 
+			&generators[0], 
+			disposable<generator>::create(g)
+		)
+	);
+
+	rb.read()();
+
+	rb.write(
+		boost::bind(
+			&disposable_generator_ptr::operator=<disposable<generator> >, 
+			&generators[0], 
+			disposable<generator>::create(g)
+		)
+	);
+
+	rb.read()();
+
+	}
 	std::cout << "velocity_low " << generators[0]->t.low_velocity << std::endl;
 
 	while(!quit) {
