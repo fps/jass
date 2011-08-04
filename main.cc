@@ -2,11 +2,11 @@
 #include <vector>
 #include <functional>
 
-#include <boost/shared_ptr.hpp>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
 
 #include <jack/jack.h>
+
+#include <QApplication>
+#include <QTimer>
 
 #include "signal.h"
 
@@ -16,24 +16,11 @@
 #include "generator.h"
 #include "assign.h"
 
-//! a fixed maximum number of generators..
-//std::vector<disposable_generator_ptr> generators(128);
-disposable_generator_ptr generators[128];
+#include "main_window.h"
+#include "timed_functor.h"
 
-typedef std::vector<disposable_generator_ptr> generator_vector;
-typedef disposable<generator_vector> disposable_generator_vector;
-typedef boost::shared_ptr<disposable_generator_vector> disposable_generator_vector_ptr;
+#include "engine.h"
 
-//! disposable vector holding generators
-disposable_generator_vector_ptr gens = disposable_generator_vector::create(generator_vector(128));
-
-typedef 
-ringbuffer<
-		boost::function<void(void)> 
-> command_ringbuffer;
-
-//! The ringbuffer for the commands that have to be passed to the process callback
-command_ringbuffer rb(1);
 
 bool quit = false;
 
@@ -44,30 +31,27 @@ void signal_handler(int sig) {
 
 
 int main(int argc, char **argv) {
+	QApplication q_application(argc, argv);
+
 	//! Make sure the heap instance is created
 	heap::get();
 
 	//! Set up signal handler so we can cleanup nicely
 	signal(2, signal_handler);
 
-	std::cout << "madness" << std::endl;
-	disposable_generator_ptr e = gens->t[0];
-	// std::cout << "x " << p->t.low_velocity << std::endl;
-	// p->t.low_velocity = 234;
+	engine e;
 
-	disposable_generator_ptr p = disposable_generator::create(generator());
-	p->t.low_velocity  = 322;
+	main_window w;
+	w.show();
 
-	rb.write(assign(gens->t[0], p));
-	rb.read()();
+	//! Make sure the heap cleanup is called regularly
+	timed_functor f(boost::bind(&heap::cleanup, heap::get()));
+	QTimer timer;
+	timer.setInterval(1000);
+	timer.connect(&timer, SIGNAL(timeout()), &f, SLOT(exec()));
+	timer.start();
 
-	std::cout << "x " << gens->t[0]->t.low_velocity << std::endl;
-
-	//! loop and garbage collect..
-	while(!quit) {
-		heap::get()->cleanup();
-		sleep(1);
-	}
+	q_application.exec();
 
 	std::cout << "exiting" << std::endl;
 

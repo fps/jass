@@ -4,10 +4,39 @@
 #include <vector>
 #include <iostream>
 
+#include <jack/jack.h>
+
 #include "disposable.h"
+#include "sample.h"
+
+struct voice {
+	bool playing;
+	jack_nframes_t frame;
+	unsigned int velocity;
+	unsigned int note;
+
+	voice(unsigned int vel = 0, unsigned int note = 0, bool playing = true, jack_nframes_t frame = 0) :
+		playing(playing),
+		frame(frame),
+		velocity(vel),
+		note(note)
+	{
+
+	}
+};
+
+struct voice_manager {
+	std::vector<voice> voices;
+	voice_manager() : voices(128) { }
+	void trigger(unsigned int velocity, unsigned int note) {
+		voices[0] = voice(velocity, note);
+	}
+};
 
 struct generator {
 	disposable_sample_ptr sample_ptr;
+
+	voice_manager voices;
 
 	//! the channel this generator listens on
 	unsigned int channel;
@@ -35,7 +64,8 @@ struct generator {
 		std::cout << "~generator()" << std::endl; 
 	}
 
-	generator()  :
+	generator(disposable_sample_ptr s) :
+		sample_ptr(s),
 		channel(0),
 		note_a(64),
 		low_note(0),
@@ -43,11 +73,25 @@ struct generator {
 		low_velocity(0),
 		high_velocity(127),
 		velocity_factor(1.0)
-	{ std::cout << "generator()" << std::endl; }
+	{ 
+		std::cout << "generator()" << std::endl; 
+		voices.voices[0].frame = 0;
+		voices.voices[0].velocity = 64;
+		voices.voices[0].note = 64;
+	}
 
 	generator(const generator& g) {
 		std::cout << "generator(const generator& g)" << std::endl;
 		*this = g;
+	}
+
+	void process(float *out_0, float *out_1, jack_nframes_t nframes) {
+		for (unsigned int i = 0; i < nframes; ++i) {
+			float s = sample_ptr->t.data_0[(voices.voices[0].frame + i) % sample_ptr->t.data_0.size()];
+			out_0 += s;
+			out_1 += s;
+		}
+		voices.voices[0].frame = (voices.voices[0].frame + nframes) % sample_ptr->t.data_0.size();
 	}
 };
 

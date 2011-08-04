@@ -130,5 +130,21 @@ void test_stuff() {
 
 	#endif
 
+#if 0
+	std::cout << "madness" << std::endl;
+	disposable_generator_ptr e = gens->t[0];
+	// std::cout << "x " << p->t.low_velocity << std::endl;
+	// p->t.low_velocity = 234;
+
+	disposable_generator_ptr p = disposable_generator::create(generator());
+	p->t.low_velocity  = 322;
+
+	rb.write(assign(gens->t[0], p));
+	rb.read()();
+
+	std::cout << "x " << gens->t[0]->t.low_velocity << std::endl;
+#endif
+
+
 	std::cout << "done" << std::endl;
 }
