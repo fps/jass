@@ -60,13 +60,7 @@ struct ringbuffer {
 		jack_ringbuffer_data_t rb_data[2];
 		jack_ringbuffer_get_read_vector(jack_ringbuffer, rb_data);
 		jack_ringbuffer_read_advance(jack_ringbuffer, sizeof(T));
-
-		//! read T from buffer
-		T t = *((T*)rb_data->buf);
-
-		//! reset place in buffer to default T()
-		*((T*)rb_data->buf) = T();
-		return t;
+		return *((T*)rb_data->buf);
 	}
 };
 

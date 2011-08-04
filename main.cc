@@ -28,7 +28,7 @@ typedef
 ringbuffer<
 		boost::function<void(void)> 
 > command_ringbuffer;
-command_ringbuffer rb(100);
+command_ringbuffer rb(2);
 
 bool quit = false;
 
@@ -44,7 +44,7 @@ struct foo {
 
 int main(int argc, char **argv) {
 	//! Make sure the heap instance is created
-	heap *h = heap::get();
+	heap::get();
 
 	//! Set up signal handler so we can cleanup nicely
 	signal(2, signal_handler);
@@ -53,96 +53,34 @@ int main(int argc, char **argv) {
 		test_stuff();
 	#endif
 	
-	{
-	generator g;
-	g.low_velocity = 111;
+	for (int i = 0; i < 50; ++i) {
+		generator g;
 
-	rb.write(
-		boost::bind(
-			&disposable_generator_ptr::operator=<disposable<generator> >, 
-			&generators[0], 
-			disposable<generator>::create(g)
-		)
-	);
+		g.low_velocity = 111;
 
-	rb.read()();
+		rb.write(
+			boost::bind(
+				&disposable_generator_ptr::operator=<disposable<generator> >, 
+				&generators[0], 
+				disposable<generator>::create(g)
+			)
+		);
 
-	g.low_velocity = 110;
-
-	rb.write(
-		boost::bind(
-			&disposable_generator_ptr::operator=<disposable<generator> >, 
-			&generators[0], 
-			disposable<generator>::create(g)
-		)
-	);
-
-	rb.read()();
-
-	g.low_velocity = 109;
-
-	rb.write(
-		boost::bind(
-			&disposable_generator_ptr::operator=<disposable<generator> >, 
-			&generators[0], 
-			disposable<generator>::create(g)
-		)
-	);
-
-	rb.read()();
-
-	g.low_velocity = 108;
-
-	rb.write(
-		boost::bind(
-			&disposable_generator_ptr::operator=<disposable<generator> >, 
-			&generators[0], 
-			disposable<generator>::create(g)
-		)
-	);
-
-	rb.read()();
-
-	rb.write(
-		boost::bind(
-			&disposable_generator_ptr::operator=<disposable<generator> >, 
-			&generators[0], 
-			disposable<generator>::create(g)
-		)
-	);
-
-	rb.read()();
-
-	rb.write(
-		boost::bind(
-			&disposable_generator_ptr::operator=<disposable<generator> >, 
-			&generators[0], 
-			disposable<generator>::create(g)
-		)
-	);
-
-	rb.read()();
-
-	rb.write(
-		boost::bind(
-			&disposable_generator_ptr::operator=<disposable<generator> >, 
-			&generators[0], 
-			disposable<generator>::create(g)
-		)
-	);
-
-	rb.read()();
-
+		std::cout << "read <-" << std::endl;
+		rb.read()();
+		std::cout << "read ->" << std::endl;
 	}
+
 	std::cout << "velocity_low " << generators[0]->t.low_velocity << std::endl;
 
 	while(!quit) {
-		std::cout << "clean" << std::endl;
 		heap::get()->cleanup();
 		sleep(1);
 	}
 
 	std::cout << "exiting" << std::endl;
+
 	delete heap::get();
+
 	return 0;
 }

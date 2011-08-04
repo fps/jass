@@ -20,17 +20,23 @@ struct heap {
 	T add(T d) {
 		std::cout << "heap::add()" << std::endl;
 		disposables.push_back(d);
+		std::cout << "add, use count " << d.use_count() << std::endl;
+		std::cout << "heap size: " << disposables.size() << std::endl;
 		return d;
 	}
 
 	void cleanup() {
-		for (std::list<boost::shared_ptr<disposable_base> >::iterator it = disposables.begin(); it != disposables.end(); ++it) {
-			std::cout << "ref count " << it->use_count() << std::endl;
+		std::cout << "============================" << std::endl;
+		for (std::list<boost::shared_ptr<disposable_base> >::iterator it = disposables.begin(); it != disposables.end();) {
+			std::cout << "cleanup use count " << it->use_count() << std::endl;
 			if (it->unique()) {
-				std::cout << "erase" << std::endl;
+				//std::cout << "erase" << std::endl;
 				it = disposables.erase(it);
+			} else {
+				++it;
 			}
 		}	
+		std::cout << "****************************" << std::endl;
 	}
 
 	~heap() { instance = 0; }
