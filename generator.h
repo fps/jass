@@ -30,9 +30,20 @@ struct generator {
 	//! resulting velocity is velocity_factor * (velocity - high_velocity)/(high_velocity - low_velocity)
 	double velocity_factor;
 
-	virtual ~generator() { std::cout << "~generator()" << std::endl; }
+	virtual ~generator()
+	{ 
+		std::cout << "~generator()" << std::endl; 
+	}
 
-	generator() { std::cout << "generator()" << std::endl; }
+	generator()  :
+		channel(0),
+		note_a(64),
+		low_note(0),
+		high_note(127),
+		low_velocity(0),
+		high_velocity(127),
+		velocity_factor(1.0)
+	{ std::cout << "generator()" << std::endl; }
 
 	generator(const generator& g) {
 		std::cout << "generator(const generator& g)" << std::endl;

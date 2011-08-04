@@ -76,5 +76,59 @@ void test_stuff() {
 
 	//boost::dynamic_pointer_cast<disposable<foo> >(ptr)->t.print_x();
 
+	#if 0 	
+	for (int i = 0; i < 5; ++i) {
+		std::cout << "+++++++++++++++++++++++++" << std::endl;
+		generator g;
+
+		g.low_velocity = 111;
+
+		rb.write(
+			boost::bind(
+				&disposable_generator_ptr::operator=<disposable_generator>, 
+				&generators[0], 
+				disposable_generator::create(g)
+			)
+		);
+
+		std::cout << "read <-" << std::endl;
+		rb.read()();
+		std::cout << "read ->" << std::endl;
+	}
+
+	std::cout << "velocity_low " << generators[0]->t.low_velocity << std::endl;
+
+	std::cout << "replacing disposable_generator_vector" << std::endl;
+	rb.write(
+		boost::bind(
+			&disposable_generator_vector_ptr::operator=<disposable_generator_vector>,
+			&gens, 
+			disposable_generator_vector::create(generator_vector(128))
+		)
+	);
+
+	std::cout << "read <-" << std::endl;
+	rb.read()();
+	std::cout << "read ->" << std::endl;
+
+	disposable_generator_ptr p = disposable_generator::create(generator());
+	std::cout << p->t.low_velocity << std::endl;
+
+	rb.write(
+		boost::bind(
+			&disposable_generator_ptr::operator=<disposable_generator>, 
+			gens->t[0], 
+			p
+		)
+	);
+	std::cout << "read <-" << std::endl;
+	rb.read()();
+	std::cout << "read ->" << std::endl;
+
+	//using namespace boost::phoenix;
+	//using namespace boost::phoenix::arg_names;
+
+	#endif
+
 	std::cout << "done" << std::endl;
 }

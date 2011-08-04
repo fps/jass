@@ -8,7 +8,7 @@
 
 template <class T>
 struct disposable : public disposable_base {
-	const T t;
+	T t;
 
 	static boost::shared_ptr<disposable<T> > create(const T& t = T()) {
 		return boost::shared_ptr<disposable<T> >(heap::get()->add(boost::shared_ptr<disposable<T> >(new disposable<T>(t))));
