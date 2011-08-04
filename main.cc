@@ -22,13 +22,28 @@ void test_stuff();
 //std::vector<disposable_generator_ptr> generators(128);
 disposable_generator_ptr generators[128];
 
+typedef std::vector<
+	disposable_generator_ptr
+> generator_vector;
+
+typedef
+disposable<
+	generator_vector
+> disposable_generator_vector;
+
+typedef
+boost::shared_ptr<
+	disposable_generator_vector
+> disposable_generator_vector_ptr;
+
+disposable_generator_vector_ptr gens = disposable_generator_vector::create(generator_vector(128));
 
 //! The ringbuffer for the commands that have to be passed to the process callback
 typedef 
 ringbuffer<
 		boost::function<void(void)> 
 > command_ringbuffer;
-command_ringbuffer rb(2);
+command_ringbuffer rb(1);
 
 bool quit = false;
 
@@ -53,16 +68,17 @@ int main(int argc, char **argv) {
 		test_stuff();
 	#endif
 	
-	for (int i = 0; i < 50; ++i) {
+	for (int i = 0; i < 5; ++i) {
+		std::cout << "+++++++++++++++++++++++++" << std::endl;
 		generator g;
 
 		g.low_velocity = 111;
 
 		rb.write(
 			boost::bind(
-				&disposable_generator_ptr::operator=<disposable<generator> >, 
+				&disposable_generator_ptr::operator=<disposable_generator>, 
 				&generators[0], 
-				disposable<generator>::create(g)
+				disposable_generator::create(g)
 			)
 		);
 
@@ -72,6 +88,32 @@ int main(int argc, char **argv) {
 	}
 
 	std::cout << "velocity_low " << generators[0]->t.low_velocity << std::endl;
+
+	rb.write(
+		boost::bind(
+			&disposable_generator_vector_ptr::operator=<disposable_generator_vector>,
+			&gens, 
+			disposable_generator_vector::create(generator_vector(128))
+		)
+	);
+	std::cout << "read <-" << std::endl;
+	rb.read()();
+	std::cout << "read ->" << std::endl;
+
+	disposable_generator_ptr p = disposable_generator::create(generator());
+
+	rb.write(
+		boost::bind(
+			&disposable_generator_ptr::operator=<disposable_generator>, 
+			gens->t[0], 
+			p
+		)
+	);
+	std::cout << "read <-" << std::endl;
+	rb.read()();
+	std::cout << "read ->" << std::endl;
+
+
 
 	while(!quit) {
 		heap::get()->cleanup();

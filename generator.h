@@ -40,6 +40,7 @@ struct generator {
 	}
 };
 
+typedef disposable<generator> disposable_generator;
 typedef boost::shared_ptr<disposable<generator> > disposable_generator_ptr;
 
 #endif

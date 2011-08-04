@@ -10,6 +10,13 @@
 
 	Note that this class needs to construct n objects of type T (with n == size)  so 
 	that the places in the ringbuffer become assignable
+
+	Note that the objects remain in the ringbuffer until they are overwritten again
+	when the ringbuffer returns to the current position the next time around. I.e. a
+	read() does not assign a T() to the read object as that could cause destructors
+	to be called, etc..
+
+	Note that read() creates a copy of the T, so the T(const T&) should be non blocking
 */
 template <class T> 
 struct ringbuffer {
