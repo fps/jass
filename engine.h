@@ -36,6 +36,9 @@ struct engine {
 	//! disposable vector holding generators
 	disposable_generator_vector_ptr gens;
 
+	//! a single generator to audit a sample
+	disposable_generator_ptr auditor_gen;
+
 	jack_client_t *jack_client;
 	jack_port_t *out_0;
 	jack_port_t *out_1;
@@ -65,7 +68,7 @@ struct engine {
 	void process(jack_nframes_t nframes) {
 		float *out_0_buf = (float*)jack_port_get_buffer(out_0, nframes);
 		float *out_1_buf = (float*)jack_port_get_buffer(out_1, nframes);
-		float *midi_in_buf = (float*)jack_port_get_buffer(midi_in, nframes);
+		void *midi_in_buf = jack_port_get_buffer(midi_in, nframes);
 
 		//! zero the buffers first
 		std::fill(out_0_buf, out_0_buf + nframes, 0);

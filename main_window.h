@@ -38,26 +38,6 @@ class main_window : public QMainWindow {
 		main_window(engine &e) :
 			engine_(e)
 		{
-
-			#if 0
-			try {
-				for (int i = 0; i < 2; ++i) {
-					disposable_generator_ptr p = disposable_generator::create(
-						generator(
-							sample("/media/b74d014a-92ba-4835-b559-64a7bd913819/Samples/AdamKeshen44/AKALOOP3.wav")
-						)
-					);
-
-					if(engine_.commands.can_write()) 
-						engine_.commands.write(assign(engine_.gens->t[i], p));
-
-					sleep(2);
-				}
-			} catch (...) {
-				std::cout << "somethign went wrong" << std::endl;
-			}
-			#endif
-	
 			setWindowTitle("jass - jack simple sampler");
 
 			connect(

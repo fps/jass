@@ -27,16 +27,20 @@ struct voice {
 };
 
 struct voice_manager {
+	enum { AUDIT, LOOP, SINGLE_SHOT } mode;
+
 	std::vector<voice> voices;
-	voice_manager() : voices(128) { }
+
+	voice_manager() : voices(128) { 
+
+	}
+
 	void trigger(unsigned int velocity, unsigned int note) {
 		voices[0] = voice(velocity, note);
 	}
 };
 
 struct generator {
-	disposable_sample_ptr sample_;
-
 	voice_manager voices;
 
 	//! the channel this generator listens on
@@ -95,6 +99,14 @@ struct generator {
 		}
 		voices.voices[0].frame = (voices.voices[0].frame + nframes) % sample_->t.data_0.size();
 	}
+
+	void set_sample(disposable_sample_ptr s) {
+		sample_ = s;
+		//! Update voice info..
+	}
+
+	protected:
+		disposable_sample_ptr sample_;
 };
 
 typedef disposable<generator> disposable_generator;
