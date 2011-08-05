@@ -41,6 +41,12 @@ int main(int argc, char **argv) {
 		timer.connect(&timer, SIGNAL(timeout()), &f, SLOT(exec()));
 		timer.start();
 
+		qfunctor g(boost::bind(&main_window::check_acknowledgements, &w));
+		QTimer timer2;
+		timer2.setInterval(100);
+		timer2.connect(&timer, SIGNAL(timeout()), &g, SLOT(exec()));
+		timer2.start();
+
 		q_application.exec();
 	}
 	std::cout << "exiting" << std::endl;

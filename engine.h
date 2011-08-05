@@ -44,7 +44,7 @@ struct engine {
 	engine() 
 	: 
 		commands(1024),
-		acknowledgements(1),
+		acknowledgements(64),
 		gens(disposable_generator_vector::create(generator_vector(128))) 
 	{
 		heap *h = heap::get();

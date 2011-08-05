@@ -13,6 +13,7 @@ void main_window::sample_double_clicked(const QModelIndex &index) {
 		if(engine_.commands.can_write()) {
 			std::cout << "writing command" << std::endl;
 			engine_.commands.write(assign(engine_.gens->t[0], p));
+			setEnabled(false);
 		} 
 		else {
 			std::cout << "full" << std::endl; 

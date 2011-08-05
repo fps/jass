@@ -28,6 +28,13 @@ class main_window : public QMainWindow {
 		void sample_double_clicked(const QModelIndex &index);
 
 	public:
+		void check_acknowledgements() {
+			if (engine_.acknowledgements.can_read()) {
+				while(engine_.acknowledgements.can_read()) engine_.acknowledgements.read();
+			}
+			setEnabled(true);
+		}
+
 		main_window(engine &e) :
 			engine_(e)
 		{
