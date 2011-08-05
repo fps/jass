@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 	}
 	std::cout << "exiting" << std::endl;
 
-	// delete heap::get();
+	delete heap::get();
 
 	return 0;
 }

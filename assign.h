@@ -4,7 +4,7 @@
 template<class U, class T>
 struct assign_fun {
 	U &u;
-	T &t;
+	T t;
 
 	assign_fun(U &u, T& t) : u(u), t(t) { }
 
