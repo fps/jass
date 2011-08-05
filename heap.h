@@ -18,10 +18,9 @@ struct heap {
 
 	template <class T>
 	T add(T d) {
-		std::cout << "heap::add()" << std::endl;
+		//std::cout << "heap::add()" << std::endl;
 		disposables.push_back(d);
-		std::cout << "add, use count " << d.use_count() << std::endl;
-		std::cout << "heap size: " << disposables.size() << std::endl;
+		std::cout << "add, use count " << d.use_count() << " heap size: " << disposables.size() << std::endl;
 		return d;
 	}
 

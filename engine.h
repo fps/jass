@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 #include <jack/jack.h>
 
@@ -73,6 +74,7 @@ struct engine {
 
 		for (unsigned int i = 0; i < gens->t.size(); ++i) {
 			if (gens->t[i].get()) {
+				//std::cout << "." << std::endl;
 				gens->t[i]->t.process(out_0_buf, out_1_buf, nframes);
 			}
 		}

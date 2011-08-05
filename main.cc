@@ -22,22 +22,11 @@
 #include "engine.h"
 
 
-bool quit = false;
-
-void signal_handler(int sig) {
-	std::cout << "got signal to quit" << std::endl;
-	quit = true;
-}
-
-
 int main(int argc, char **argv) {
 	QApplication q_application(argc, argv);
 
 	//! Make sure the heap instance is created
-	heap::get();
-
-	//! Set up signal handler so we can cleanup nicely
-	signal(2, signal_handler);
+	heap *h = heap::get();
 
 	{
 		engine e;
@@ -48,7 +37,7 @@ int main(int argc, char **argv) {
 		//! Make sure the heap cleanup is called regularly
 		qfunctor f(boost::bind(&heap::cleanup, heap::get()));
 		QTimer timer;
-		timer.setInterval(1000);
+		timer.setInterval(5000);
 		timer.connect(&timer, SIGNAL(timeout()), &f, SLOT(exec()));
 		timer.start();
 

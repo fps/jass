@@ -20,24 +20,12 @@ class main_window : public QMainWindow {
 
 	engine &engine_;
 
+	void print_foo() {
+		std::cout << "fooooo" << std::endl;
+	}
+
 	public slots:
-		void sample_double_clicked(const QModelIndex &index) {
-			try {
-				disposable_generator_ptr p = disposable_generator::create(
-					generator(
-						disposable_sample::create(
-							sample(std::string(file_system_model.filePath(index).toLatin1()))
-						)
-					)
-				);
-
-				std::cout << "writing command" << std::endl;
-				engine_.commands.write(assign(engine_.gens->t[0], p));
-
-			} catch (...) {
-				std::cout << "something went wrong" << std::endl;
-			}
-		}
+		void sample_double_clicked(const QModelIndex &index);
 
 	public:
 		main_window(engine &e) :
@@ -45,17 +33,21 @@ class main_window : public QMainWindow {
 		{
 
 			#if 0
-			for (int i = 0; i < 2; ++i) {
-				disposable_generator_ptr p = disposable_generator::create(
-					generator(
-						disposable_sample::create(
+			try {
+				for (int i = 0; i < 2; ++i) {
+					disposable_generator_ptr p = disposable_generator::create(
+						generator(
 							sample("/media/b74d014a-92ba-4835-b559-64a7bd913819/Samples/AdamKeshen44/AKALOOP3.wav")
 						)
-					)
-				);
+					);
 
-				engine_.commands.write(assign(engine_.gens->t[i], p));
-				sleep(2);
+					if(engine_.commands.can_write()) 
+						engine_.commands.write(assign(engine_.gens->t[i], p));
+
+					sleep(2);
+				}
+			} catch (...) {
+				std::cout << "somethign went wrong" << std::endl;
 			}
 			#endif
 
@@ -65,7 +57,8 @@ class main_window : public QMainWindow {
 				&file_system_view, 
 				SIGNAL(doubleClicked(const QModelIndex&)), 
 				this, 
-				SLOT(sample_double_clicked(const QModelIndex&))
+				SLOT(sample_double_clicked(const QModelIndex&)),
+				Qt::QueuedConnection
 			);
 
 			file_system_model.setRootPath("/");

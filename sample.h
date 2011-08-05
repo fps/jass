@@ -22,6 +22,9 @@ struct sample {
 		SF_INFO sf_info;
 		sf_info.format = 0;
 		SNDFILE* snd_file = sf_open(file_name.c_str(), SFM_READ, &sf_info);
+		if (snd_file == 0) {
+			throw std::runtime_error("Couldn't read sound file: " + file_name);
+		}
 
 		data_0.resize(sf_info.frames);
 		data_1.resize(sf_info.frames);
