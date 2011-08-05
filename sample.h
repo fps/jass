@@ -41,8 +41,10 @@ struct sample {
 		}
 
 		if (sf_info.channels == 2) {
-			std::copy(frames.begin(), frames.begin() + sf_info.frames, data_0.begin());
-			std::copy(frames.begin() + sf_info.frames, frames.end(), data_1.begin());
+			for (unsigned int i = 0; i < sf_info.frames; ++i) {
+				data_0[i] = frames[2 * i];
+				data_1[i] = frames[2 * i + 1];
+			}
 		}
 	}
 };

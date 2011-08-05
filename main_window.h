@@ -32,7 +32,7 @@ class main_window : public QMainWindow {
 			engine_(e)
 		{
 
-
+			#if 0
 			try {
 				for (int i = 0; i < 2; ++i) {
 					disposable_generator_ptr p = disposable_generator::create(
@@ -49,8 +49,8 @@ class main_window : public QMainWindow {
 			} catch (...) {
 				std::cout << "somethign went wrong" << std::endl;
 			}
-
-
+			#endif
+	
 			setWindowTitle("jass - jack simple sampler");
 
 			connect(
