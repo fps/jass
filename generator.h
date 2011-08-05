@@ -35,7 +35,7 @@ struct voice_manager {
 };
 
 struct generator {
-	sample sample_;
+	disposable_sample_ptr sample_;
 
 	voice_manager voices;
 
@@ -65,7 +65,7 @@ struct generator {
 		std::cout << "~generator()" << std::endl; 
 	}
 
-	generator(sample s) :
+	generator(disposable_sample_ptr s) :
 		sample_(s),
 		channel(0),
 		note_a(64),
@@ -88,12 +88,12 @@ struct generator {
 
 	void process(float *out_0, float *out_1, jack_nframes_t nframes) {
 		for (unsigned int i = 0; i < nframes; ++i) {
-			assert((voices.voices[0].frame + i) % sample_.data_0.size() < sample_.data_0.size());
-			float s = sample_.data_0[(voices.voices[0].frame + i) % sample_.data_0.size()];
+			assert((voices.voices[0].frame + i) % sample_->t.data_0.size() < sample_->t.data_0.size());
+			float s = sample_->t.data_0[(voices.voices[0].frame + i) % sample_->t.data_0.size()];
 			out_0[i] += 0.2 * s;
 			out_1[i] += 0.2 * s;
 		}
-		voices.voices[0].frame = (voices.voices[0].frame + nframes) % sample_.data_0.size();
+		voices.voices[0].frame = (voices.voices[0].frame + nframes) % sample_->t.data_0.size();
 	}
 };
 

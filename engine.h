@@ -31,6 +31,7 @@ extern "C" {
 struct engine {
 	//! The ringbuffer for the commands that have to be passed to the process callback
 	command_ringbuffer commands;
+	ringbuffer<char> acknowledgements;
 
 	//! disposable vector holding generators
 	disposable_generator_vector_ptr gens;
@@ -43,6 +44,7 @@ struct engine {
 	engine() 
 	: 
 		commands(1024),
+		acknowledgements(1),
 		gens(disposable_generator_vector::create(generator_vector(128))) 
 	{
 		heap *h = heap::get();

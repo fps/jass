@@ -5,7 +5,9 @@
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
-						sample(std::string(file_system_model.filePath(index).toLatin1()))
+						disposable_sample::create(
+							sample(std::string(file_system_model.filePath(index).toLatin1()))
+						)
 					)
 				);
 
