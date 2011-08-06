@@ -16,6 +16,7 @@
 #include "generator.h"
 #include "ringbuffer.h"
 #include "jass.hxx"
+#include "xsd_error_handler.h"
 
 typedef std::vector<disposable_generator_ptr> generator_vector;
 typedef disposable<generator_vector> disposable_generator_vector;
@@ -67,7 +68,8 @@ struct engine {
 	}
 
 	void load_setup(std::string file_name) {
-		std::auto_ptr<Jass::Jass> j = Jass::Jass_(file_name);
+		xsd_error_handler h;
+		std::auto_ptr<Jass::Jass> j = Jass::Jass_(file_name, h, xml_schema::flags::dont_validate);
 	}
 
 	void process(jack_nframes_t nframes) {
