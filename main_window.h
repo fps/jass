@@ -73,6 +73,8 @@ class main_window : public QMainWindow {
 		{
 			setWindowTitle("jass - jack simple sampler");
 
+			engine_.commands.write(boost::bind(&generator::set_sample, engine_.gens->t[0]->t, disposable_sample::create(sample("foo"))));
+
 			connect(
 				&file_system_view, 
 				SIGNAL(doubleClicked(const QModelIndex&)), 
