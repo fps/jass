@@ -1,7 +1,7 @@
 #include "main_window.h"
 
 void main_window::sample_double_clicked(const QModelIndex &index) {
-	engine_.commands.write(boost::bind(&main_window::print_foo, this));
+	//engine_.commands.write(boost::bind(&main_window::print_foo, this));
 	try {
 		disposable_generator_ptr p = disposable_generator::create(
 			generator(

@@ -78,7 +78,7 @@ struct engine {
 		std::fill(out_1_buf, out_1_buf + nframes, 0);
 
 		//! Execute commands passed in through ringbuffer
-		while(commands.can_read()) { commands.read()(); }
+		while(commands.can_read()) { /* std::cout << "read()()" << std::endl; */ commands.read()(); }
 
 		//! Send ack to (possibly) enable the GUI again
 		if (!acknowledgements.can_write()) std::cout << "ack buffer full" << std::endl;

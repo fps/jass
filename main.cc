@@ -18,9 +18,25 @@
 
 #include "main_window.h"
 #include "qfunctor.h"
+#include "timed_functor.h"
 
 #include "engine.h"
 
+//! A global variable to communicate the receiption of SIGUSR1 to the check_signalled function
+bool signalled = false;
+void signal_handler(int signum) {
+	if (signum == SIGUSR1) {
+		signalled = true;
+	}
+}
+
+//! Called periodically in GUI thread to see whether we received SIGUSR1 (ladish)
+void check_signalled(main_window &w) {
+	if (signalled) {
+		signalled = false;
+		w.save_setup();
+	}
+}
 
 int main(int argc, char **argv) {
 	QApplication q_application(argc, argv);
@@ -34,20 +50,19 @@ int main(int argc, char **argv) {
 		main_window w(e);
 		if (argc > 1) w.load_setup(argv[1]);
 
+		//! register SIGUSR1 for ladish session support
+		signal(SIGUSR1, signal_handler);
+
 		w.show();
 
-		//! Make sure the heap cleanup is called regularly
-		qfunctor f(boost::bind(&heap::cleanup, heap::get()));
-		QTimer timer;
-		timer.setInterval(100);
-		timer.connect(&timer, SIGNAL(timeout()), &f, SLOT(exec()));
-		timer.start();
+		//! Register a timed function to clean the heap
+		timed_functor tf1(boost::bind(&heap::cleanup, heap::get()), 1000);
 
-		qfunctor g(boost::bind(&main_window::check_acknowledgements, &w));
-		QTimer timer2;
-		timer2.setInterval(100);
-		timer2.connect(&timer, SIGNAL(timeout()), &g, SLOT(exec()));
-		timer2.start();
+		//! This function checks for acknowledgements of the engine and reenables the GUI
+		timed_functor tf2(boost::bind(&main_window::check_acknowledgements, &w), 100);
+
+		//! This one checks for ladish save signals..
+		timed_functor tf3(boost::bind(check_signalled, boost::ref(w)), 100);
 
 		q_application.exec();
 	}

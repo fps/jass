@@ -25,6 +25,8 @@ class main_window : public QMainWindow {
 
 	engine &engine_;
 
+	std::string setup_file_name;
+
 	void print_foo() {
 		std::cout << "fooooo" << std::endl;
 	}
@@ -42,6 +44,16 @@ class main_window : public QMainWindow {
 				std::cout << "something went wrong saving the setup" << std::endl;
 			}
 		}
+
+		void save_setup() {
+			std::cout << "save_setup" << std::endl;
+			if (setup_file_name == "") {
+				std::cout << "Ask user for filename" << std::endl;
+				return;
+			}
+			save_setup(setup_file_name);
+		}
+
 	
 		void load_setup(const std::string &file_name) {
 			try {
@@ -50,12 +62,15 @@ class main_window : public QMainWindow {
 				Jass::Jass jass_ = *j;
 				Jass::Jass_(std::cout, jass_);
  				int i = 0;
-				for(Jass::Jass::Generator_const_iterator it = jass.Generator().begin(); it != jass.Generator().end(); ++it) {
+				setEnabled(false);
+				for(Jass::Jass::Generator_const_iterator it = jass_.Generator().begin(); it != jass_.Generator().end(); ++it) {
+					std::cout << "loading sample " << (*it).Sample() << std::endl;
 					disposable_generator_ptr p = disposable_generator::create(
 						disposable_sample::create((*it).Sample()));
 					engine_.commands.write(assign(engine_.gens->t[i++], p));
 				}
 				jass = jass_;
+				setup_file_name = file_name;
 			} catch(...) {
 				std::cout << "something went wrong loading some file" << std::endl;
 			}

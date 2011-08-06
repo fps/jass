@@ -1,7 +1,9 @@
-#ifndef TIMED_FUNCTOR_HH
-#define TIMED_FUNCTOR_HH
+#ifndef Q_FUNCTOR_HH
+#define Q_FUNCTOR_HH
 
 #include <QObject>
+#include <QTimer>
+
 #include <boost/function.hpp>
 
 class qfunctor : public QObject {
@@ -10,12 +12,18 @@ class qfunctor : public QObject {
 	boost::function<void(void)> f;
 
 	public:
-		qfunctor(boost::function<void(void)> t) : f(t) { }
+		qfunctor(boost::function<void(void)> t) 
+		: 
+			f(t) 
+		{ 
+
+		}
 
 	public slots:
 		void exec() {
 			f();
 		}
 };
+
 
 #endif
