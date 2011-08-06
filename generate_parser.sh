@@ -1,2 +1,2 @@
-xsdcxx cxx-tree jass.xsd
+xsdcxx cxx-tree --generate-serialization --generate-ostream jass.xsd
 

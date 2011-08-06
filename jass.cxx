@@ -287,6 +287,32 @@ namespace Jass
   }
 }
 
+#include <ostream>
+
+namespace Jass
+{
+  ::std::ostream&
+  operator<< (::std::ostream& o, const Generator& i)
+  {
+    o << ::std::endl << "Sample: " << i.Sample ();
+    o << ::std::endl << "Channel: " << i.Channel ();
+    return o;
+  }
+
+  ::std::ostream&
+  operator<< (::std::ostream& o, const Jass& i)
+  {
+    for (Jass::Generator_const_iterator
+         b (i.Generator ().begin ()), e (i.Generator ().end ());
+         b != e; ++b)
+    {
+      o << ::std::endl << "Generator: " << *b;
+    }
+
+    return o;
+  }
+}
+
 #include <istream>
 #include <xsd/cxx/xml/sax/std-input-source.hxx>
 #include <xsd/cxx/tree/error-handler.hxx>
@@ -571,6 +597,209 @@ namespace Jass
       n.namespace_ (),
       "Jass",
       "http://shirkhan.dyndns.org/Jass");
+  }
+}
+
+#include <ostream>
+#include <xsd/cxx/tree/error-handler.hxx>
+#include <xsd/cxx/xml/dom/serialization-source.hxx>
+
+namespace Jass
+{
+  void
+  Jass_ (::std::ostream& o,
+         const ::Jass::Jass& s,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+  {
+    ::xsd::cxx::xml::auto_initializer i (
+      (f & ::xml_schema::flags::dont_initialize) == 0);
+
+    ::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument > d (
+      ::Jass::Jass_ (s, m, f));
+
+    ::xsd::cxx::tree::error_handler< char > h;
+
+    ::xsd::cxx::xml::dom::ostream_format_target t (o);
+    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+    {
+      h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
+    }
+  }
+
+  void
+  Jass_ (::std::ostream& o,
+         const ::Jass::Jass& s,
+         ::xml_schema::error_handler& h,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+  {
+    ::xsd::cxx::xml::auto_initializer i (
+      (f & ::xml_schema::flags::dont_initialize) == 0);
+
+    ::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument > d (
+      ::Jass::Jass_ (s, m, f));
+    ::xsd::cxx::xml::dom::ostream_format_target t (o);
+    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+    {
+      throw ::xsd::cxx::tree::serialization< char > ();
+    }
+  }
+
+  void
+  Jass_ (::std::ostream& o,
+         const ::Jass::Jass& s,
+         ::xercesc::DOMErrorHandler& h,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+  {
+    ::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument > d (
+      ::Jass::Jass_ (s, m, f));
+    ::xsd::cxx::xml::dom::ostream_format_target t (o);
+    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+    {
+      throw ::xsd::cxx::tree::serialization< char > ();
+    }
+  }
+
+  void
+  Jass_ (::xercesc::XMLFormatTarget& t,
+         const ::Jass::Jass& s,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+  {
+    ::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument > d (
+      ::Jass::Jass_ (s, m, f));
+
+    ::xsd::cxx::tree::error_handler< char > h;
+
+    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+    {
+      h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
+    }
+  }
+
+  void
+  Jass_ (::xercesc::XMLFormatTarget& t,
+         const ::Jass::Jass& s,
+         ::xml_schema::error_handler& h,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+  {
+    ::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument > d (
+      ::Jass::Jass_ (s, m, f));
+    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+    {
+      throw ::xsd::cxx::tree::serialization< char > ();
+    }
+  }
+
+  void
+  Jass_ (::xercesc::XMLFormatTarget& t,
+         const ::Jass::Jass& s,
+         ::xercesc::DOMErrorHandler& h,
+         const ::xml_schema::namespace_infomap& m,
+         const ::std::string& e,
+         ::xml_schema::flags f)
+  {
+    ::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument > d (
+      ::Jass::Jass_ (s, m, f));
+    if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
+    {
+      throw ::xsd::cxx::tree::serialization< char > ();
+    }
+  }
+
+  void
+  Jass_ (::xercesc::DOMDocument& d,
+         const ::Jass::Jass& s,
+         ::xml_schema::flags)
+  {
+    ::xercesc::DOMElement& e (*d.getDocumentElement ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (e));
+
+    if (n.name () == "Jass" &&
+        n.namespace_ () == "http://shirkhan.dyndns.org/Jass")
+    {
+      e << s;
+    }
+    else
+    {
+      throw ::xsd::cxx::tree::unexpected_element < char > (
+        n.name (),
+        n.namespace_ (),
+        "Jass",
+        "http://shirkhan.dyndns.org/Jass");
+    }
+  }
+
+  ::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument >
+  Jass_ (const ::Jass::Jass& s,
+         const ::xml_schema::namespace_infomap& m,
+         ::xml_schema::flags f)
+  {
+    ::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument > d (
+      ::xsd::cxx::xml::dom::serialize< char > (
+        "Jass",
+        "http://shirkhan.dyndns.org/Jass",
+        m, f));
+
+    ::Jass::Jass_ (*d, s, f);
+    return d;
+  }
+
+  void
+  operator<< (::xercesc::DOMElement& e, const Generator& i)
+  {
+    e << static_cast< const ::xml_schema::type& > (i);
+
+    // Sample
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "Sample",
+          e));
+
+      s << i.Sample ();
+    }
+
+    // Channel
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "Channel",
+          e));
+
+      s << i.Channel ();
+    }
+  }
+
+  void
+  operator<< (::xercesc::DOMElement& e, const Jass& i)
+  {
+    e << static_cast< const ::xml_schema::type& > (i);
+
+    // Generator
+    //
+    for (Jass::Generator_const_iterator
+         b (i.Generator ().begin ()), n (i.Generator ().end ());
+         b != n; ++b)
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "Generator",
+          e));
+
+      s << *b;
+    }
   }
 }
 

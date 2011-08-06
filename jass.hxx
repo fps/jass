@@ -79,6 +79,23 @@
 #include <xsd/cxx/tree/parsing/double.hxx>
 #include <xsd/cxx/tree/parsing/decimal.hxx>
 
+#include <xsd/cxx/xml/dom/serialization-header.hxx>
+#include <xsd/cxx/tree/serialization.hxx>
+#include <xsd/cxx/tree/serialization/byte.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-byte.hxx>
+#include <xsd/cxx/tree/serialization/short.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-short.hxx>
+#include <xsd/cxx/tree/serialization/int.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-int.hxx>
+#include <xsd/cxx/tree/serialization/long.hxx>
+#include <xsd/cxx/tree/serialization/unsigned-long.hxx>
+#include <xsd/cxx/tree/serialization/boolean.hxx>
+#include <xsd/cxx/tree/serialization/float.hxx>
+#include <xsd/cxx/tree/serialization/double.hxx>
+#include <xsd/cxx/tree/serialization/decimal.hxx>
+
+#include <xsd/cxx/tree/std-ostream-operators.hxx>
+
 namespace xml_schema
 {
   // anyType and anySimpleType.
@@ -174,6 +191,16 @@ namespace xml_schema
   typedef ::xsd::cxx::tree::entity< char, ncname > entity;
   typedef ::xsd::cxx::tree::entities< char, simple_type, entity > entities;
 
+  // Namespace information and list stream. Used in
+  // serialization functions.
+  //
+  typedef ::xsd::cxx::xml::dom::namespace_info< char > namespace_info;
+  typedef ::xsd::cxx::xml::dom::namespace_infomap< char > namespace_infomap;
+  typedef ::xsd::cxx::tree::list_stream< char > list_stream;
+  typedef ::xsd::cxx::tree::as_double< double_ > as_double;
+  typedef ::xsd::cxx::tree::as_decimal< decimal > as_decimal;
+  typedef ::xsd::cxx::tree::facet facet;
+
   // Flags and properties.
   //
   typedef ::xsd::cxx::tree::flags flags;
@@ -197,6 +224,7 @@ namespace xml_schema
   typedef ::xsd::cxx::tree::unexpected_enumerator< char > unexpected_enumerator;
   typedef ::xsd::cxx::tree::expected_text_content< char > expected_text_content;
   typedef ::xsd::cxx::tree::no_prefix_mapping< char > no_prefix_mapping;
+  typedef ::xsd::cxx::tree::serialization< char > serialization;
 
   // Error handler callback interface.
   //
@@ -362,6 +390,17 @@ namespace Jass
 
 #include <iosfwd>
 
+namespace Jass
+{
+  ::std::ostream&
+  operator<< (::std::ostream&, const Generator&);
+
+  ::std::ostream&
+  operator<< (::std::ostream&, const Jass&);
+}
+
+#include <iosfwd>
+
 #include <xercesc/sax/InputSource.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/dom/DOMErrorHandler.hpp>
@@ -460,6 +499,91 @@ namespace Jass
   Jass_ (::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument >& d,
          ::xml_schema::flags f = 0,
          const ::xml_schema::properties& p = ::xml_schema::properties ());
+}
+
+#include <iosfwd>
+
+#include <xercesc/dom/DOMDocument.hpp>
+#include <xercesc/dom/DOMErrorHandler.hpp>
+#include <xercesc/framework/XMLFormatter.hpp>
+
+#include <xsd/cxx/xml/dom/auto-ptr.hxx>
+
+namespace Jass
+{
+  // Serialize to std::ostream.
+  //
+
+  void
+  Jass_ (::std::ostream& os,
+         const ::Jass::Jass& x, 
+         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+         const ::std::string& e = "UTF-8",
+         ::xml_schema::flags f = 0);
+
+  void
+  Jass_ (::std::ostream& os,
+         const ::Jass::Jass& x, 
+         ::xml_schema::error_handler& eh,
+         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+         const ::std::string& e = "UTF-8",
+         ::xml_schema::flags f = 0);
+
+  void
+  Jass_ (::std::ostream& os,
+         const ::Jass::Jass& x, 
+         ::xercesc::DOMErrorHandler& eh,
+         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+         const ::std::string& e = "UTF-8",
+         ::xml_schema::flags f = 0);
+
+  // Serialize to xercesc::XMLFormatTarget.
+  //
+
+  void
+  Jass_ (::xercesc::XMLFormatTarget& ft,
+         const ::Jass::Jass& x, 
+         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+         const ::std::string& e = "UTF-8",
+         ::xml_schema::flags f = 0);
+
+  void
+  Jass_ (::xercesc::XMLFormatTarget& ft,
+         const ::Jass::Jass& x, 
+         ::xml_schema::error_handler& eh,
+         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+         const ::std::string& e = "UTF-8",
+         ::xml_schema::flags f = 0);
+
+  void
+  Jass_ (::xercesc::XMLFormatTarget& ft,
+         const ::Jass::Jass& x, 
+         ::xercesc::DOMErrorHandler& eh,
+         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+         const ::std::string& e = "UTF-8",
+         ::xml_schema::flags f = 0);
+
+  // Serialize to an existing xercesc::DOMDocument.
+  //
+
+  void
+  Jass_ (::xercesc::DOMDocument& d,
+         const ::Jass::Jass& x,
+         ::xml_schema::flags f = 0);
+
+  // Serialize to a new xercesc::DOMDocument.
+  //
+
+  ::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument >
+  Jass_ (const ::Jass::Jass& x, 
+         const ::xml_schema::namespace_infomap& m = ::xml_schema::namespace_infomap (),
+         ::xml_schema::flags f = 0);
+
+  void
+  operator<< (::xercesc::DOMElement&, const Generator&);
+
+  void
+  operator<< (::xercesc::DOMElement&, const Jass&);
 }
 
 #include <xsd/cxx/post.hxx>

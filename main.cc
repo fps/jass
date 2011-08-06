@@ -31,9 +31,9 @@ int main(int argc, char **argv) {
 	{
 		engine e;
 
-		if (argc > 1) e.load_setup(argv[1]);
-
 		main_window w(e);
+		if (argc > 1) w.load_setup(argv[1]);
+
 		w.show();
 
 		//! Make sure the heap cleanup is called regularly
