@@ -80,7 +80,7 @@ struct engine {
 		//! Execute commands passed in through ringbuffer
 		while(commands.can_read()) { commands.read()(); }
 		if (!acknowledgements.can_write()) std::cout << "ack buffer full" << std::endl;
-		acknowledgements.write(0);
+		else acknowledgements.write(0);
 
 		for (unsigned int i = 0; i < gens->t.size(); ++i) {
 			if (gens->t[i].get()) {
