@@ -25,9 +25,9 @@ struct heap {
 	}
 
 	void cleanup() {
-		std::cout << "============================" << std::endl;
+		//std::cout << "============================" << std::endl;
 		for (std::list<boost::shared_ptr<disposable_base> >::iterator it = disposables.begin(); it != disposables.end();) {
-			std::cout << "cleanup use count " << it->use_count() << std::endl;
+			//std::cout << "cleanup use count " << it->use_count() << std::endl;
 			if (it->unique()) {
 				//std::cout << "erase" << std::endl;
 				it = disposables.erase(it);
@@ -35,7 +35,7 @@ struct heap {
 				++it;
 			}
 		}	
-		std::cout << "****************************" << std::endl;
+		//std::cout << "****************************" << std::endl;
 	}
 
 	~heap() { instance = 0; }

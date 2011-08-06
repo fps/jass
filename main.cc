@@ -31,13 +31,15 @@ int main(int argc, char **argv) {
 	{
 		engine e;
 
+		if (argc > 1) e.load_setup(argv[1]);
+
 		main_window w(e);
 		w.show();
 
 		//! Make sure the heap cleanup is called regularly
 		qfunctor f(boost::bind(&heap::cleanup, heap::get()));
 		QTimer timer;
-		timer.setInterval(5000);
+		timer.setInterval(100);
 		timer.connect(&timer, SIGNAL(timeout()), &f, SLOT(exec()));
 		timer.start();
 

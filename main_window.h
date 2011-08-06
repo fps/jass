@@ -31,8 +31,8 @@ class main_window : public QMainWindow {
 		void check_acknowledgements() {
 			if (engine_.acknowledgements.can_read()) {
 				while(engine_.acknowledgements.can_read()) engine_.acknowledgements.read();
+				setEnabled(true);
 			}
-			setEnabled(true);
 		}
 
 		main_window(engine &e) :

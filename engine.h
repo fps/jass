@@ -15,6 +15,7 @@
 #include "disposable.h"
 #include "generator.h"
 #include "ringbuffer.h"
+#include "jass.hxx"
 
 typedef std::vector<disposable_generator_ptr> generator_vector;
 typedef disposable<generator_vector> disposable_generator_vector;
@@ -65,6 +66,10 @@ struct engine {
 		jack_client_close(jack_client);
 	}
 
+	void load_setup(std::string file_name) {
+		std::auto_ptr<Jass::Jass> j = Jass::Jass_(file_name);
+	}
+
 	void process(jack_nframes_t nframes) {
 		float *out_0_buf = (float*)jack_port_get_buffer(out_0, nframes);
 		float *out_1_buf = (float*)jack_port_get_buffer(out_1, nframes);
@@ -76,6 +81,8 @@ struct engine {
 
 		//! Execute commands passed in through ringbuffer
 		while(commands.can_read()) { commands.read()(); }
+		if (!acknowledgements.can_write()) std::cout << "ack buffer full" << std::endl;
+		acknowledgements.write(0);
 
 		for (unsigned int i = 0; i < gens->t.size(); ++i) {
 			if (gens->t[i].get()) {
