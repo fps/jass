@@ -79,6 +79,8 @@ struct engine {
 
 		//! Execute commands passed in through ringbuffer
 		while(commands.can_read()) { commands.read()(); }
+
+		//! Send ack to (possibly) enable the GUI again
 		if (!acknowledgements.can_write()) std::cout << "ack buffer full" << std::endl;
 		else acknowledgements.write(0);
 
