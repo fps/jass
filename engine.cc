@@ -5,4 +5,7 @@ extern "C" {
 		((engine*)p)->process(frames);
 		return 0;
 	}
+	void session_callback(jack_session_event_t *event, void *p) {
+		((engine*)p)->session_callback(event);
+	}
 }

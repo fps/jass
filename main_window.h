@@ -32,9 +32,28 @@ class main_window : public QMainWindow {
 	}
 
 	public slots:
-		void sample_double_clicked(const QModelIndex &index);
 
-	public:
+		void handle_jack_session_event(jack_session_event_t *ev) {
+			jack_session_event_t *e = (jack_session_event_t *) ev;
+			char filename[10000];
+			char command[10000];
+			
+			snprintf( filename, sizeof(filename), "%smyfile.state", e->session_dir );
+			snprintf( command,  sizeof(command),  "my_app -U %s ${SESSION_DIR}myfile.state", e->client_uuid );
+			
+			save_setup( filename );
+			
+			ev->command_line = strdup(command);
+			jack_session_reply(engine_.jack_client, e);
+			
+			if (ev->type == JackSessionSaveAndQuit) {
+
+			}
+			
+			jack_session_event_free( ev );
+		}
+
+		void sample_double_clicked(const QModelIndex &index);
 
 		void save_setup(const std::string &file_name) {
 			try {
@@ -83,6 +102,7 @@ class main_window : public QMainWindow {
 			}
 		}
 
+	public:
 		main_window(engine &e) :
 			engine_(e)
 		{
@@ -100,8 +120,8 @@ class main_window : public QMainWindow {
 
 			file_system_model.setRootPath("/");
 			file_system_view.setModel(&file_system_model);
-			file_system_view.setExpanded(file_system_model.index("/media/b74d014a-92ba-4835-b559-64a7bd913819/Samples.old/DrumKits/Club basic/"), true);
-			file_system_view.scrollTo(file_system_model.index("/media/b74d014a-92ba-4835-b559-64a7bd913819/Samples.old/DrumKits/Club basic/"));
+			//file_system_view.setExpanded(file_system_model.index("/media/b74d014a-92ba-4835-b559-64a7bd913819/Samples.old/DrumKits/Club basic/"), true);
+			//file_system_view.scrollTo(file_system_model.index("/media/b74d014a-92ba-4835-b559-64a7bd913819/Samples.old/DrumKits/Club basic/"));
 			setCentralWidget(&file_system_view);
 		}
 };

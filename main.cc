@@ -50,6 +50,13 @@ int main(int argc, char **argv) {
 		main_window w(e);
 		if (argc > 1) w.load_setup(argv[1]);
 
+		//! The session_signal is received possibly in the process thread thus we need to use a QueuedConnection
+		QObject::connect(
+			&e, SIGNAL(session_signal(jack_session_event_t*)), 
+			&w, SLOT(handle_jack_session_event(jack_session_event_t*)), 
+			Qt::QueuedConnection
+		);
+
 		//! register SIGUSR1 for ladish session support
 		signal(SIGUSR1, signal_handler);
 
