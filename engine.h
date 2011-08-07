@@ -42,9 +42,11 @@ class engine : public QObject {
 	public:
 		//! The ringbuffer for the commands that have to be passed to the process callback
 		command_ringbuffer commands;
+
+		//! When the engine is done processing a command that possibly alters references, it will signal completion by writing a 0 in this ringbuffer
 		ringbuffer<char> acknowledgements;
 
-		//! disposable vector holding generators
+		//! disposable vector holding generators. This is a disposable_vector_ptr so that the whole collection of generators can be replaced in one step, which is useful for loading/reloading setups
 		disposable_generator_vector_ptr gens;
 
 		//! a single generator to audit a sample
@@ -55,6 +57,7 @@ class engine : public QObject {
 		jack_port_t *out_1;
 		jack_port_t *midi_in;
 
+		//! Set this member only using the set_samplerate method..
 		double sample_rate;
 
 	public:
@@ -72,6 +75,8 @@ class engine : public QObject {
 			midi_in = jack_port_register(jack_client, "in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
 
 			sample_rate = jack_get_sample_rate(jack_client);
+
+			jack_set_session_callback(jack_client, ::session_callback, this);
 
 			jack_set_process_callback(jack_client, process_callback, (void*)this);
 			jack_activate(jack_client);

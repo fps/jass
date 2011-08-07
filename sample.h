@@ -18,7 +18,11 @@ struct sample {
 	std::vector<float> data_0;
 	std::vector<float> data_1;
 
-	sample(const std::string &file_name) {
+	std::string file_name;
+
+	sample(const std::string &file_name) :
+		file_name(file_name)
+	{
 		SF_INFO sf_info;
 		sf_info.format = 0;
 		SNDFILE* snd_file = sf_open(file_name.c_str(), SFM_READ, &sf_info);

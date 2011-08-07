@@ -7,6 +7,8 @@
 #include <QApplication>
 #include <QTimer>
 
+#include <boost/program_options.hpp>
+
 #include "signal.h"
 
 #include "sample.h"
@@ -37,8 +39,16 @@ void check_signalled(main_window &w) {
 	}
 }
 
+namespace po = boost::program_options;
+
 int main(int argc, char **argv) {
 	QApplication q_application(argc, argv);
+
+	po::options_description options_description("Allowed options:");
+	options_description.add_options()
+		("help", "produce this help message")
+		("UUID,U", "jack session UUID")
+	;
 
 	//! Make sure the heap instance is created
 	heap *h = heap::get();

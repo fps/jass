@@ -38,16 +38,16 @@ class main_window : public QMainWindow {
 			char filename[10000];
 			char command[10000];
 			
-			snprintf( filename, sizeof(filename), "%smyfile.state", e->session_dir );
-			snprintf( command,  sizeof(command),  "my_app -U %s ${SESSION_DIR}myfile.state", e->client_uuid );
+			snprintf(filename, sizeof(filename), "%smyfile.state", e->session_dir);
+			snprintf(command, sizeof(command), "my_app -U %s ${SESSION_DIR}setup.xml", e->client_uuid);
 			
-			save_setup( filename );
+			save_setup(filename);
 			
 			ev->command_line = strdup(command);
 			jack_session_reply(engine_.jack_client, e);
 			
 			if (ev->type == JackSessionSaveAndQuit) {
-
+				close();
 			}
 			
 			jack_session_event_free( ev );
