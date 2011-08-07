@@ -44,11 +44,19 @@ namespace po = boost::program_options;
 int main(int argc, char **argv) {
 	QApplication q_application(argc, argv);
 
-	po::options_description options_description("Allowed options:");
-	options_description.add_options()
+	po::options_description desc("Allowed options:");
+	desc.add_options()
 		("help", "produce this help message")
-		("UUID,U", "jack session UUID")
+		("UUID,U", po::value<std::string>(), "jack session UUID")
+		("setup", po::value<std::vector<std::string> >(), "load setup")
 	;
+
+	po::positional_options_description p;
+	p.add("setup", -1);
+
+	po::variables_map vm;
+	po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+	po::notify(vm);
 
 	//! Make sure the heap instance is created
 	heap *h = heap::get();
@@ -57,7 +65,7 @@ int main(int argc, char **argv) {
 		engine e;
 
 		main_window w(e);
-		if (argc > 1) w.load_setup(argv[1]);
+		if (vm.count("setup")) w.load_setup(vm["setup"].as<std::vector<std::string> >()[0]);
 
 		//! The session_signal is received possibly in the process thread thus we need to use a QueuedConnection
 		QObject::connect(
