@@ -25,11 +25,8 @@ class main_window : public QMainWindow {
 
 	engine &engine_;
 
-	std::string setup_file_name;
-
-	void print_foo() {
-		std::cout << "fooooo" << std::endl;
-	}
+	public:
+		std::string setup_file_name;
 
 	public slots:
 

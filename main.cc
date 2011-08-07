@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
 	desc.add_options()
 		("help", "produce this help message")
 		("UUID,U", po::value<std::string>(), "jack session UUID")
+		("create_setup,c", po::value<std::string>(), "create a named setup (LADISH L1)")
 		("setup", po::value<std::vector<std::string> >(), "load setup")
 	;
 
@@ -67,6 +68,8 @@ int main(int argc, char **argv) {
 		engine e(uuid);
 
 		main_window w(e);
+
+		if (vm.count("create_setup")) w.setup_file_name = vm["create_setup"].as<std::string>();
 		if (vm.count("setup")) w.load_setup(vm["setup"].as<std::vector<std::string> >()[0]);
 
 		//! The session_signal is received possibly in the process thread thus we need to use a QueuedConnection
