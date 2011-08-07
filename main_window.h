@@ -209,8 +209,8 @@ class main_window : public QMainWindow {
 			addDockWidget(Qt::LeftDockWidgetArea, file_system_view_dock_widget);
 
 			QSettings settings;
-			restoreGeometry(settings.value("main_window/geometry").toByteArray());
-			restoreState(settings.value("main_window/windowState").toByteArray());
+			restoreGeometry(settings.value("geometry").toByteArray());
+			restoreState(settings.value("windowState").toByteArray());
 		}
 };
 
