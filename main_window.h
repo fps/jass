@@ -11,6 +11,7 @@
 #include <QTreeView>
 #include <QTableWidget>
 #include <QFileSystemModel>
+#include <QHeaderView>
 #include <QDockWidget>
 
 #include "engine.h"
@@ -105,6 +106,7 @@ class main_window : public QMainWindow {
 			}
 		}
 
+
 		void save_setup() {
 			std::cout << "save_setup" << std::endl;
 			if (setup_file_name == "") {
@@ -171,6 +173,8 @@ class main_window : public QMainWindow {
 			QSettings settings;
 			settings.setValue("geometry", saveGeometry());
 			settings.setValue("windowState", saveState());
+			//settings.setValue("generatorTableState", generator_table->horizontalHeader().saveState());
+			settings.setValue("fileSystemViewState", file_system_view->header()->saveState());
 			QWidget::closeEvent(event);
 		}
 
@@ -211,6 +215,7 @@ class main_window : public QMainWindow {
 			QSettings settings;
 			restoreGeometry(settings.value("geometry").toByteArray());
 			restoreState(settings.value("windowState").toByteArray());
+			file_system_view->header()->restoreState(settings.value("fileSystemViewState").toByteArray());
 		}
 };
 
