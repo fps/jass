@@ -2,6 +2,7 @@
 #define JASS_ENGINE_HH
 
 #include <vector>
+#include <list>
 #include <algorithm>
 #include <iostream>
 
@@ -27,6 +28,11 @@ typedef std::vector<disposable_generator_ptr> generator_vector;
 typedef disposable<generator_vector> disposable_generator_vector;
 typedef boost::shared_ptr<disposable_generator_vector> disposable_generator_vector_ptr;
 
+typedef std::list<disposable_generator_ptr> generator_list;
+typedef disposable<generator_list> disposable_generator_list;
+typedef boost::shared_ptr<disposable_generator_list> disposable_generator_list_ptr;
+
+
 typedef ringbuffer<boost::function<void(void)> > command_ringbuffer;
 
 struct engine;
@@ -47,7 +53,7 @@ class engine : public QObject {
 		ringbuffer<char> acknowledgements;
 
 		//! disposable vector holding generators. This is a disposable_vector_ptr so that the whole collection of generators can be replaced in one step, which is useful for loading/reloading setups
-		disposable_generator_vector_ptr gens;
+		disposable_generator_list_ptr gens;
 
 		//! a single generator to audit a sample
 		disposable_generator_ptr auditor_gen;
@@ -64,8 +70,8 @@ class engine : public QObject {
 		engine(const char *uuid = 0) 
 		: 
 			commands(1024),
-			acknowledgements(64),
-			gens(disposable_generator_vector::create(generator_vector(128)))
+			acknowledgements(1024),
+			gens(disposable_generator_list::create(generator_list()))
 		{
 			heap *h = heap::get();	
 
@@ -120,11 +126,8 @@ class engine : public QObject {
 			if (!acknowledgements.can_write()) std::cout << "ack buffer full" << std::endl;
 			else acknowledgements.write(0);
 	
-			for (unsigned int i = 0; i < gens->t.size(); ++i) {
-				if (gens->t[i].get()) {
-					//std::cout << "." << std::endl;
-					gens->t[i]->t.process(out_0_buf, out_1_buf, nframes);
-				}
+			for (generator_list::iterator it = gens->t.begin(); it != gens->t.end(); ++it) {
+				(*it)->t.process(out_0_buf, out_1_buf, nframes);
 			}
 			//! Synthesize
 		}

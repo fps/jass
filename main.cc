@@ -43,6 +43,10 @@ namespace po = boost::program_options;
 
 int main(int argc, char **argv) {
 	QApplication q_application(argc, argv);
+	QCoreApplication::setOrganizationName("Ugh");
+	QCoreApplication::setOrganizationDomain("shirkhan.dyndns.org");
+	QCoreApplication::setApplicationName("jass");
+
 
 	po::options_description desc("Allowed options:");
 	desc.add_options()

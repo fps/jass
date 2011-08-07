@@ -6,9 +6,12 @@
 #include <cstdlib>
 
 #include <QMainWindow>
+#include <QSettings>
 #include <QSplitter>
 #include <QTreeView>
+#include <QTableWidget>
 #include <QFileSystemModel>
+#include <QDockWidget>
 
 #include "engine.h"
 #include "assign.h"
@@ -19,10 +22,11 @@ class main_window : public QMainWindow {
 	Q_OBJECT
 
 	QFileSystemModel file_system_model;
-	QTreeView file_system_view;
+	QTreeView *file_system_view;
+	QTableWidget *generator_table;
 
-	//! This is the generated object representation of an xml document..
-	Jass::Jass jass;
+	QDockWidget *file_system_view_dock_widget;
+
 
 	engine &engine_;
 
@@ -30,8 +34,34 @@ class main_window : public QMainWindow {
 		std::string setup_file_name;
 
 	public slots:
-
+		void sample_double_clicked(const QModelIndex &index) {
+			//engine_.commands.write(boost::bind(&main_window::print_foo, this));
+			try {
+				disposable_generator_ptr p = disposable_generator::create(
+					generator(
+						disposable_sample::create(
+							sample(std::string(file_system_model.filePath(index).toLatin1()))
+						)
+					)
+				);
+				if(engine_.commands.can_write()) {
+					std::cout << "writing command" << std::endl;
+					disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
+					l->t.push_back(p);
+					write_blocking_command(assign(engine_.gens, l));
+					sleep(1);
+					update_generator_table();	
+				} 
+				else {
+					std::cout << "full" << std::endl; 
+				}
+			} catch (...) {
+				std::cout << "something went wrong" << std::endl;
+			}
+		}
+		
 		void handle_jack_session_event(jack_session_event_t *ev) {
+			//! Copy pasta slightly adapted from the jack session client walkthrough..
 			jack_session_event_t *e = (jack_session_event_t *) ev;
 			char filename[10000];
 			char command[10000];
@@ -51,12 +81,25 @@ class main_window : public QMainWindow {
 			jack_session_event_free( ev );
 		}
 
-		void sample_double_clicked(const QModelIndex &index);
+		//! Write command without blocking the GUI
+		void write_command(boost::function<void(void)> f) {
+			engine_.commands.write(f);
+		}
+		
+		void write_blocking_command(boost::function<void(void)> f) {
+			//! Will be reenabled by acknowledgement 
+			setEnabled(false);
+
+			engine_.commands.write(f);
+		}
 
 		void save_setup(const std::string &file_name) {
 			try {
 				std::ofstream f(file_name.c_str());
-				Jass::Jass_(f, jass);
+				Jass::Jass j;
+				for(generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) 
+					j.Generator().push_back(Jass::Generator((*it)->t.get_sample()->t.file_name, 0));
+				Jass::Jass_(f, j);
 			} catch (...) {
 				std::cout << "something went wrong saving the setup" << std::endl;
 			}
@@ -71,6 +114,14 @@ class main_window : public QMainWindow {
 			save_setup(setup_file_name);
 		}
 
+		void update_generator_table() {
+			generator_table->setRowCount(engine_.gens->t.size());
+
+			int row = 0;
+			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
+				generator_table->setItem(row++, 0, new QTableWidgetItem((*it)->t.get_sample()->t.file_name.c_str()));
+			}
+		}
 	
 		void load_setup(const std::string &file_name) {
 			if (getenv("LADISH_APP_NAME") != 0) {
@@ -79,9 +130,9 @@ class main_window : public QMainWindow {
 			}
 			try {
 				//! First try loading all generators
-				disposable_generator_vector_ptr v = 
-					disposable_generator_vector::create(
-						std::vector<disposable_generator_ptr>());
+				disposable_generator_list_ptr l = 
+					disposable_generator_list::create(
+						generator_list());
 
 				xsd_error_handler h;
 				std::auto_ptr<Jass::Jass> j = Jass::Jass_(file_name, h, xml_schema::flags::dont_validate);
@@ -94,12 +145,14 @@ class main_window : public QMainWindow {
 					disposable_generator_ptr p = disposable_generator::create(
 						disposable_sample::create((*it).Sample()));
 
-					v->t.push_back(p);
+					l->t.push_back(p);
 				}
-				engine_.commands.write(assign(engine_.gens, v));
+				sleep(1);
+				write_blocking_command(assign(engine_.gens, l));
 
-				jass = jass_;
 				setup_file_name = file_name;
+				sleep(1);
+				update_generator_table();
 				//! Then write them in one go, replacing the whole gens collection
 			} catch(...) {
 				std::cout << "something went wrong loading some file" << std::endl;
@@ -113,6 +166,14 @@ class main_window : public QMainWindow {
 			}
 		}
 
+		void closeEvent(QCloseEvent *event)
+		 {
+			QSettings settings;
+			settings.setValue("geometry", saveGeometry());
+			settings.setValue("windowState", saveState());
+			QWidget::closeEvent(event);
+		}
+
 	public:
 		main_window(engine &e) :
 			engine_(e)
@@ -121,19 +182,35 @@ class main_window : public QMainWindow {
 
 			//engine_.commands.write(boost::bind(&generator::set_sample, engine_.gens->t[0]->t, disposable_sample::create(sample("foo"))));
 
+			file_system_model.setRootPath("/");
+			file_system_view = new QTreeView();
+			file_system_view->setModel(&file_system_model);
+
 			connect(
-				&file_system_view, 
+				file_system_view, 
 				SIGNAL(doubleClicked(const QModelIndex&)), 
 				this, 
 				SLOT(sample_double_clicked(const QModelIndex&)),
 				Qt::QueuedConnection
 			);
 
-			file_system_model.setRootPath("/");
-			file_system_view.setModel(&file_system_model);
-			//file_system_view.setExpanded(file_system_model.index("/media/b74d014a-92ba-4835-b559-64a7bd913819/Samples.old/DrumKits/Club basic/"), true);
-			//file_system_view.scrollTo(file_system_model.index("/media/b74d014a-92ba-4835-b559-64a7bd913819/Samples.old/DrumKits/Club basic/"));
-			setCentralWidget(&file_system_view);
+			generator_table = new QTableWidget();
+
+			generator_table->setColumnCount(1);
+			QStringList headers;
+			headers << "Generator";
+
+			generator_table->setHorizontalHeaderLabels(headers);
+			setCentralWidget(generator_table);
+
+			file_system_view_dock_widget = new QDockWidget();
+			file_system_view_dock_widget->setWidget(file_system_view);
+
+			addDockWidget(Qt::LeftDockWidgetArea, file_system_view_dock_widget);
+
+			QSettings settings;
+			restoreGeometry(settings.value("main_window/geometry").toByteArray());
+			restoreState(settings.value("main_window/windowState").toByteArray());
 		}
 };
 

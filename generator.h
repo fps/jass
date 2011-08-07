@@ -105,6 +105,10 @@ struct generator {
 		//! Update voice info..
 	}
 
+	disposable_sample_ptr get_sample() {
+		return sample_;
+	}
+
 	protected:
 		disposable_sample_ptr sample_;
 };
