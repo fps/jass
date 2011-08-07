@@ -62,7 +62,9 @@ int main(int argc, char **argv) {
 	heap *h = heap::get();
 
 	{
-		engine e;
+		const char *uuid = 0;
+		if (vm.count("UUID")) uuid = vm["UUID"].as<std::string>().c_str();
+		engine e(uuid);
 
 		main_window w(e);
 		if (vm.count("setup")) w.load_setup(vm["setup"].as<std::vector<std::string> >()[0]);

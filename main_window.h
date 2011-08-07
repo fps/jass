@@ -38,8 +38,8 @@ class main_window : public QMainWindow {
 			char filename[10000];
 			char command[10000];
 			
-			snprintf(filename, sizeof(filename), "%smyfile.state", e->session_dir);
-			snprintf(command, sizeof(command), "my_app -U %s ${SESSION_DIR}setup.xml", e->client_uuid);
+			snprintf(filename, sizeof(filename), "%ssetup.xml", e->session_dir);
+			snprintf(command, sizeof(command), "jass -U %s ${SESSION_DIR}setup.xml", e->client_uuid);
 			
 			save_setup(filename);
 			
