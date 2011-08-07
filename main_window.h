@@ -173,7 +173,6 @@ class main_window : public QMainWindow {
 			QSettings settings;
 			settings.setValue("geometry", saveGeometry());
 			settings.setValue("windowState", saveState());
-			//settings.setValue("generatorTableState", generator_table->horizontalHeader().saveState());
 			settings.setValue("fileSystemViewState", file_system_view->header()->saveState());
 			QWidget::closeEvent(event);
 		}
@@ -202,12 +201,13 @@ class main_window : public QMainWindow {
 
 			generator_table->setColumnCount(1);
 			QStringList headers;
-			headers << "Generator";
+			headers << "Generator" << "Channel" << "Min. Note" << "Max. Note" << "A4" << "Min Velocity" << "Max Velocity" << "Velocity Factor";
 
 			generator_table->setHorizontalHeaderLabels(headers);
 			setCentralWidget(generator_table);
 
 			file_system_view_dock_widget = new QDockWidget();
+			file_system_view_dock_widget->setObjectName("FileSystemDockWidget");
 			file_system_view_dock_widget->setWidget(file_system_view);
 
 			addDockWidget(Qt::LeftDockWidgetArea, file_system_view_dock_widget);
