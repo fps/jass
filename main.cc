@@ -2,7 +2,6 @@
 #include <vector>
 #include <functional>
 
-
 #include <jack/jack.h>
 
 #include <QApplication>
@@ -52,7 +51,7 @@ int main(int argc, char **argv) {
 
 		//! The session_signal is received possibly in the process thread thus we need to use a QueuedConnection
 		QObject::connect(
-			&e, SIGNAL(session_signal(jack_session_event_t*)), 
+			&e, SIGNAL(session_event(jack_session_event_t*)), 
 			&w, SLOT(handle_jack_session_event(jack_session_event_t*)), 
 			Qt::QueuedConnection
 		);

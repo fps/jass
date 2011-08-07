@@ -90,7 +90,7 @@ class engine : public QObject {
 		}
 
 		void session_callback(jack_session_event_t *event) {
-			emit session_signal(event);
+			emit session_event(event);
 		}
 	
 		void process(jack_nframes_t nframes) {
@@ -125,7 +125,7 @@ class engine : public QObject {
 		}
 	
 	signals:
-		void session_signal(jack_session_event_t *);
+		void session_event(jack_session_event_t *);
 };
 
 
