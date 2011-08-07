@@ -3,6 +3,7 @@
 
 #include <string>
 #include <fstream>
+#include <cstdlib>
 
 #include <QMainWindow>
 #include <QSplitter>
@@ -72,7 +73,16 @@ class main_window : public QMainWindow {
 
 	
 		void load_setup(const std::string &file_name) {
+			if (getenv("LADISH_APP_NAME") != 0) {
+				setup_file_name = file_name;
+				//! Don't fail in this case..
+			}
 			try {
+				//! First try loading all generators
+				disposable_generator_vector_ptr v = 
+					disposable_generator_vector::create(
+						std::vector<disposable_generator_ptr>());
+
 				xsd_error_handler h;
 				std::auto_ptr<Jass::Jass> j = Jass::Jass_(file_name, h, xml_schema::flags::dont_validate);
 				Jass::Jass jass_ = *j;
@@ -83,10 +93,14 @@ class main_window : public QMainWindow {
 					std::cout << "loading sample " << (*it).Sample() << std::endl;
 					disposable_generator_ptr p = disposable_generator::create(
 						disposable_sample::create((*it).Sample()));
-					engine_.commands.write(assign(engine_.gens->t[i++], p));
+
+					v->t.push_back(p);
 				}
+				engine_.commands.write(assign(engine_.gens, v));
+
 				jass = jass_;
 				setup_file_name = file_name;
+				//! Then write them in one go, replacing the whole gens collection
 			} catch(...) {
 				std::cout << "something went wrong loading some file" << std::endl;
 			}

@@ -46,18 +46,19 @@ int main(int argc, char **argv) {
 
 	po::options_description desc("Allowed options:");
 	desc.add_options()
-		("help", "produce this help message")
+		("help,h", "Produce this help message")
 		("UUID,U", po::value<std::string>(), "jack session UUID")
-		("create_setup,c", po::value<std::string>(), "create a named setup (LADISH L1)")
-		("setup", po::value<std::vector<std::string> >(), "load setup")
+		("state,s", po::value<std::vector<std::string> >(), "Load state from file arg1, arg2, arg3,... Note that this is a positional argument, i.e. just jass state.xml loads the state file as well. If the environment variable LADISH_APP_NAME is set, then do not exit if the file is not found and set the current file name to the arg.")
 	;
 
 	po::positional_options_description p;
-	p.add("setup", -1);
+	p.add("state", -1);
 
 	po::variables_map vm;
 	po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
 	po::notify(vm);
+
+	if(vm.count("help")) { std::cout << desc << std::endl; return 0; }
 
 	//! Make sure the heap instance is created
 	heap *h = heap::get();
@@ -69,8 +70,7 @@ int main(int argc, char **argv) {
 
 		main_window w(e);
 
-		if (vm.count("create_setup")) w.setup_file_name = vm["create_setup"].as<std::string>();
-		if (vm.count("setup")) w.load_setup(vm["setup"].as<std::vector<std::string> >()[0]);
+		if (vm.count("state")) w.load_setup(vm["state"].as<std::vector<std::string> >()[0]);
 
 		//! The session_signal is received possibly in the process thread thus we need to use a QueuedConnection
 		QObject::connect(
