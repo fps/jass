@@ -62,7 +62,7 @@ struct generator {
 
 	virtual ~generator()
 	{ 
-		std::cout << "~generator()" << std::endl; 
+		//std::cout << "~generator()" << std::endl; 
 	}
 
 	generator(
@@ -87,12 +87,7 @@ struct generator {
 		max_velocity(max_velocity),
 		velocity_factor(velocity_factor)
 	{ 
-		std::cout << "generator()" << std::endl; 
-	}
-
-	generator(const generator& g) : sample_(g.sample_) {
-		std::cout << "generator(const generator& g)" << std::endl;
-		*this = g;
+		// std::cout << "generator()" << std::endl; 
 	}
 
 	void process(float *out_0, float *out_1, void * midi_in_buf, jack_nframes_t nframes, jack_client_t *jack_client) {
@@ -107,13 +102,22 @@ struct generator {
 		for (unsigned int frame = 0; frame < nframes; ++frame) {
 			if (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
 				if (((*(midi_event.buffer) & 0xf0)) == 0x90) {
-					notes->t[current_note].key = *(midi_event.buffer+1);
-					notes->t[current_note].note_on_frame = last_frame_time + frame;
-					notes->t[current_note].playing = true;
-					current_note = (++current_note) % notes->t.size();
-					//notes[*(midi_event.buffer+1)].note_on_velocity = *(midi_event.buffer+2);;
+					//! Note on
+					if(
+						(*(midi_event.buffer) & 0x0f) == channel 
+						&& *(midi_event.buffer+1) >= min_note
+						&& *(midi_event.buffer+1) <= max_note
+						&& *(midi_event.buffer+2) >= min_velocity
+						&& *(midi_event.buffer+2) <= max_velocity
+					) {
+						//! We be responsible for this note command
+						notes->t[current_note].key = *(midi_event.buffer+1);
+						notes->t[current_note].note_on_velocity = *(midi_event.buffer+2);
+						notes->t[current_note].note_on_frame = last_frame_time + frame;
+						notes->t[current_note].playing = true;
+						current_note = (++current_note) % notes->t.size();
+					}
 				}
-
 				jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
 				++midi_in_event_index;
 			}
@@ -123,8 +127,9 @@ struct generator {
 				{
 					if (last_frame_time + frame < notes->t[note_index].note_on_frame + sample_->t.data_0.size())
 					{
-						out_0[frame] += sample_->t.data_0[last_frame_time + frame - notes->t[note_index].note_on_frame];				
-						out_1[frame] += sample_->t.data_0[last_frame_time + frame - notes->t[note_index].note_on_frame];				
+						double gain = ((double)notes->t[note_index].note_on_velocity/128.0) * velocity_factor;
+						out_0[frame] += gain * sample_->t.data_0[last_frame_time + frame - notes->t[note_index].note_on_frame];
+						out_1[frame] += gain * sample_->t.data_0[last_frame_time + frame - notes->t[note_index].note_on_frame];
 					}
 				}
 			}
