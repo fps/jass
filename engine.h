@@ -109,12 +109,6 @@ class engine : public QObject {
 			float *out_1_buf = (float*)jack_port_get_buffer(out_1, nframes);
 			void *midi_in_buf = jack_port_get_buffer(midi_in, nframes);	
 
-			jack_nframes_t midi_event_count = jack_midi_get_event_count(midi_in_buf);
-			for (jack_nframes_t index = 0; index < midi_event_count; ++index) {
-				jack_midi_event_t ev;
-				jack_midi_event_get(&ev, midi_in_buf, index);
-			}
-
 			//! zero the buffers first
 			std::fill(out_0_buf, out_0_buf + nframes, 0);
 			std::fill(out_1_buf, out_1_buf + nframes, 0);
@@ -125,9 +119,13 @@ class engine : public QObject {
 			//! Send ack to (possibly) enable the GUI again
 			if (!acknowledgements.can_write()) std::cout << "ack buffer full" << std::endl;
 			else acknowledgements.write(0);
+
+			if (auditor_gen.get()) {
+				auditor_gen->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes);
+			}
 	
 			for (generator_list::iterator it = gens->t.begin(); it != gens->t.end(); ++it) {
-				(*it)->t.process(out_0_buf, out_1_buf, nframes);
+				(*it)->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes);
 			}
 			//! Synthesize
 		}

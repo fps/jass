@@ -11,6 +11,7 @@
 #include <QTreeView>
 #include <QTableWidget>
 #include <QFileSystemModel>
+#include <QApplication>
 #include <QHeaderView>
 #include <QDockWidget>
 
@@ -35,7 +36,31 @@ class main_window : public QMainWindow {
 		std::string setup_file_name;
 
 	public slots:
-		void sample_double_clicked(const QModelIndex &index) {
+		void sample_file_clicked(const QModelIndex &index) {
+			if (!(QApplication::keyboardModifiers() & Qt::ShiftModifier))
+				return;
+
+			try {
+				disposable_generator_ptr p = disposable_generator::create(
+					generator(
+						disposable_sample::create(
+							sample(std::string(file_system_model.filePath(index).toLatin1()))
+						)
+					)
+				);
+				if(engine_.commands.can_write()) {
+					write_blocking_command(assign(engine_.auditor_gen, p));
+				} 
+				else {
+					std::cout << "full" << std::endl; 
+				}
+			} catch (...) {
+				std::cout << "something went wrong" << std::endl;
+			}
+
+		}
+
+		void sample_file_double_clicked(const QModelIndex &index) {
 			//engine_.commands.write(boost::bind(&main_window::print_foo, this));
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
@@ -174,6 +199,7 @@ class main_window : public QMainWindow {
 			settings.setValue("geometry", saveGeometry());
 			settings.setValue("windowState", saveState());
 			settings.setValue("fileSystemViewState", file_system_view->header()->saveState());
+			settings.setValue("fileSystemLastFile", file_system_model.filePath(file_system_view->currentIndex()));
 			QWidget::closeEvent(event);
 		}
 
@@ -183,8 +209,6 @@ class main_window : public QMainWindow {
 		{
 			setWindowTitle("jass - jack simple sampler");
 
-			//engine_.commands.write(boost::bind(&generator::set_sample, engine_.gens->t[0]->t, disposable_sample::create(sample("foo"))));
-
 			file_system_model.setRootPath("/");
 			file_system_view = new QTreeView();
 			file_system_view->setModel(&file_system_model);
@@ -193,15 +217,31 @@ class main_window : public QMainWindow {
 				file_system_view, 
 				SIGNAL(doubleClicked(const QModelIndex&)), 
 				this, 
-				SLOT(sample_double_clicked(const QModelIndex&)),
+				SLOT(sample_file_double_clicked(const QModelIndex&)),
+				Qt::QueuedConnection
+			);
+
+			connect(
+				file_system_view, 
+				SIGNAL(clicked(const QModelIndex&)), 
+				this, 
+				SLOT(sample_file_clicked(const QModelIndex&)),
 				Qt::QueuedConnection
 			);
 
 			generator_table = new QTableWidget();
 
-			generator_table->setColumnCount(1);
+			generator_table->setColumnCount(8);
 			QStringList headers;
-			headers << "Generator" << "Channel" << "Min. Note" << "Max. Note" << "A4" << "Min Velocity" << "Max Velocity" << "Velocity Factor";
+			headers 
+				<< "Generator" 
+				<< "Channel" 
+				<< "Min. Note" 
+				<< "Max. Note" 
+				<< "A4" 
+				<< "Min Velocity" 
+				<< "Max Velocity" 
+				<< "Velocity Factor";
 
 			generator_table->setHorizontalHeaderLabels(headers);
 			setCentralWidget(generator_table);
@@ -216,6 +256,8 @@ class main_window : public QMainWindow {
 			restoreGeometry(settings.value("geometry").toByteArray());
 			restoreState(settings.value("windowState").toByteArray());
 			file_system_view->header()->restoreState(settings.value("fileSystemViewState").toByteArray());
+			file_system_view->scrollTo(file_system_model.index(settings.value("fileSystemLastFile").toString()));
+			file_system_view->setExpanded(file_system_model.index(settings.value("fileSystemLastFile").toString()), true);
 		}
 };
 

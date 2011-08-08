@@ -4,8 +4,10 @@
 #include <vector>
 #include <iostream>
 #include <cassert>
+#include <string>
 
 #include <jack/jack.h>
+#include <jack/midiport.h>
 
 #include "disposable.h"
 #include "sample.h"
@@ -41,6 +43,8 @@ struct voice_manager {
 };
 
 struct generator {
+	std::string name;
+
 	voice_manager voices;
 
 	//! the channel this generator listens on
@@ -90,7 +94,13 @@ struct generator {
 		*this = g;
 	}
 
-	void process(float *out_0, float *out_1, jack_nframes_t nframes) {
+	void process(float *out_0, float *out_1, void * midi_in_buf, jack_nframes_t nframes) {
+		jack_nframes_t midi_event_count = jack_midi_get_event_count(midi_in_buf);
+		for (jack_nframes_t index = 0; index < midi_event_count; ++index) {
+			jack_midi_event_t ev;
+			jack_midi_event_get(&ev, midi_in_buf, index);
+		}
+
 		for (unsigned int i = 0; i < nframes; ++i) {
 			assert((voices.voices[0].frame + i) % sample_->t.data_0.size() < sample_->t.data_0.size());
 			float s = sample_->t.data_0[(voices.voices[0].frame + i) % sample_->t.data_0.size()];

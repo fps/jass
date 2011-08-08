@@ -27,14 +27,14 @@ struct disposable : public disposable_base {
 	}
 
 
-	~disposable() { std::cout << "~disposable()" << std::endl; }
+	virtual ~disposable() { /* std::cout << "~disposable()" << std::endl; */ }
 
 	private:
 		/**
 			Force creation on the heap by making the constructor private.
 		*/
 		disposable(const T &t = T()) : t(t) { 
-			std::cout << "disposable()" << std::endl;
+			// std::cout << "disposable()" << std::endl;
 		}
 };
 
