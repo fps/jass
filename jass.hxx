@@ -291,6 +291,20 @@ namespace Jass
     void
     Sample (::std::auto_ptr< Sample_type > p);
 
+    // Polyphony
+    // 
+    typedef ::xml_schema::non_negative_integer Polyphony_type;
+    typedef ::xsd::cxx::tree::traits< Polyphony_type, char > Polyphony_traits;
+
+    const Polyphony_type&
+    Polyphony () const;
+
+    Polyphony_type&
+    Polyphony ();
+
+    void
+    Polyphony (const Polyphony_type& x);
+
     // Channel
     // 
     typedef ::xml_schema::non_negative_integer Channel_type;
@@ -305,10 +319,101 @@ namespace Jass
     void
     Channel (const Channel_type& x);
 
+    // Transpose
+    // 
+    typedef ::xml_schema::non_negative_integer Transpose_type;
+    typedef ::xsd::cxx::tree::traits< Transpose_type, char > Transpose_traits;
+
+    const Transpose_type&
+    Transpose () const;
+
+    Transpose_type&
+    Transpose ();
+
+    void
+    Transpose (const Transpose_type& x);
+
+    // MinNote
+    // 
+    typedef ::xml_schema::non_negative_integer MinNote_type;
+    typedef ::xsd::cxx::tree::traits< MinNote_type, char > MinNote_traits;
+
+    const MinNote_type&
+    MinNote () const;
+
+    MinNote_type&
+    MinNote ();
+
+    void
+    MinNote (const MinNote_type& x);
+
+    // MaxNote
+    // 
+    typedef ::xml_schema::non_negative_integer MaxNote_type;
+    typedef ::xsd::cxx::tree::traits< MaxNote_type, char > MaxNote_traits;
+
+    const MaxNote_type&
+    MaxNote () const;
+
+    MaxNote_type&
+    MaxNote ();
+
+    void
+    MaxNote (const MaxNote_type& x);
+
+    // MinVelocity
+    // 
+    typedef ::xml_schema::non_negative_integer MinVelocity_type;
+    typedef ::xsd::cxx::tree::traits< MinVelocity_type, char > MinVelocity_traits;
+
+    const MinVelocity_type&
+    MinVelocity () const;
+
+    MinVelocity_type&
+    MinVelocity ();
+
+    void
+    MinVelocity (const MinVelocity_type& x);
+
+    // MaxVelocity
+    // 
+    typedef ::xml_schema::non_negative_integer MaxVelocity_type;
+    typedef ::xsd::cxx::tree::traits< MaxVelocity_type, char > MaxVelocity_traits;
+
+    const MaxVelocity_type&
+    MaxVelocity () const;
+
+    MaxVelocity_type&
+    MaxVelocity ();
+
+    void
+    MaxVelocity (const MaxVelocity_type& x);
+
+    // VelocityFactor
+    // 
+    typedef ::xml_schema::float_ VelocityFactor_type;
+    typedef ::xsd::cxx::tree::traits< VelocityFactor_type, char > VelocityFactor_traits;
+
+    const VelocityFactor_type&
+    VelocityFactor () const;
+
+    VelocityFactor_type&
+    VelocityFactor ();
+
+    void
+    VelocityFactor (const VelocityFactor_type& x);
+
     // Constructors.
     //
     Generator (const Sample_type&,
-               const Channel_type&);
+               const Polyphony_type&,
+               const Channel_type&,
+               const Transpose_type&,
+               const MinNote_type&,
+               const MaxNote_type&,
+               const MinVelocity_type&,
+               const MaxVelocity_type&,
+               const VelocityFactor_type&);
 
     Generator (const ::xercesc::DOMElement& e,
                ::xml_schema::flags f = 0,
@@ -334,7 +439,14 @@ namespace Jass
 
     protected:
     ::xsd::cxx::tree::one< Sample_type > Sample_;
+    ::xsd::cxx::tree::one< Polyphony_type > Polyphony_;
     ::xsd::cxx::tree::one< Channel_type > Channel_;
+    ::xsd::cxx::tree::one< Transpose_type > Transpose_;
+    ::xsd::cxx::tree::one< MinNote_type > MinNote_;
+    ::xsd::cxx::tree::one< MaxNote_type > MaxNote_;
+    ::xsd::cxx::tree::one< MinVelocity_type > MinVelocity_;
+    ::xsd::cxx::tree::one< MaxVelocity_type > MaxVelocity_;
+    ::xsd::cxx::tree::one< VelocityFactor_type > VelocityFactor_;
   };
 
   class Jass: public ::xml_schema::type

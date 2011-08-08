@@ -12,58 +12,48 @@
 #include "disposable.h"
 #include "sample.h"
 
-struct voice {
+struct note {
 	bool playing;
-	jack_nframes_t frame;
-	unsigned int velocity;
-	unsigned int note;
 
-	voice(unsigned int vel = 0, unsigned int note = 0, bool playing = true, jack_nframes_t frame = 0) :
-		playing(playing),
-		frame(frame),
-		velocity(vel),
-		note(note)
+	unsigned int key;
+
+	//! The frame the event to start this voice happened
+	jack_nframes_t note_on_frame;
+	unsigned int note_on_velocity;
+
+	note(unsigned int note_on_velocity = 0, jack_nframes_t note_on_frame = 0, bool playing = false) :
+		note_on_velocity(note_on_velocity),
+		note_on_frame(note_on_frame),
+		playing(playing)
 	{
 
 	}
 };
 
-struct voice_manager {
-	enum { AUDIT, LOOP, SINGLE_SHOT } mode;
-
-	std::vector<voice> voices;
-
-	voice_manager() : voices(128) { 
-
-	}
-
-	void trigger(unsigned int velocity, unsigned int note) {
-		voices[0] = voice(velocity, note);
-	}
-};
 
 struct generator {
 	std::string name;
 
-	voice_manager voices;
+	std::vector<note> notes;
+	unsigned int current_note;
 
 	//! the channel this generator listens on
 	unsigned int channel;
 
 	//! the tuning note
-	unsigned int note_a;
+	unsigned int transpose;
 
 	//! lowest note tp react to
-	unsigned int low_note;
+	unsigned int min_note;
 
 	//! highest note to react to
-	unsigned int high_note;
+	unsigned int max_note;
 
 	//! the lowest velocity to react to
-	unsigned int low_velocity;
+	unsigned int min_velocity;
 
 	//! the highest velocity to react to
-	unsigned int high_velocity;
+	unsigned int max_velocity;
 
 	//! resulting velocity is velocity_factor * (velocity - high_velocity)/(high_velocity - low_velocity)
 	double velocity_factor;
@@ -73,20 +63,29 @@ struct generator {
 		std::cout << "~generator()" << std::endl; 
 	}
 
-	generator(disposable_sample_ptr s) :
+	generator(
+		disposable_sample_ptr s,
+		unsigned int polyphony = 4, 
+		unsigned int channel = 0,
+		unsigned int transpose = 0,
+		unsigned int min_note = 0,
+		unsigned int max_mote = 127,
+		unsigned int min_velocity = 0,
+		unsigned int max_velocity = 127,
+		double velocity_factor = 1.0
+	) :
+		notes(polyphony),
+		current_note(0),
 		sample_(s),
 		channel(0),
-		note_a(64),
-		low_note(0),
-		high_note(127),
-		low_velocity(0),
-		high_velocity(127),
-		velocity_factor(1.0)
+		transpose(transpose),
+		min_note(min_note),
+		max_note(max_note),
+		min_velocity(min_velocity),
+		max_velocity(max_velocity),
+		velocity_factor(velocity_factor)
 	{ 
 		std::cout << "generator()" << std::endl; 
-		voices.voices[0].frame = 0;
-		voices.voices[0].velocity = 64;
-		voices.voices[0].note = 64;
 	}
 
 	generator(const generator& g) : sample_(g.sample_) {
@@ -94,20 +93,40 @@ struct generator {
 		*this = g;
 	}
 
-	void process(float *out_0, float *out_1, void * midi_in_buf, jack_nframes_t nframes) {
-		jack_nframes_t midi_event_count = jack_midi_get_event_count(midi_in_buf);
-		for (jack_nframes_t index = 0; index < midi_event_count; ++index) {
-			jack_midi_event_t ev;
-			jack_midi_event_get(&ev, midi_in_buf, index);
-		}
+	void process(float *out_0, float *out_1, void * midi_in_buf, jack_nframes_t nframes, jack_client_t *jack_client) {
+		jack_nframes_t midi_in_event_index = 0;
+		jack_nframes_t midi_in_event_count = jack_midi_get_event_count(midi_in_buf);
 
-		for (unsigned int i = 0; i < nframes; ++i) {
-			assert((voices.voices[0].frame + i) % sample_->t.data_0.size() < sample_->t.data_0.size());
-			float s = sample_->t.data_0[(voices.voices[0].frame + i) % sample_->t.data_0.size()];
-			out_0[i] += 0.2 * s;
-			out_1[i] += 0.2 * s;
+		jack_midi_event_t midi_event;
+		if (midi_in_event_count > 0)
+			jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
+
+		jack_nframes_t last_frame_time = jack_last_frame_time(jack_client);
+		for (unsigned int frame = 0; frame < nframes; ++frame) {
+			if (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
+				if (((*(midi_event.buffer) & 0xf0)) == 0x90) {
+					notes[current_note].key = *(midi_event.buffer+1);
+					notes[current_note].note_on_frame = last_frame_time + frame;
+					notes[current_note].playing = true;
+					current_note = (++current_note) % notes.size();
+					//notes[*(midi_event.buffer+1)].note_on_velocity = *(midi_event.buffer+2);;
+				}
+
+				jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
+				++midi_in_event_index;
+			}
+
+			for (unsigned int note_index = 0; note_index < notes.size(); ++note_index) {
+				if (notes[note_index].playing) 
+				{
+					if (last_frame_time + frame < notes[note_index].note_on_frame + sample_->t.data_0.size())
+					{
+						out_0[frame] += sample_->t.data_0[last_frame_time + frame - notes[note_index].note_on_frame];				
+						out_1[frame] += sample_->t.data_0[last_frame_time + frame - notes[note_index].note_on_frame];				
+					}
+				}
+			}
 		}
-		voices.voices[0].frame = (voices.voices[0].frame + nframes) % sample_->t.data_0.size();
 	}
 
 	void set_sample(disposable_sample_ptr s) {

@@ -103,6 +103,14 @@ class engine : public QObject {
 		void session_callback(jack_session_event_t *event) {
 			emit session_event(event);
 		}
+
+		void play_auditor() {
+			if(!auditor_gen.get()) return;
+
+			auditor_gen->t.notes[0].playing = true;
+			auditor_gen->t.notes[0].note_on_frame = jack_last_frame_time(jack_client);
+			auditor_gen->t.notes[0].note_on_velocity = 64;
+		}
 	
 		void process(jack_nframes_t nframes) {
 			float *out_0_buf = (float*)jack_port_get_buffer(out_0, nframes);
@@ -121,11 +129,11 @@ class engine : public QObject {
 			else acknowledgements.write(0);
 
 			if (auditor_gen.get()) {
-				auditor_gen->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes);
+				auditor_gen->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes, jack_client);
 			}
 	
 			for (generator_list::iterator it = gens->t.begin(); it != gens->t.end(); ++it) {
-				(*it)->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes);
+				(*it)->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes, jack_client);
 			}
 			//! Synthesize
 		}

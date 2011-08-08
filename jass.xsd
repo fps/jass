@@ -10,7 +10,14 @@
   <xsd:complexType name="Generator">
 	 <xsd:sequence>
 		<xsd:element name="Sample" type="xsd:string"/>
+		<xsd:element name="Polyphony" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="Channel" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="Transpose" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="MinNote" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="MaxNote" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="MinVelocity" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="MaxVelocity" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="VelocityFactor" type="xsd:float"/>
 	 </xsd:sequence>
   </xsd:complexType>
 

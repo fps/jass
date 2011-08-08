@@ -14,6 +14,7 @@
 #include <QApplication>
 #include <QHeaderView>
 #include <QDockWidget>
+#include <QSpinBox>
 
 #include "engine.h"
 #include "assign.h"
@@ -25,10 +26,11 @@ class main_window : public QMainWindow {
 
 	QFileSystemModel file_system_model;
 	QTreeView *file_system_view;
+	bool file_clicked;
+
 	QTableWidget *generator_table;
 
 	QDockWidget *file_system_view_dock_widget;
-
 
 	engine &engine_;
 
@@ -37,6 +39,8 @@ class main_window : public QMainWindow {
 
 	public slots:
 		void sample_file_clicked(const QModelIndex &index) {
+			file_clicked = true;
+
 			if (!(QApplication::keyboardModifiers() & Qt::ShiftModifier))
 				return;
 
@@ -45,15 +49,12 @@ class main_window : public QMainWindow {
 					generator(
 						disposable_sample::create(
 							sample(std::string(file_system_model.filePath(index).toLatin1()))
-						)
+						),
+						4, 0, 0, 0, 127, 0, 127, 1.0
 					)
 				);
-				if(engine_.commands.can_write()) {
-					write_blocking_command(assign(engine_.auditor_gen, p));
-				} 
-				else {
-					std::cout << "full" << std::endl; 
-				}
+				write_blocking_command(assign(engine_.auditor_gen, p));
+				write_blocking_command(boost::bind(&engine::play_auditor, boost::ref(engine_)));
 			} catch (...) {
 				std::cout << "something went wrong" << std::endl;
 			}
@@ -61,26 +62,23 @@ class main_window : public QMainWindow {
 		}
 
 		void sample_file_double_clicked(const QModelIndex &index) {
-			//engine_.commands.write(boost::bind(&main_window::print_foo, this));
+			file_clicked = true;
+
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
 						disposable_sample::create(
 							sample(std::string(file_system_model.filePath(index).toLatin1()))
-						)
+						),
+						4, 0, 0, 0, 127, 0, 127, 1.0
 					)
 				);
-				if(engine_.commands.can_write()) {
-					std::cout << "writing command" << std::endl;
-					disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
-					l->t.push_back(p);
-					write_blocking_command(assign(engine_.gens, l));
-					sleep(1);
-					update_generator_table();	
-				} 
-				else {
-					std::cout << "full" << std::endl; 
-				}
+				std::cout << "writing command" << std::endl;
+				disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
+				l->t.push_back(p);
+				write_blocking_command(assign(engine_.gens, l));
+				sleep(1);
+				update_generator_table();	
 			} catch (...) {
 				std::cout << "something went wrong" << std::endl;
 			}
@@ -109,14 +107,17 @@ class main_window : public QMainWindow {
 
 		//! Write command without blocking the GUI
 		void write_command(boost::function<void(void)> f) {
-			engine_.commands.write(f);
+			if (engine_.commands.can_write()) {
+				engine_.commands.write(f);
+			}
 		}
 		
 		void write_blocking_command(boost::function<void(void)> f) {
 			//! Will be reenabled by acknowledgement 
-			setEnabled(false);
-
-			engine_.commands.write(f);
+			if (engine_.commands.can_write()) {
+				setEnabled(false);
+				engine_.commands.write(f);
+			}
 		}
 
 		void save_setup(const std::string &file_name) {
@@ -124,7 +125,17 @@ class main_window : public QMainWindow {
 				std::ofstream f(file_name.c_str());
 				Jass::Jass j;
 				for(generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) 
-					j.Generator().push_back(Jass::Generator((*it)->t.get_sample()->t.file_name, 0));
+					j.Generator().push_back(Jass::Generator(
+						(*it)->t.get_sample()->t.file_name,
+						(*it)->t.notes.size(),
+						(*it)->t.channel,
+						(*it)->t.transpose,
+						(*it)->t.min_note,
+						(*it)->t.max_note,
+						(*it)->t.min_velocity,
+						(*it)->t.max_velocity,
+						(*it)->t.velocity_factor
+					));
 				Jass::Jass_(f, j);
 			} catch (...) {
 				std::cout << "something went wrong saving the setup" << std::endl;
@@ -146,7 +157,14 @@ class main_window : public QMainWindow {
 
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
-				generator_table->setItem(row++, 0, new QTableWidgetItem((*it)->t.get_sample()->t.file_name.c_str()));
+				generator_table->setItem(row, 0, new QTableWidgetItem((*it)->t.get_sample()->t.file_name.c_str()));
+				generator_table->setCellWidget(row, 1, new QSpinBox());
+				generator_table->setCellWidget(row, 2, new QSpinBox());
+				generator_table->setCellWidget(row, 3, new QSpinBox());
+				generator_table->setCellWidget(row, 4, new QSpinBox());
+				generator_table->setCellWidget(row, 5, new QSpinBox());
+				generator_table->setCellWidget(row, 6, new QSpinBox());
+				++row;
 			}
 		}
 	
@@ -170,7 +188,17 @@ class main_window : public QMainWindow {
 				for(Jass::Jass::Generator_const_iterator it = jass_.Generator().begin(); it != jass_.Generator().end(); ++it) {
 					std::cout << "loading sample " << (*it).Sample() << std::endl;
 					disposable_generator_ptr p = disposable_generator::create(
-						disposable_sample::create((*it).Sample()));
+						generator(
+							disposable_sample::create((*it).Sample()),
+							4,
+							(*it).Channel(),
+							(*it).Transpose(),
+							(*it).MinNote(),
+							(*it).MaxNote(),
+							(*it).MinVelocity(),
+							(*it).MaxVelocity(),
+							(*it).VelocityFactor()
+						));
 
 					l->t.push_back(p);
 				}
@@ -199,13 +227,16 @@ class main_window : public QMainWindow {
 			settings.setValue("geometry", saveGeometry());
 			settings.setValue("windowState", saveState());
 			settings.setValue("fileSystemViewState", file_system_view->header()->saveState());
-			settings.setValue("fileSystemLastFile", file_system_model.filePath(file_system_view->currentIndex()));
+			if (file_clicked) {
+				settings.setValue("fileSystemLastFile", file_system_model.filePath(file_system_view->currentIndex()));
+			}
 			QWidget::closeEvent(event);
 		}
 
 	public:
 		main_window(engine &e) :
-			engine_(e)
+			engine_(e),
+			file_clicked(false)
 		{
 			setWindowTitle("jass - jack simple sampler");
 
@@ -256,9 +287,8 @@ class main_window : public QMainWindow {
 			restoreGeometry(settings.value("geometry").toByteArray());
 			restoreState(settings.value("windowState").toByteArray());
 			file_system_view->header()->restoreState(settings.value("fileSystemViewState").toByteArray());
-			file_system_view->scrollTo(file_system_model.index(settings.value("fileSystemLastFile").toString()));
-			file_system_view->setExpanded(file_system_model.index(settings.value("fileSystemLastFile").toString()), true);
-		}
+			file_system_view->expand(file_system_model.index(settings.value("fileSystemLastFile").toString()));
+			file_system_view->scrollTo(file_system_model.index(settings.value("fileSystemLastFile").toString()));		}
 };
 
 #endif

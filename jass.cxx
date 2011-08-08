@@ -69,6 +69,24 @@ namespace Jass
     this->Sample_.set (x);
   }
 
+  const Generator::Polyphony_type& Generator::
+  Polyphony () const
+  {
+    return this->Polyphony_.get ();
+  }
+
+  Generator::Polyphony_type& Generator::
+  Polyphony ()
+  {
+    return this->Polyphony_.get ();
+  }
+
+  void Generator::
+  Polyphony (const Polyphony_type& x)
+  {
+    this->Polyphony_.set (x);
+  }
+
   const Generator::Channel_type& Generator::
   Channel () const
   {
@@ -85,6 +103,114 @@ namespace Jass
   Channel (const Channel_type& x)
   {
     this->Channel_.set (x);
+  }
+
+  const Generator::Transpose_type& Generator::
+  Transpose () const
+  {
+    return this->Transpose_.get ();
+  }
+
+  Generator::Transpose_type& Generator::
+  Transpose ()
+  {
+    return this->Transpose_.get ();
+  }
+
+  void Generator::
+  Transpose (const Transpose_type& x)
+  {
+    this->Transpose_.set (x);
+  }
+
+  const Generator::MinNote_type& Generator::
+  MinNote () const
+  {
+    return this->MinNote_.get ();
+  }
+
+  Generator::MinNote_type& Generator::
+  MinNote ()
+  {
+    return this->MinNote_.get ();
+  }
+
+  void Generator::
+  MinNote (const MinNote_type& x)
+  {
+    this->MinNote_.set (x);
+  }
+
+  const Generator::MaxNote_type& Generator::
+  MaxNote () const
+  {
+    return this->MaxNote_.get ();
+  }
+
+  Generator::MaxNote_type& Generator::
+  MaxNote ()
+  {
+    return this->MaxNote_.get ();
+  }
+
+  void Generator::
+  MaxNote (const MaxNote_type& x)
+  {
+    this->MaxNote_.set (x);
+  }
+
+  const Generator::MinVelocity_type& Generator::
+  MinVelocity () const
+  {
+    return this->MinVelocity_.get ();
+  }
+
+  Generator::MinVelocity_type& Generator::
+  MinVelocity ()
+  {
+    return this->MinVelocity_.get ();
+  }
+
+  void Generator::
+  MinVelocity (const MinVelocity_type& x)
+  {
+    this->MinVelocity_.set (x);
+  }
+
+  const Generator::MaxVelocity_type& Generator::
+  MaxVelocity () const
+  {
+    return this->MaxVelocity_.get ();
+  }
+
+  Generator::MaxVelocity_type& Generator::
+  MaxVelocity ()
+  {
+    return this->MaxVelocity_.get ();
+  }
+
+  void Generator::
+  MaxVelocity (const MaxVelocity_type& x)
+  {
+    this->MaxVelocity_.set (x);
+  }
+
+  const Generator::VelocityFactor_type& Generator::
+  VelocityFactor () const
+  {
+    return this->VelocityFactor_.get ();
+  }
+
+  Generator::VelocityFactor_type& Generator::
+  VelocityFactor ()
+  {
+    return this->VelocityFactor_.get ();
+  }
+
+  void Generator::
+  VelocityFactor (const VelocityFactor_type& x)
+  {
+    this->VelocityFactor_.set (x);
   }
 
 
@@ -119,10 +245,24 @@ namespace Jass
 
   Generator::
   Generator (const Sample_type& Sample,
-             const Channel_type& Channel)
+             const Polyphony_type& Polyphony,
+             const Channel_type& Channel,
+             const Transpose_type& Transpose,
+             const MinNote_type& MinNote,
+             const MaxNote_type& MaxNote,
+             const MinVelocity_type& MinVelocity,
+             const MaxVelocity_type& MaxVelocity,
+             const VelocityFactor_type& VelocityFactor)
   : ::xml_schema::type (),
     Sample_ (Sample, ::xml_schema::flags (), this),
-    Channel_ (Channel, ::xml_schema::flags (), this)
+    Polyphony_ (Polyphony, ::xml_schema::flags (), this),
+    Channel_ (Channel, ::xml_schema::flags (), this),
+    Transpose_ (Transpose, ::xml_schema::flags (), this),
+    MinNote_ (MinNote, ::xml_schema::flags (), this),
+    MaxNote_ (MaxNote, ::xml_schema::flags (), this),
+    MinVelocity_ (MinVelocity, ::xml_schema::flags (), this),
+    MaxVelocity_ (MaxVelocity, ::xml_schema::flags (), this),
+    VelocityFactor_ (VelocityFactor, ::xml_schema::flags (), this)
   {
   }
 
@@ -132,7 +272,14 @@ namespace Jass
              ::xml_schema::container* c)
   : ::xml_schema::type (x, f, c),
     Sample_ (x.Sample_, f, this),
-    Channel_ (x.Channel_, f, this)
+    Polyphony_ (x.Polyphony_, f, this),
+    Channel_ (x.Channel_, f, this),
+    Transpose_ (x.Transpose_, f, this),
+    MinNote_ (x.MinNote_, f, this),
+    MaxNote_ (x.MaxNote_, f, this),
+    MinVelocity_ (x.MinVelocity_, f, this),
+    MaxVelocity_ (x.MaxVelocity_, f, this),
+    VelocityFactor_ (x.VelocityFactor_, f, this)
   {
   }
 
@@ -142,7 +289,14 @@ namespace Jass
              ::xml_schema::container* c)
   : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
     Sample_ (f, this),
-    Channel_ (f, this)
+    Polyphony_ (f, this),
+    Channel_ (f, this),
+    Transpose_ (f, this),
+    MinNote_ (f, this),
+    MaxNote_ (f, this),
+    MinVelocity_ (f, this),
+    MaxVelocity_ (f, this),
+    VelocityFactor_ (f, this)
   {
     if ((f & ::xml_schema::flags::base) == 0)
     {
@@ -175,6 +329,17 @@ namespace Jass
         }
       }
 
+      // Polyphony
+      //
+      if (n.name () == "Polyphony" && n.namespace_ ().empty ())
+      {
+        if (!Polyphony_.present ())
+        {
+          this->Polyphony_.set (Polyphony_traits::create (i, f, this));
+          continue;
+        }
+      }
+
       // Channel
       //
       if (n.name () == "Channel" && n.namespace_ ().empty ())
@@ -182,6 +347,72 @@ namespace Jass
         if (!Channel_.present ())
         {
           this->Channel_.set (Channel_traits::create (i, f, this));
+          continue;
+        }
+      }
+
+      // Transpose
+      //
+      if (n.name () == "Transpose" && n.namespace_ ().empty ())
+      {
+        if (!Transpose_.present ())
+        {
+          this->Transpose_.set (Transpose_traits::create (i, f, this));
+          continue;
+        }
+      }
+
+      // MinNote
+      //
+      if (n.name () == "MinNote" && n.namespace_ ().empty ())
+      {
+        if (!MinNote_.present ())
+        {
+          this->MinNote_.set (MinNote_traits::create (i, f, this));
+          continue;
+        }
+      }
+
+      // MaxNote
+      //
+      if (n.name () == "MaxNote" && n.namespace_ ().empty ())
+      {
+        if (!MaxNote_.present ())
+        {
+          this->MaxNote_.set (MaxNote_traits::create (i, f, this));
+          continue;
+        }
+      }
+
+      // MinVelocity
+      //
+      if (n.name () == "MinVelocity" && n.namespace_ ().empty ())
+      {
+        if (!MinVelocity_.present ())
+        {
+          this->MinVelocity_.set (MinVelocity_traits::create (i, f, this));
+          continue;
+        }
+      }
+
+      // MaxVelocity
+      //
+      if (n.name () == "MaxVelocity" && n.namespace_ ().empty ())
+      {
+        if (!MaxVelocity_.present ())
+        {
+          this->MaxVelocity_.set (MaxVelocity_traits::create (i, f, this));
+          continue;
+        }
+      }
+
+      // VelocityFactor
+      //
+      if (n.name () == "VelocityFactor" && n.namespace_ ().empty ())
+      {
+        if (!VelocityFactor_.present ())
+        {
+          this->VelocityFactor_.set (VelocityFactor_traits::create (i, f, this));
           continue;
         }
       }
@@ -196,10 +427,59 @@ namespace Jass
         "");
     }
 
+    if (!Polyphony_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "Polyphony",
+        "");
+    }
+
     if (!Channel_.present ())
     {
       throw ::xsd::cxx::tree::expected_element< char > (
         "Channel",
+        "");
+    }
+
+    if (!Transpose_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "Transpose",
+        "");
+    }
+
+    if (!MinNote_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "MinNote",
+        "");
+    }
+
+    if (!MaxNote_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "MaxNote",
+        "");
+    }
+
+    if (!MinVelocity_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "MinVelocity",
+        "");
+    }
+
+    if (!MaxVelocity_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "MaxVelocity",
+        "");
+    }
+
+    if (!VelocityFactor_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "VelocityFactor",
         "");
     }
   }
@@ -295,7 +575,14 @@ namespace Jass
   operator<< (::std::ostream& o, const Generator& i)
   {
     o << ::std::endl << "Sample: " << i.Sample ();
+    o << ::std::endl << "Polyphony: " << i.Polyphony ();
     o << ::std::endl << "Channel: " << i.Channel ();
+    o << ::std::endl << "Transpose: " << i.Transpose ();
+    o << ::std::endl << "MinNote: " << i.MinNote ();
+    o << ::std::endl << "MaxNote: " << i.MaxNote ();
+    o << ::std::endl << "MinVelocity: " << i.MinVelocity ();
+    o << ::std::endl << "MaxVelocity: " << i.MaxVelocity ();
+    o << ::std::endl << "VelocityFactor: " << i.VelocityFactor ();
     return o;
   }
 
@@ -770,6 +1057,17 @@ namespace Jass
       s << i.Sample ();
     }
 
+    // Polyphony
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "Polyphony",
+          e));
+
+      s << i.Polyphony ();
+    }
+
     // Channel
     //
     {
@@ -779,6 +1077,72 @@ namespace Jass
           e));
 
       s << i.Channel ();
+    }
+
+    // Transpose
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "Transpose",
+          e));
+
+      s << i.Transpose ();
+    }
+
+    // MinNote
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "MinNote",
+          e));
+
+      s << i.MinNote ();
+    }
+
+    // MaxNote
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "MaxNote",
+          e));
+
+      s << i.MaxNote ();
+    }
+
+    // MinVelocity
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "MinVelocity",
+          e));
+
+      s << i.MinVelocity ();
+    }
+
+    // MaxVelocity
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "MaxVelocity",
+          e));
+
+      s << i.MaxVelocity ();
+    }
+
+    // VelocityFactor
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "VelocityFactor",
+          e));
+
+      s << i.VelocityFactor ();
     }
   }
 
