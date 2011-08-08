@@ -45,6 +45,30 @@ namespace Jass
   // Generator
   // 
 
+  const Generator::Name_type& Generator::
+  Name () const
+  {
+    return this->Name_.get ();
+  }
+
+  Generator::Name_type& Generator::
+  Name ()
+  {
+    return this->Name_.get ();
+  }
+
+  void Generator::
+  Name (const Name_type& x)
+  {
+    this->Name_.set (x);
+  }
+
+  void Generator::
+  Name (::std::auto_ptr< Name_type > x)
+  {
+    this->Name_.set (x);
+  }
+
   const Generator::Sample_type& Generator::
   Sample () const
   {
@@ -105,22 +129,22 @@ namespace Jass
     this->Channel_.set (x);
   }
 
-  const Generator::Transpose_type& Generator::
-  Transpose () const
+  const Generator::Note_type& Generator::
+  Note () const
   {
-    return this->Transpose_.get ();
+    return this->Note_.get ();
   }
 
-  Generator::Transpose_type& Generator::
-  Transpose ()
+  Generator::Note_type& Generator::
+  Note ()
   {
-    return this->Transpose_.get ();
+    return this->Note_.get ();
   }
 
   void Generator::
-  Transpose (const Transpose_type& x)
+  Note (const Note_type& x)
   {
-    this->Transpose_.set (x);
+    this->Note_.set (x);
   }
 
   const Generator::MinNote_type& Generator::
@@ -244,20 +268,22 @@ namespace Jass
   //
 
   Generator::
-  Generator (const Sample_type& Sample,
+  Generator (const Name_type& Name,
+             const Sample_type& Sample,
              const Polyphony_type& Polyphony,
              const Channel_type& Channel,
-             const Transpose_type& Transpose,
+             const Note_type& Note,
              const MinNote_type& MinNote,
              const MaxNote_type& MaxNote,
              const MinVelocity_type& MinVelocity,
              const MaxVelocity_type& MaxVelocity,
              const VelocityFactor_type& VelocityFactor)
   : ::xml_schema::type (),
+    Name_ (Name, ::xml_schema::flags (), this),
     Sample_ (Sample, ::xml_schema::flags (), this),
     Polyphony_ (Polyphony, ::xml_schema::flags (), this),
     Channel_ (Channel, ::xml_schema::flags (), this),
-    Transpose_ (Transpose, ::xml_schema::flags (), this),
+    Note_ (Note, ::xml_schema::flags (), this),
     MinNote_ (MinNote, ::xml_schema::flags (), this),
     MaxNote_ (MaxNote, ::xml_schema::flags (), this),
     MinVelocity_ (MinVelocity, ::xml_schema::flags (), this),
@@ -271,10 +297,11 @@ namespace Jass
              ::xml_schema::flags f,
              ::xml_schema::container* c)
   : ::xml_schema::type (x, f, c),
+    Name_ (x.Name_, f, this),
     Sample_ (x.Sample_, f, this),
     Polyphony_ (x.Polyphony_, f, this),
     Channel_ (x.Channel_, f, this),
-    Transpose_ (x.Transpose_, f, this),
+    Note_ (x.Note_, f, this),
     MinNote_ (x.MinNote_, f, this),
     MaxNote_ (x.MaxNote_, f, this),
     MinVelocity_ (x.MinVelocity_, f, this),
@@ -288,10 +315,11 @@ namespace Jass
              ::xml_schema::flags f,
              ::xml_schema::container* c)
   : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+    Name_ (f, this),
     Sample_ (f, this),
     Polyphony_ (f, this),
     Channel_ (f, this),
-    Transpose_ (f, this),
+    Note_ (f, this),
     MinNote_ (f, this),
     MaxNote_ (f, this),
     MinVelocity_ (f, this),
@@ -314,6 +342,20 @@ namespace Jass
       const ::xercesc::DOMElement& i (p.cur_element ());
       const ::xsd::cxx::xml::qualified_name< char > n (
         ::xsd::cxx::xml::dom::name< char > (i));
+
+      // Name
+      //
+      if (n.name () == "Name" && n.namespace_ ().empty ())
+      {
+        ::std::auto_ptr< Name_type > r (
+          Name_traits::create (i, f, this));
+
+        if (!Name_.present ())
+        {
+          this->Name_.set (r);
+          continue;
+        }
+      }
 
       // Sample
       //
@@ -351,13 +393,13 @@ namespace Jass
         }
       }
 
-      // Transpose
+      // Note
       //
-      if (n.name () == "Transpose" && n.namespace_ ().empty ())
+      if (n.name () == "Note" && n.namespace_ ().empty ())
       {
-        if (!Transpose_.present ())
+        if (!Note_.present ())
         {
-          this->Transpose_.set (Transpose_traits::create (i, f, this));
+          this->Note_.set (Note_traits::create (i, f, this));
           continue;
         }
       }
@@ -420,6 +462,13 @@ namespace Jass
       break;
     }
 
+    if (!Name_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "Name",
+        "");
+    }
+
     if (!Sample_.present ())
     {
       throw ::xsd::cxx::tree::expected_element< char > (
@@ -441,10 +490,10 @@ namespace Jass
         "");
     }
 
-    if (!Transpose_.present ())
+    if (!Note_.present ())
     {
       throw ::xsd::cxx::tree::expected_element< char > (
-        "Transpose",
+        "Note",
         "");
     }
 
@@ -574,10 +623,11 @@ namespace Jass
   ::std::ostream&
   operator<< (::std::ostream& o, const Generator& i)
   {
+    o << ::std::endl << "Name: " << i.Name ();
     o << ::std::endl << "Sample: " << i.Sample ();
     o << ::std::endl << "Polyphony: " << i.Polyphony ();
     o << ::std::endl << "Channel: " << i.Channel ();
-    o << ::std::endl << "Transpose: " << i.Transpose ();
+    o << ::std::endl << "Note: " << i.Note ();
     o << ::std::endl << "MinNote: " << i.MinNote ();
     o << ::std::endl << "MaxNote: " << i.MaxNote ();
     o << ::std::endl << "MinVelocity: " << i.MinVelocity ();
@@ -1046,6 +1096,17 @@ namespace Jass
   {
     e << static_cast< const ::xml_schema::type& > (i);
 
+    // Name
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "Name",
+          e));
+
+      s << i.Name ();
+    }
+
     // Sample
     //
     {
@@ -1079,15 +1140,15 @@ namespace Jass
       s << i.Channel ();
     }
 
-    // Transpose
+    // Note
     //
     {
       ::xercesc::DOMElement& s (
         ::xsd::cxx::xml::dom::create_element (
-          "Transpose",
+          "Note",
           e));
 
-      s << i.Transpose ();
+      s << i.Note ();
     }
 
     // MinNote

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cassert>
 #include <string>
+#include <cmath>
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
@@ -15,7 +16,7 @@
 struct voice {
 	bool playing;
 
-	unsigned int key;
+	unsigned int note;
 
 	//! The frame the event to start this voice happened
 	jack_nframes_t note_on_frame;
@@ -44,7 +45,7 @@ struct generator {
 	unsigned int channel;
 
 	//! the tuning note
-	unsigned int transpose;
+	unsigned int note;
 
 	//! lowest note to react to
 	unsigned int min_note;
@@ -67,21 +68,23 @@ struct generator {
 	}
 
 	generator(
+		const std::string &name,
 		disposable_sample_ptr s,
 		unsigned int polyphony = 1, 
 		unsigned int channel = 0,
-		unsigned int transpose = 0,
+		unsigned int note = 64,
 		unsigned int min_note = 0,
 		unsigned int max_note = 127,
 		unsigned int min_velocity = 0,
 		unsigned int max_velocity = 127,
 		double velocity_factor = 1.0
 	) :
+		name(name),
 		voices(disposable_voice_vector::create(std::vector<voice>(polyphony))),
 		current_voice(0),
 		sample_(s),
 		channel(channel),
-		transpose(transpose),
+		note(note),
 		min_note(min_note),
 		max_note(max_note),
 		min_velocity(min_velocity),
@@ -112,7 +115,7 @@ struct generator {
 						&& *(midi_event.buffer+2) <= max_velocity
 					) {
 						//! We be responsible for this note command
-						voices->t[current_voice].key = *(midi_event.buffer+1);
+						voices->t[current_voice].note = *(midi_event.buffer+1);
 						voices->t[current_voice].note_on_velocity = *(midi_event.buffer+2);
 						voices->t[current_voice].note_on_frame = last_frame_time + frame;
 						voices->t[current_voice].playing = true;
@@ -126,11 +129,14 @@ struct generator {
 			for (unsigned int voice_index = 0; voice_index < voices->t.size(); ++voice_index) {
 				if (voices->t[voice_index].playing) 
 				{
-					if (last_frame_time + frame < voices->t[voice_index].note_on_frame + sample_->t.data_0.size())
+					double stretch = pow(pow(2.0, 1.0/12.0), (int)voices->t[voice_index].note - (int)note);
+					int current_frame = stretch * (last_frame_time + frame - voices->t[voice_index].note_on_frame);
+					if (current_frame >= 0 && current_frame < sample_->t.data_0.size())
 					{
 						double gain = ((double)voices->t[voice_index].note_on_velocity/128.0) * velocity_factor;
-						out_0[frame] += gain * sample_->t.data_0[last_frame_time + frame - voices->t[voice_index].note_on_frame];
-						out_1[frame] += gain * sample_->t.data_0[last_frame_time + frame - voices->t[voice_index].note_on_frame];
+
+						out_0[frame] += gain * sample_->t.data_0[current_frame];
+						out_1[frame] += gain * sample_->t.data_0[current_frame];
 					}
 				}
 			}

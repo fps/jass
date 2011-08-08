@@ -9,10 +9,11 @@
 
   <xsd:complexType name="Generator">
 	 <xsd:sequence>
+		<xsd:element name="Name" type="xsd:string"/>
 		<xsd:element name="Sample" type="xsd:string"/>
 		<xsd:element name="Polyphony" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="Channel" type="xsd:nonNegativeInteger"/>
-		<xsd:element name="Transpose" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="Note" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="MinNote" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="MaxNote" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="MinVelocity" type="xsd:nonNegativeInteger"/>

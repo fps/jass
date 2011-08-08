@@ -274,6 +274,23 @@ namespace Jass
   class Generator: public ::xml_schema::type
   {
     public:
+    // Name
+    // 
+    typedef ::xml_schema::string Name_type;
+    typedef ::xsd::cxx::tree::traits< Name_type, char > Name_traits;
+
+    const Name_type&
+    Name () const;
+
+    Name_type&
+    Name ();
+
+    void
+    Name (const Name_type& x);
+
+    void
+    Name (::std::auto_ptr< Name_type > p);
+
     // Sample
     // 
     typedef ::xml_schema::string Sample_type;
@@ -319,19 +336,19 @@ namespace Jass
     void
     Channel (const Channel_type& x);
 
-    // Transpose
+    // Note
     // 
-    typedef ::xml_schema::non_negative_integer Transpose_type;
-    typedef ::xsd::cxx::tree::traits< Transpose_type, char > Transpose_traits;
+    typedef ::xml_schema::non_negative_integer Note_type;
+    typedef ::xsd::cxx::tree::traits< Note_type, char > Note_traits;
 
-    const Transpose_type&
-    Transpose () const;
+    const Note_type&
+    Note () const;
 
-    Transpose_type&
-    Transpose ();
+    Note_type&
+    Note ();
 
     void
-    Transpose (const Transpose_type& x);
+    Note (const Note_type& x);
 
     // MinNote
     // 
@@ -405,10 +422,11 @@ namespace Jass
 
     // Constructors.
     //
-    Generator (const Sample_type&,
+    Generator (const Name_type&,
+               const Sample_type&,
                const Polyphony_type&,
                const Channel_type&,
-               const Transpose_type&,
+               const Note_type&,
                const MinNote_type&,
                const MaxNote_type&,
                const MinVelocity_type&,
@@ -438,10 +456,11 @@ namespace Jass
            ::xml_schema::flags);
 
     protected:
+    ::xsd::cxx::tree::one< Name_type > Name_;
     ::xsd::cxx::tree::one< Sample_type > Sample_;
     ::xsd::cxx::tree::one< Polyphony_type > Polyphony_;
     ::xsd::cxx::tree::one< Channel_type > Channel_;
-    ::xsd::cxx::tree::one< Transpose_type > Transpose_;
+    ::xsd::cxx::tree::one< Note_type > Note_;
     ::xsd::cxx::tree::one< MinNote_type > MinNote_;
     ::xsd::cxx::tree::one< MaxNote_type > MaxNote_;
     ::xsd::cxx::tree::one< MinVelocity_type > MinVelocity_;

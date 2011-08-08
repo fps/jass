@@ -50,10 +50,10 @@ class main_window : public QMainWindow {
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
+						std::string(file_system_model.fileName(index).toLatin1()),
 						disposable_sample::create(
 							sample(std::string(file_system_model.filePath(index).toLatin1()))
-						),
-						1, 0, 0, 0, 127, 0, 127, 1.0
+						)
 					)
 				);
 				write_blocking_command(assign(engine_.auditor_gen, p));
@@ -70,10 +70,10 @@ class main_window : public QMainWindow {
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
+						std::string(file_system_model.fileName(index).toLatin1()),
 						disposable_sample::create(
 							sample(std::string(file_system_model.filePath(index).toLatin1()))
-						),
-						1, 0, 0, 0, 127, 0, 127, 1.0
+						)
 					)
 				);
 				std::cout << "writing command" << std::endl;
@@ -91,18 +91,13 @@ class main_window : public QMainWindow {
 			unsigned int row = generator_table->currentRow();
 			generator_list::iterator i = engine_.gens->t.begin();
 			std::advance(i, row);
-			write_command(
-				assign(
-					(*i)->t.channel, 
-					(((QSpinBox*)generator_table->cellWidget(row, 2))->value())
-				)
-			);
-			write_command(
-				assign(
-					(*i)->t.transpose, 
-					(((QSpinBox*)generator_table->cellWidget(row, 3))->value())
-				)
-			);
+			write_command(assign((*i)->t.channel, (((QSpinBox*)generator_table->cellWidget(row, 3))->value())));
+			write_command(assign((*i)->t.note, (((QSpinBox*)generator_table->cellWidget(row, 4))->value())));
+			write_command(assign((*i)->t.min_note, (((QSpinBox*)generator_table->cellWidget(row, 5))->value())));
+			write_command(assign((*i)->t.max_note, (((QSpinBox*)generator_table->cellWidget(row, 6))->value())));
+			write_command(assign((*i)->t.min_velocity, (((QSpinBox*)generator_table->cellWidget(row, 7))->value())));
+			write_command(assign((*i)->t.max_velocity, (((QSpinBox*)generator_table->cellWidget(row, 8))->value())));
+			write_command(assign((*i)->t.velocity_factor, (((QSlider*)generator_table->cellWidget(row, 9))->value())));
 		}
 
 		void handle_jack_session_event(jack_session_event_t *ev) {
@@ -147,10 +142,11 @@ class main_window : public QMainWindow {
 				Jass::Jass j;
 				for(generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) 
 					j.Generator().push_back(Jass::Generator(
+						(*it)->t.name,
 						(*it)->t.get_sample()->t.file_name,
 						(*it)->t.voices->t.size(),
 						(*it)->t.channel,
-						(*it)->t.transpose,
+						(*it)->t.note,
 						(*it)->t.min_note,
 						(*it)->t.max_note,
 						(*it)->t.min_velocity,
@@ -178,13 +174,49 @@ class main_window : public QMainWindow {
 
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
-				generator_table->setItem(row, 0, new QTableWidgetItem((*it)->t.get_sample()->t.file_name.c_str()));
+				generator_table->setItem(row, 0, new QTableWidgetItem((*it)->t.name.c_str()));
+				generator_table->setItem(row, 1, new QTableWidgetItem((*it)->t.get_sample()->t.file_name.c_str()));
 
-				for (int i = 1; i < 8; ++i) {
-					generator_table->setCellWidget(row, i, new QSpinBox());
-					connect(generator_table->cellWidget(row, i), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
-					//! TODO: fill generator properties..
-				}
+				generator_table->setCellWidget(row, 2, new QSpinBox());
+				((QSpinBox*)generator_table->cellWidget(row,2))->setRange(0,127);
+				((QSpinBox*)generator_table->cellWidget(row,2))->setValue((*it)->t.voices->t.size());
+				connect(generator_table->cellWidget(row, 2), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
+
+				generator_table->setCellWidget(row, 3, new QSpinBox());
+				((QSpinBox*)generator_table->cellWidget(row,3))->setRange(0,16);
+				((QSpinBox*)generator_table->cellWidget(row,3))->setValue((*it)->t.channel);
+				connect(generator_table->cellWidget(row, 3), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
+
+				generator_table->setCellWidget(row, 4, new QSpinBox());
+				((QSpinBox*)generator_table->cellWidget(row,4))->setRange(-128,127);
+				((QSpinBox*)generator_table->cellWidget(row,4))->setValue((*it)->t.note);
+				connect(generator_table->cellWidget(row, 4), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
+
+				generator_table->setCellWidget(row, 5, new QSpinBox());
+				((QSpinBox*)generator_table->cellWidget(row,5))->setRange(0,127);
+				((QSpinBox*)generator_table->cellWidget(row,5))->setValue((*it)->t.min_note);
+				connect(generator_table->cellWidget(row, 5), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
+
+				generator_table->setCellWidget(row, 6, new QSpinBox());
+				((QSpinBox*)generator_table->cellWidget(row,6))->setRange(0,127);
+				((QSpinBox*)generator_table->cellWidget(row,6))->setValue((*it)->t.max_note);
+				connect(generator_table->cellWidget(row, 6), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
+
+				generator_table->setCellWidget(row, 7, new QSpinBox());
+				((QSpinBox*)generator_table->cellWidget(row,7))->setRange(0,127);
+				((QSpinBox*)generator_table->cellWidget(row,7))->setValue((*it)->t.min_velocity);
+				connect(generator_table->cellWidget(row, 7), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
+
+				generator_table->setCellWidget(row, 8, new QSpinBox());
+				((QSpinBox*)generator_table->cellWidget(row,8))->setRange(0,127);
+				((QSpinBox*)generator_table->cellWidget(row,8))->setValue((*it)->t.max_velocity);
+				connect(generator_table->cellWidget(row, 8), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
+
+				generator_table->setCellWidget(row, 9, new QSlider(Qt::Horizontal));
+				((QSlider*)generator_table->cellWidget(row,9))->setRange(-1.0, 1.0);
+				((QSlider*)generator_table->cellWidget(row,9))->setValue((*it)->t.velocity_factor);
+
+				connect(generator_table->cellWidget(row, 9), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
 
 				++row;
 			}
@@ -211,10 +243,11 @@ class main_window : public QMainWindow {
 					std::cout << "loading sample " << (*it).Sample() << std::endl;
 					disposable_generator_ptr p = disposable_generator::create(
 						generator(
+							(*it).Name(),
 							disposable_sample::create((*it).Sample()),
 							(*it).Polyphony(),
 							(*it).Channel(),
-							(*it).Transpose(),
+							(*it).Note(),
 							(*it).MinNote(),
 							(*it).MaxNote(),
 							(*it).MinVelocity(),
@@ -223,9 +256,10 @@ class main_window : public QMainWindow {
 						));
 					std::cout
 						<< "gen args: "
+						<< " " << p->t.name
 						<< " " << p->t.voices->t.size()
 						<< " " << p->t.channel
-						<< " " << p->t.transpose
+						<< " " << p->t.note
 						<< " " << p->t.min_note
 						<< " " << p->t.max_note
 						<< " " << p->t.min_velocity
@@ -236,9 +270,10 @@ class main_window : public QMainWindow {
 					l->t.push_back(p);
 					std::cout 
 						<< "gen args: " 
+						<< " " << (*it).Name()
 						<< " " << (*it).Polyphony()
 						<< " " << (*it).Channel()
-						<< " " << (*it).Transpose()
+						<< " " << (*it).Note()
 						<< " " << (*it).MinNote()
 						<< " " << (*it).MaxNote()
 						<< " " << (*it).MinVelocity()
@@ -305,13 +340,14 @@ class main_window : public QMainWindow {
 
 			generator_table = new QTableWidget();
 
-			generator_table->setColumnCount(8);
+			generator_table->setColumnCount(10);
 			QStringList headers;
 			headers 
+				<< "Name"
 				<< "Sample" 
 				<< "Poly."
 				<< "Ch." 
-				<< "Transp."
+				<< "Note."
 				<< "Min. Note" 
 				<< "Max. Note" 
 				<< "Min. Vel." 
