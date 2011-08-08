@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <cstdlib>
+#include <iterator>
 
 #include <QMainWindow>
 #include <QSettings>
@@ -23,6 +24,8 @@
 
 class main_window : public QMainWindow {
 	Q_OBJECT
+
+	command_ringbuffer deferred_gui_commands;
 
 	QFileSystemModel file_system_model;
 	QTreeView *file_system_view;
@@ -77,13 +80,31 @@ class main_window : public QMainWindow {
 				disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
 				l->t.push_back(p);
 				write_blocking_command(assign(engine_.gens, l));
-				sleep(1);
-				update_generator_table();	
+				deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
 			} catch (...) {
 				std::cout << "something went wrong" << std::endl;
 			}
 		}
 		
+		void generator_property_changed(void) {
+			std::cout << "property" << std::endl;
+			unsigned int row = generator_table->currentRow();
+			generator_list::iterator i = engine_.gens->t.begin();
+			std::advance(i, row);
+			write_command(
+				assign(
+					(*i)->t.channel, 
+					(((QSpinBox*)generator_table->cellWidget(row, 2))->value())
+				)
+			);
+			write_command(
+				assign(
+					(*i)->t.transpose, 
+					(((QSpinBox*)generator_table->cellWidget(row, 3))->value())
+				)
+			);
+		}
+
 		void handle_jack_session_event(jack_session_event_t *ev) {
 			//! Copy pasta slightly adapted from the jack session client walkthrough..
 			jack_session_event_t *e = (jack_session_event_t *) ev;
@@ -127,7 +148,7 @@ class main_window : public QMainWindow {
 				for(generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) 
 					j.Generator().push_back(Jass::Generator(
 						(*it)->t.get_sample()->t.file_name,
-						(*it)->t.notes.size(),
+						(*it)->t.notes->t.size(),
 						(*it)->t.channel,
 						(*it)->t.transpose,
 						(*it)->t.min_note,
@@ -158,12 +179,12 @@ class main_window : public QMainWindow {
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
 				generator_table->setItem(row, 0, new QTableWidgetItem((*it)->t.get_sample()->t.file_name.c_str()));
-				generator_table->setCellWidget(row, 1, new QSpinBox());
-				generator_table->setCellWidget(row, 2, new QSpinBox());
-				generator_table->setCellWidget(row, 3, new QSpinBox());
-				generator_table->setCellWidget(row, 4, new QSpinBox());
-				generator_table->setCellWidget(row, 5, new QSpinBox());
-				generator_table->setCellWidget(row, 6, new QSpinBox());
+
+				for (int i = 1; i < 8; ++i) {
+					generator_table->setCellWidget(row, i, new QSpinBox());
+					connect(generator_table->cellWidget(row, i), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
+				}
+
 				++row;
 			}
 		}
@@ -202,12 +223,10 @@ class main_window : public QMainWindow {
 
 					l->t.push_back(p);
 				}
-				sleep(1);
 				write_blocking_command(assign(engine_.gens, l));
 
 				setup_file_name = file_name;
-				sleep(1);
-				update_generator_table();
+				deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
 				//! Then write them in one go, replacing the whole gens collection
 			} catch(...) {
 				std::cout << "something went wrong loading some file" << std::endl;
@@ -217,6 +236,7 @@ class main_window : public QMainWindow {
 		void check_acknowledgements() {
 			if (engine_.acknowledgements.can_read()) {
 				while(engine_.acknowledgements.can_read()) engine_.acknowledgements.read();
+				while(deferred_gui_commands.can_read()) deferred_gui_commands.read()();
 				setEnabled(true);
 			}
 		}
@@ -236,7 +256,8 @@ class main_window : public QMainWindow {
 	public:
 		main_window(engine &e) :
 			engine_(e),
-			file_clicked(false)
+			file_clicked(false),
+			deferred_gui_commands(1024)
 		{
 			setWindowTitle("jass - jack simple sampler");
 
@@ -266,12 +287,13 @@ class main_window : public QMainWindow {
 			QStringList headers;
 			headers 
 				<< "Generator" 
+				<< "Polyphony"
 				<< "Channel" 
+				<< "Transpose"
 				<< "Min. Note" 
 				<< "Max. Note" 
-				<< "A4" 
-				<< "Min Velocity" 
-				<< "Max Velocity" 
+				<< "Min. Velocity" 
+				<< "Max. Velocity" 
 				<< "Velocity Factor";
 
 			generator_table->setHorizontalHeaderLabels(headers);

@@ -30,11 +30,13 @@ struct note {
 	}
 };
 
+typedef disposable<std::vector<note> > disposable_note_vector;
+typedef boost::shared_ptr<disposable_note_vector> disposable_note_vector_ptr;
 
 struct generator {
 	std::string name;
 
-	std::vector<note> notes;
+	disposable_note_vector_ptr notes;
 	unsigned int current_note;
 
 	//! the channel this generator listens on
@@ -74,7 +76,7 @@ struct generator {
 		unsigned int max_velocity = 127,
 		double velocity_factor = 1.0
 	) :
-		notes(polyphony),
+		notes(disposable_note_vector::create(std::vector<note>(polyphony))),
 		current_note(0),
 		sample_(s),
 		channel(0),
@@ -105,10 +107,10 @@ struct generator {
 		for (unsigned int frame = 0; frame < nframes; ++frame) {
 			if (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
 				if (((*(midi_event.buffer) & 0xf0)) == 0x90) {
-					notes[current_note].key = *(midi_event.buffer+1);
-					notes[current_note].note_on_frame = last_frame_time + frame;
-					notes[current_note].playing = true;
-					current_note = (++current_note) % notes.size();
+					notes->t[current_note].key = *(midi_event.buffer+1);
+					notes->t[current_note].note_on_frame = last_frame_time + frame;
+					notes->t[current_note].playing = true;
+					current_note = (++current_note) % notes->t.size();
 					//notes[*(midi_event.buffer+1)].note_on_velocity = *(midi_event.buffer+2);;
 				}
 
@@ -116,13 +118,13 @@ struct generator {
 				++midi_in_event_index;
 			}
 
-			for (unsigned int note_index = 0; note_index < notes.size(); ++note_index) {
-				if (notes[note_index].playing) 
+			for (unsigned int note_index = 0; note_index < notes->t.size(); ++note_index) {
+				if (notes->t[note_index].playing) 
 				{
-					if (last_frame_time + frame < notes[note_index].note_on_frame + sample_->t.data_0.size())
+					if (last_frame_time + frame < notes->t[note_index].note_on_frame + sample_->t.data_0.size())
 					{
-						out_0[frame] += sample_->t.data_0[last_frame_time + frame - notes[note_index].note_on_frame];				
-						out_1[frame] += sample_->t.data_0[last_frame_time + frame - notes[note_index].note_on_frame];				
+						out_0[frame] += sample_->t.data_0[last_frame_time + frame - notes->t[note_index].note_on_frame];				
+						out_1[frame] += sample_->t.data_0[last_frame_time + frame - notes->t[note_index].note_on_frame];				
 					}
 				}
 			}
