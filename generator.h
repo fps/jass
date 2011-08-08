@@ -129,8 +129,11 @@ struct generator {
 			for (unsigned int voice_index = 0; voice_index < voices->t.size(); ++voice_index) {
 				if (voices->t[voice_index].playing) 
 				{
-					double stretch = pow(pow(2.0, 1.0/12.0), (int)voices->t[voice_index].note - (int)note);
-					int current_frame = stretch * (last_frame_time + frame - voices->t[voice_index].note_on_frame);
+					double stretch = 1.0;
+					if (((int)voices->t[voice_index].note - (int)note) != 0) 
+						stretch = pow(pow(2.0, 1.0/12.0), (int)voices->t[voice_index].note - (int)note);
+
+					int current_frame = floor(stretch * (last_frame_time + frame - voices->t[voice_index].note_on_frame));
 					if (current_frame >= 0 && current_frame < sample_->t.data_0.size())
 					{
 						double gain = ((double)voices->t[voice_index].note_on_velocity/128.0) * velocity_factor;
