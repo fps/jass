@@ -183,6 +183,7 @@ class main_window : public QMainWindow {
 				for (int i = 1; i < 8; ++i) {
 					generator_table->setCellWidget(row, i, new QSpinBox());
 					connect(generator_table->cellWidget(row, i), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
+					//! TODO: fill generator properties..
 				}
 
 				++row;

@@ -1,0 +1,23 @@
+Requirements:
+
+libxerces-c
+libsamplerate
+libsndfile
+Qt4
+boost::program_options
+boost::bind
+boost::function
+xsdcxx
+
+If all requirements are met, these commands should build the project:
+
+mkdir bld
+cd bld
+cmake ..
+cd ..
+make -C bld -j 4
+
+To install:
+
+sudo make -C bld install
+

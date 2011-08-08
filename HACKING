@@ -1,0 +1,5 @@
+If you want to change the jass.xsd, the schema describing the jass
+XML file format you need to run the generate_parser.sh script to
+regenerate jass.hxx and jass.cxx..
+
+
