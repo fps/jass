@@ -190,7 +190,7 @@ class main_window : public QMainWindow {
 					disposable_generator_ptr p = disposable_generator::create(
 						generator(
 							disposable_sample::create((*it).Sample()),
-							4,
+							(*it).Polyphony(),
 							(*it).Channel(),
 							(*it).Transpose(),
 							(*it).MinNote(),
