@@ -53,7 +53,7 @@ class main_window : public QMainWindow {
 						disposable_sample::create(
 							sample(std::string(file_system_model.filePath(index).toLatin1()))
 						),
-						4, 0, 0, 0, 127, 0, 127, 1.0
+						1, 0, 0, 0, 127, 0, 127, 1.0
 					)
 				);
 				write_blocking_command(assign(engine_.auditor_gen, p));
@@ -73,7 +73,7 @@ class main_window : public QMainWindow {
 						disposable_sample::create(
 							sample(std::string(file_system_model.filePath(index).toLatin1()))
 						),
-						4, 0, 0, 0, 127, 0, 127, 1.0
+						1, 0, 0, 0, 127, 0, 127, 1.0
 					)
 				);
 				std::cout << "writing command" << std::endl;
@@ -221,11 +221,32 @@ class main_window : public QMainWindow {
 							(*it).MaxVelocity(),
 							(*it).VelocityFactor()
 						));
+					std::cout
+						<< "gen args: "
+						<< " " << p->t.notes->t.size()
+						<< " " << p->t.channel
+						<< " " << p->t.transpose
+						<< " " << p->t.min_note
+						<< " " << p->t.max_note
+						<< " " << p->t.min_velocity
+						<< " " << p->t.max_velocity
+						<< " " << p->t.velocity_factor
+						<< std::endl;
 
 					l->t.push_back(p);
+					std::cout 
+						<< "gen args: " 
+						<< " " << (*it).Polyphony()
+						<< " " << (*it).Channel()
+						<< " " << (*it).Transpose()
+						<< " " << (*it).MinNote()
+						<< " " << (*it).MaxNote()
+						<< " " << (*it).MinVelocity()
+						<< " " << (*it).MaxVelocity()
+						<< " " << (*it).VelocityFactor()
+						<< std::endl;
 				}
 				write_blocking_command(assign(engine_.gens, l));
-
 				setup_file_name = file_name;
 				deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
 				//! Then write them in one go, replacing the whole gens collection
@@ -287,15 +308,15 @@ class main_window : public QMainWindow {
 			generator_table->setColumnCount(8);
 			QStringList headers;
 			headers 
-				<< "Generator" 
-				<< "Polyphony"
-				<< "Channel" 
-				<< "Transpose"
+				<< "Sample" 
+				<< "Poly."
+				<< "Ch." 
+				<< "Transp."
 				<< "Min. Note" 
 				<< "Max. Note" 
-				<< "Min. Velocity" 
-				<< "Max. Velocity" 
-				<< "Velocity Factor";
+				<< "Min. Vel." 
+				<< "Max. Vel." 
+				<< "Vel. Factor";
 
 			generator_table->setHorizontalHeaderLabels(headers);
 			setCentralWidget(generator_table);
