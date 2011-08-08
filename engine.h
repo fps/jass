@@ -107,9 +107,9 @@ class engine : public QObject {
 		void play_auditor() {
 			if(!auditor_gen.get()) return;
 
-			auditor_gen->t.notes->t[0].playing = true;
-			auditor_gen->t.notes->t[0].note_on_frame = jack_last_frame_time(jack_client);
-			auditor_gen->t.notes->t[0].note_on_velocity = 64;
+			auditor_gen->t.voices->t[0].playing = true;
+			auditor_gen->t.voices->t[0].note_on_frame = jack_last_frame_time(jack_client);
+			auditor_gen->t.voices->t[0].note_on_velocity = 64;
 		}
 	
 		void process(jack_nframes_t nframes) {

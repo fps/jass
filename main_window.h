@@ -148,7 +148,7 @@ class main_window : public QMainWindow {
 				for(generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) 
 					j.Generator().push_back(Jass::Generator(
 						(*it)->t.get_sample()->t.file_name,
-						(*it)->t.notes->t.size(),
+						(*it)->t.voices->t.size(),
 						(*it)->t.channel,
 						(*it)->t.transpose,
 						(*it)->t.min_note,
@@ -223,7 +223,7 @@ class main_window : public QMainWindow {
 						));
 					std::cout
 						<< "gen args: "
-						<< " " << p->t.notes->t.size()
+						<< " " << p->t.voices->t.size()
 						<< " " << p->t.channel
 						<< " " << p->t.transpose
 						<< " " << p->t.min_note
