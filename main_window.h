@@ -16,6 +16,9 @@
 #include <QHeaderView>
 #include <QDockWidget>
 #include <QSpinBox>
+#include <QMenuBar>
+#include <QMenu>
+#include <QFileDialog>
 
 #include "engine.h"
 #include "assign.h"
@@ -91,6 +94,7 @@ class main_window : public QMainWindow {
 			unsigned int row = generator_table->currentRow();
 			generator_list::iterator i = engine_.gens->t.begin();
 			std::advance(i, row);
+			write_command(assign((*i)->t.name, std::string(((generator_table->item(row, 0))->text().toLatin1()))));
 			write_command(assign((*i)->t.channel, (((QSpinBox*)generator_table->cellWidget(row, 3))->value())));
 			write_command(assign((*i)->t.note, (((QSpinBox*)generator_table->cellWidget(row, 4))->value())));
 			write_command(assign((*i)->t.min_note, (((QSpinBox*)generator_table->cellWidget(row, 5))->value())));
@@ -169,6 +173,7 @@ class main_window : public QMainWindow {
 			save_setup(setup_file_name);
 		}
 
+		//! This should only be called by deferred_gui_commands.read()()
 		void update_generator_table() {
 			generator_table->setRowCount(engine_.gens->t.size());
 
@@ -305,18 +310,50 @@ class main_window : public QMainWindow {
 			settings.setValue("windowState", saveState());
 			settings.setValue("fileSystemViewState", file_system_view->header()->saveState());
 			if (file_clicked) {
-				settings.setValue("fileSystemLastFile", file_system_model.filePath(file_system_view->currentIndex()));
+				settings.setValue(
+					"fileSystemLastFile", 
+					file_system_model.filePath(file_system_view->currentIndex()));
 			}
+
 			QWidget::closeEvent(event);
 		}
 
 	public:
+		bool eventFilter(QObject *obj, QEvent *ev) {
+			std::cout << "filter" << std::endl;
+			if (ev->type() == QEvent::Hide || ev->type() == QEvent::Close) {
+				std::cout << "eat" << std::endl;
+				return true;
+			}
+			return false;
+		}
+
 		main_window(engine &e) :
 			engine_(e),
 			file_clicked(false),
 			deferred_gui_commands(1024)
 		{
 			setWindowTitle("jass - jack simple sampler");
+
+			QMenuBar *menu_bar = new QMenuBar();				
+				QMenu *file_menu = new QMenu("&File");
+				menu_bar->addMenu(file_menu);
+					file_menu->addAction("&Open...");
+					file_menu->addSeparator();
+					file_menu->addAction("&Save");
+					file_menu->addAction("Save &As...");
+					file_menu->addSeparator();
+					file_menu->addAction("&Quit");
+				QMenu *generator_menu = new QMenu("&Generator");
+				menu_bar->addMenu(generator_menu);
+					generator_menu->addAction("&Remove");
+					generator_menu->addSeparator();
+					generator_menu->addAction("&New from File Dialog...");
+				QMenu *help_menu = new QMenu("&Help");
+					help_menu->addAction("&Help");
+					help_menu->addAction("&About");
+	
+			setMenuBar(menu_bar);
 
 			file_system_model.setRootPath("/");
 			file_system_view = new QTreeView();
@@ -362,6 +399,15 @@ class main_window : public QMainWindow {
 			file_system_view_dock_widget->setWidget(file_system_view);
 
 			addDockWidget(Qt::LeftDockWidgetArea, file_system_view_dock_widget);
+
+			QDockWidget *file_dialog_dock_widget = new QDockWidget();
+			QFileDialog *file_dialog = new QFileDialog(this, Qt::SubWindow);//"Select a Sample", "/", "*");
+			connect(file_dialog, SIGNAL(finished(int)), file_dialog, SLOT(open()));
+			//file_dialog->installEventFilter(this);
+
+			file_dialog_dock_widget->setWidget(file_dialog);
+			//addDockWidget(Qt::RightDockWidgetArea, file_dialog_dock_widget);
+
 
 			QSettings settings;
 			restoreGeometry(settings.value("geometry").toByteArray());
