@@ -38,7 +38,7 @@ class main_window : public QMainWindow {
 
 	engine &engine_;
 
-	unsigned int outstanding_acks;
+	int outstanding_acks;
 
 	public:
 		std::string setup_file_name;
@@ -87,14 +87,11 @@ class main_window : public QMainWindow {
 		}
 		
 		void generator_property_changed(void) {
-			std::cout << "row count " << generator_table->rowCount() << std::endl;
-			if (generator_table->rowCount() == 0) return;
+			int row = sender()->property("row").toInt();
 
-			std::cout << "property" << std::endl;
-			unsigned int row = generator_table->currentRow();
-			std::cout << "row" << row << std::endl;
 			generator_list::iterator i = engine_.gens->t.begin();
 			std::advance(i, row);
+			std::cout << "current row " << row << std::endl;
 
 			disposable_voice_vector_ptr v = disposable_voice_vector::create(
 				std::vector<voice>(
@@ -103,7 +100,6 @@ class main_window : public QMainWindow {
 			);
 
 			write_command(assign((*i)->t.voices, v));
-			write_command(assign((*i)->t.name, std::string(((generator_table->item(row, 0))->text().toLatin1()))));
 			write_command(assign((*i)->t.channel, (((QSpinBox*)generator_table->cellWidget(row, 3))->value())));
 			write_command(assign((*i)->t.note, (((QSpinBox*)generator_table->cellWidget(row, 4))->value())));
 			write_command(assign((*i)->t.min_note, (((QSpinBox*)generator_table->cellWidget(row, 5))->value())));
@@ -138,6 +134,7 @@ class main_window : public QMainWindow {
 		void write_command(boost::function<void(void)> f) {
 			if (engine_.commands.can_write()) {
 				engine_.commands.write(f);
+				++outstanding_acks;
 			}
 		}
 		
@@ -211,41 +208,49 @@ class main_window : public QMainWindow {
 				generator_table->setCellWidget(row, 2, new QSpinBox());
 				((QSpinBox*)generator_table->cellWidget(row,2))->setRange(0,127);
 				((QSpinBox*)generator_table->cellWidget(row,2))->setValue((*it)->t.voices->t.size());
+				((QSpinBox*)generator_table->cellWidget(row,2))->setProperty("row", row);
 				connect(generator_table->cellWidget(row, 2), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
 
 				generator_table->setCellWidget(row, 3, new QSpinBox());
 				((QSpinBox*)generator_table->cellWidget(row,3))->setRange(0,16);
 				((QSpinBox*)generator_table->cellWidget(row,3))->setValue((*it)->t.channel);
+				((QSpinBox*)generator_table->cellWidget(row,3))->setProperty("row", row);
 				connect(generator_table->cellWidget(row, 3), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
 
 				generator_table->setCellWidget(row, 4, new QSpinBox());
 				((QSpinBox*)generator_table->cellWidget(row,4))->setRange(-128,127);
 				((QSpinBox*)generator_table->cellWidget(row,4))->setValue((*it)->t.note);
+				((QSpinBox*)generator_table->cellWidget(row,4))->setProperty("row", row);
 				connect(generator_table->cellWidget(row, 4), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
 
 				generator_table->setCellWidget(row, 5, new QSpinBox());
 				((QSpinBox*)generator_table->cellWidget(row,5))->setRange(0,127);
 				((QSpinBox*)generator_table->cellWidget(row,5))->setValue((*it)->t.min_note);
+				((QSpinBox*)generator_table->cellWidget(row,5))->setProperty("row", row);
 				connect(generator_table->cellWidget(row, 5), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
 
 				generator_table->setCellWidget(row, 6, new QSpinBox());
 				((QSpinBox*)generator_table->cellWidget(row,6))->setRange(0,127);
 				((QSpinBox*)generator_table->cellWidget(row,6))->setValue((*it)->t.max_note);
+				((QSpinBox*)generator_table->cellWidget(row,6))->setProperty("row", row);
 				connect(generator_table->cellWidget(row, 6), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
 
 				generator_table->setCellWidget(row, 7, new QSpinBox());
 				((QSpinBox*)generator_table->cellWidget(row,7))->setRange(0,127);
 				((QSpinBox*)generator_table->cellWidget(row,7))->setValue((*it)->t.min_velocity);
+				((QSpinBox*)generator_table->cellWidget(row,7))->setProperty("row", row);
 				connect(generator_table->cellWidget(row, 7), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
 
 				generator_table->setCellWidget(row, 8, new QSpinBox());
 				((QSpinBox*)generator_table->cellWidget(row,8))->setRange(0,127);
 				((QSpinBox*)generator_table->cellWidget(row,8))->setValue((*it)->t.max_velocity);
+				((QSpinBox*)generator_table->cellWidget(row,8))->setProperty("row", row);
 				connect(generator_table->cellWidget(row, 8), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
 
 				generator_table->setCellWidget(row, 9, new QSlider(Qt::Horizontal));
 				((QSlider*)generator_table->cellWidget(row,9))->setRange(-1.0, 1.0);
 				((QSlider*)generator_table->cellWidget(row,9))->setValue((*it)->t.velocity_factor);
+				((QSlider*)generator_table->cellWidget(row,9))->setProperty("row", row);
 				connect(generator_table->cellWidget(row, 9), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
 
 				++row;
@@ -353,6 +358,16 @@ class main_window : public QMainWindow {
 			}
 		}
 
+
+		void generator_item_changed(QTableWidgetItem *i) {
+			int row = i->row();
+			generator_list::iterator it = engine_.gens->t.begin();
+			std::advance(it, row);
+			std::cout << "current row " << row << std::endl;
+
+			write_command(assign((*it)->t.name,std::string(generator_table->item(row,0)->text().toLatin1())));
+		}
+
 	public:
 		main_window(engine &e) :
 			outstanding_acks(0),
@@ -396,6 +411,9 @@ class main_window : public QMainWindow {
 				<< "Vel. Factor";
 
 			generator_table->setHorizontalHeaderLabels(headers);
+			generator_table->setMouseTracking(true);
+			//connect(generator_table, SIGNAL(cellEntered(int, int)), this, SLOT(generator_cell_entered(int, int)));
+			connect(generator_table, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(generator_item_changed(QTableWidgetItem*)));
 
 			setCentralWidget(generator_table);
 
