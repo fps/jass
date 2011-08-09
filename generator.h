@@ -106,7 +106,8 @@ struct generator {
 		for (unsigned int frame = 0; frame < nframes; ++frame) {
 			if (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
 				if (((*(midi_event.buffer) & 0xf0)) == 0x80
-					|| (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) == 0)) {
+					|| (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) == 0)
+				) {
 					//! Note off
 					if((*(midi_event.buffer) & 0x0f) == channel)
 					{
