@@ -153,11 +153,22 @@ class main_window : public QMainWindow {
 			}
 		}
 
+		void load_setup() {
+			QString setup_file_name = QFileDialog::getOpenFileName();
+			if (!setup_file_name.isNull())
+				load_setup(std::string(setup_file_name.toLatin1()));
+		}
+
+		void save_setup_as() {
+			QString setup_file_name = QFileDialog::getSaveFileName();
+			if (!setup_file_name.isNull())
+				save_setup(std::string(setup_file_name.toLatin1()));
+		}
 
 		void save_setup() {
 			std::cout << "save_setup" << std::endl;
 			if (setup_file_name == "") {
-				std::cout << "Ask user for filename" << std::endl;
+				save_setup_as();
 				return;
 			}
 			save_setup(setup_file_name);
@@ -170,6 +181,7 @@ class main_window : public QMainWindow {
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
 				generator_table->setItem(row, 0, new QTableWidgetItem((*it)->t.name.c_str()));
+
 				generator_table->setItem(row, 1, new QTableWidgetItem((*it)->t.get_sample()->t.file_name.c_str()));
 
 				generator_table->setCellWidget(row, 2, new QSpinBox());
@@ -301,6 +313,16 @@ class main_window : public QMainWindow {
 			QWidget::closeEvent(event);
 		}
 
+		void remove_generator() {
+			std::cout << "current row: " << generator_table->currentRow() << std::endl;
+			disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
+			generator_list::iterator it = l->t.begin();
+			std::advance(it, generator_table->currentRow());
+			l->t.erase(it);
+			write_blocking_command(assign(engine_.gens, l));
+			deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
+		}
+
 	public:
 		main_window(engine &e) :
 			engine_(e),
@@ -311,17 +333,15 @@ class main_window : public QMainWindow {
 			QMenuBar *menu_bar = new QMenuBar();				
 				QMenu *file_menu = new QMenu("&File");
 				menu_bar->addMenu(file_menu);
-					file_menu->addAction("&Open...");
+					connect(file_menu->addAction("&Open..."), SIGNAL(triggered(bool)), this, SLOT(load_setup()));
 					file_menu->addSeparator();
-					file_menu->addAction("&Save");
-					file_menu->addAction("Save &As...");
+					connect(file_menu->addAction("&Save"), SIGNAL(triggered(bool)), this, SLOT(save_setup()));
+					connect(file_menu->addAction("Save &As..."), SIGNAL(triggered(bool)), this, SLOT(save_setup_as()));
 					file_menu->addSeparator();
-					file_menu->addAction("&Quit");
+					connect(file_menu->addAction("&Quit"), SIGNAL(triggered(bool)), this, SLOT(close()));
 				QMenu *generator_menu = new QMenu("&Generator");
 				menu_bar->addMenu(generator_menu);
-					generator_menu->addAction("&Remove");
-					generator_menu->addSeparator();
-					generator_menu->addAction("&New from File Dialog...");
+					connect(generator_menu->addAction("&Remove"), SIGNAL(triggered(bool)), this, SLOT(remove_generator()));;
 				QMenu *help_menu = new QMenu("&Help");
 					help_menu->addAction("&Help");
 					help_menu->addAction("&About");
