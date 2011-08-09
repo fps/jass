@@ -38,6 +38,8 @@ class main_window : public QMainWindow {
 
 	engine &engine_;
 
+	unsigned int outstanding_acks;
+
 	public:
 		std::string setup_file_name;
 
@@ -85,8 +87,12 @@ class main_window : public QMainWindow {
 		}
 		
 		void generator_property_changed(void) {
+			std::cout << "row count " << generator_table->rowCount() << std::endl;
+			if (generator_table->rowCount() == 0) return;
+
 			std::cout << "property" << std::endl;
 			unsigned int row = generator_table->currentRow();
+			std::cout << "row" << row << std::endl;
 			generator_list::iterator i = engine_.gens->t.begin();
 			std::advance(i, row);
 
@@ -96,7 +102,7 @@ class main_window : public QMainWindow {
 				)
 			);
 
-			write_blocking_command(assign((*i)->t.voices, v));
+			write_command(assign((*i)->t.voices, v));
 			write_command(assign((*i)->t.name, std::string(((generator_table->item(row, 0))->text().toLatin1()))));
 			write_command(assign((*i)->t.channel, (((QSpinBox*)generator_table->cellWidget(row, 3))->value())));
 			write_command(assign((*i)->t.note, (((QSpinBox*)generator_table->cellWidget(row, 4))->value())));
@@ -138,6 +144,8 @@ class main_window : public QMainWindow {
 		void write_blocking_command(boost::function<void(void)> f) {
 			//! Will be reenabled by acknowledgement 
 			if (engine_.commands.can_write()) {
+				++outstanding_acks;
+				std::cout << "outstanding acks: " << outstanding_acks << std::endl;
 				setEnabled(false);
 				engine_.commands.write(f);
 			}
@@ -189,12 +197,15 @@ class main_window : public QMainWindow {
 
 		//! This should only be called by deferred_gui_commands.read()()
 		void update_generator_table() {
+			//generator_table->setRowCount(0);
 			generator_table->setRowCount(engine_.gens->t.size());
 
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
+				//disconnect(generator_table, SIGNAL(itemChanged(QTableWidgetItem*)), 0, 0);
 				generator_table->setItem(row, 0, new QTableWidgetItem((*it)->t.name.c_str()));
-
+				//connect(generator_table, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(generator_property_changed()));
+	
 				generator_table->setItem(row, 1, new QTableWidgetItem((*it)->t.get_sample()->t.file_name.c_str()));
 
 				generator_table->setCellWidget(row, 2, new QSpinBox());
@@ -235,7 +246,6 @@ class main_window : public QMainWindow {
 				generator_table->setCellWidget(row, 9, new QSlider(Qt::Horizontal));
 				((QSlider*)generator_table->cellWidget(row,9))->setRange(-1.0, 1.0);
 				((QSlider*)generator_table->cellWidget(row,9))->setValue((*it)->t.velocity_factor);
-
 				connect(generator_table->cellWidget(row, 9), SIGNAL(valueChanged(int)), this, SLOT(generator_property_changed()));
 
 				++row;
@@ -311,8 +321,13 @@ class main_window : public QMainWindow {
 		}
 	
 		void check_acknowledgements() {
-			if (engine_.acknowledgements.can_read()) {
-				while(engine_.acknowledgements.can_read()) engine_.acknowledgements.read();
+			while(engine_.acknowledgements.can_read()) { 
+				engine_.acknowledgements.read(); 
+				--outstanding_acks; 
+				std::cout << outstanding_acks << std::endl; 
+			}
+
+			if (outstanding_acks == 0) {
 				while(deferred_gui_commands.can_read()) deferred_gui_commands.read()();
 				setEnabled(true);
 			}
@@ -340,6 +355,7 @@ class main_window : public QMainWindow {
 
 	public:
 		main_window(engine &e) :
+			outstanding_acks(0),
 			engine_(e),
 			deferred_gui_commands(1024)
 		{
@@ -380,6 +396,7 @@ class main_window : public QMainWindow {
 				<< "Vel. Factor";
 
 			generator_table->setHorizontalHeaderLabels(headers);
+
 			setCentralWidget(generator_table);
 
 			file_dialog_dock_widget = new QDockWidget();
