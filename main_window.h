@@ -63,7 +63,7 @@ class main_window : public QMainWindow {
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
-						std::string(std::string(file_dialog->selectedFiles()[0].toLatin1())),
+						std::string(std::string(QFileInfo(file_dialog->selectedFiles()[0]).baseName().toLatin1())),
 						disposable_sample::create(
 							sample(std::string(file_dialog->selectedFiles()[0].toLatin1()))
 						)
