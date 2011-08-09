@@ -59,7 +59,7 @@ class main_window : public QMainWindow {
 
 		}
 
-		void sample_file_double_clicked(const QModelIndex &index) {
+		void sample_file_double_clicked() {
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
@@ -351,6 +351,8 @@ class main_window : public QMainWindow {
 			file_dialog_dock_widget->setObjectName("FileDialogDockWidget");
 			file_dialog = new QFileDialog(this, Qt::SubWindow);
 			connect(file_dialog, SIGNAL(finished(int)), file_dialog, SLOT(open()));
+			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(sample_file_double_clicked()));
+			
 
 			file_dialog_dock_widget->setWidget(file_dialog);
 			addDockWidget(Qt::LeftDockWidgetArea, file_dialog_dock_widget);
