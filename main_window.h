@@ -30,13 +30,10 @@ class main_window : public QMainWindow {
 
 	command_ringbuffer deferred_gui_commands;
 
-	QFileSystemModel file_system_model;
-	QTreeView *file_system_view;
-	bool file_clicked;
-
 	QTableWidget *generator_table;
 
-	QDockWidget *file_system_view_dock_widget;
+	QFileDialog *file_dialog;
+	QDockWidget *file_dialog_dock_widget;
 
 	engine &engine_;
 
@@ -44,18 +41,13 @@ class main_window : public QMainWindow {
 		std::string setup_file_name;
 
 	public slots:
-		void sample_file_clicked(const QModelIndex &index) {
-			file_clicked = true;
-
-			if (!(QApplication::keyboardModifiers() & Qt::ShiftModifier))
-				return;
-
+		void sample_file_clicked() {
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
-						std::string(file_system_model.fileName(index).toLatin1()),
+						std::string(file_dialog->selectedFiles()[0].toLatin1()),
 						disposable_sample::create(
-							sample(std::string(file_system_model.filePath(index).toLatin1()))
+							sample(std::string(file_dialog->selectedFiles()[0].toLatin1()))
 						)
 					)
 				);
@@ -68,14 +60,12 @@ class main_window : public QMainWindow {
 		}
 
 		void sample_file_double_clicked(const QModelIndex &index) {
-			file_clicked = true;
-
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
-						std::string(file_system_model.fileName(index).toLatin1()),
+						std::string(std::string(file_dialog->selectedFiles()[0].toLatin1())),
 						disposable_sample::create(
-							sample(std::string(file_system_model.filePath(index).toLatin1()))
+							sample(std::string(file_dialog->selectedFiles()[0].toLatin1()))
 						)
 					)
 				);
@@ -308,29 +298,12 @@ class main_window : public QMainWindow {
 			QSettings settings;
 			settings.setValue("geometry", saveGeometry());
 			settings.setValue("windowState", saveState());
-			settings.setValue("fileSystemViewState", file_system_view->header()->saveState());
-			if (file_clicked) {
-				settings.setValue(
-					"fileSystemLastFile", 
-					file_system_model.filePath(file_system_view->currentIndex()));
-			}
-
 			QWidget::closeEvent(event);
 		}
 
 	public:
-		bool eventFilter(QObject *obj, QEvent *ev) {
-			std::cout << "filter" << std::endl;
-			if (ev->type() == QEvent::Hide || ev->type() == QEvent::Close) {
-				std::cout << "eat" << std::endl;
-				return true;
-			}
-			return false;
-		}
-
 		main_window(engine &e) :
 			engine_(e),
-			file_clicked(false),
 			deferred_gui_commands(1024)
 		{
 			setWindowTitle("jass - jack simple sampler");
@@ -355,26 +328,6 @@ class main_window : public QMainWindow {
 	
 			setMenuBar(menu_bar);
 
-			file_system_model.setRootPath("/");
-			file_system_view = new QTreeView();
-			file_system_view->setModel(&file_system_model);
-
-			connect(
-				file_system_view, 
-				SIGNAL(doubleClicked(const QModelIndex&)), 
-				this, 
-				SLOT(sample_file_double_clicked(const QModelIndex&)),
-				Qt::QueuedConnection
-			);
-
-			connect(
-				file_system_view, 
-				SIGNAL(clicked(const QModelIndex&)), 
-				this, 
-				SLOT(sample_file_clicked(const QModelIndex&)),
-				Qt::QueuedConnection
-			);
-
 			generator_table = new QTableWidget();
 
 			generator_table->setColumnCount(10);
@@ -394,27 +347,19 @@ class main_window : public QMainWindow {
 			generator_table->setHorizontalHeaderLabels(headers);
 			setCentralWidget(generator_table);
 
-			file_system_view_dock_widget = new QDockWidget();
-			file_system_view_dock_widget->setObjectName("FileSystemDockWidget");
-			file_system_view_dock_widget->setWidget(file_system_view);
-
-			addDockWidget(Qt::LeftDockWidgetArea, file_system_view_dock_widget);
-
-			QDockWidget *file_dialog_dock_widget = new QDockWidget();
-			QFileDialog *file_dialog = new QFileDialog(this, Qt::SubWindow);//"Select a Sample", "/", "*");
+			file_dialog_dock_widget = new QDockWidget();
+			file_dialog_dock_widget->setObjectName("FileDialogDockWidget");
+			file_dialog = new QFileDialog(this, Qt::SubWindow);
 			connect(file_dialog, SIGNAL(finished(int)), file_dialog, SLOT(open()));
-			//file_dialog->installEventFilter(this);
 
 			file_dialog_dock_widget->setWidget(file_dialog);
-			//addDockWidget(Qt::RightDockWidgetArea, file_dialog_dock_widget);
-
+			addDockWidget(Qt::LeftDockWidgetArea, file_dialog_dock_widget);
+			connect(file_dialog, SIGNAL(currentChanged(const QString&)), this, SLOT(sample_file_clicked()));
 
 			QSettings settings;
 			restoreGeometry(settings.value("geometry").toByteArray());
 			restoreState(settings.value("windowState").toByteArray());
-			file_system_view->header()->restoreState(settings.value("fileSystemViewState").toByteArray());
-			file_system_view->expand(file_system_model.index(settings.value("fileSystemLastFile").toString()));
-			file_system_view->scrollTo(file_system_model.index(settings.value("fileSystemLastFile").toString()));		}
+		}
 };
 
 #endif
