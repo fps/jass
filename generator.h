@@ -105,7 +105,20 @@ struct generator {
 		jack_nframes_t last_frame_time = jack_last_frame_time(jack_client);
 		for (unsigned int frame = 0; frame < nframes; ++frame) {
 			if (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
-				if (((*(midi_event.buffer) & 0xf0)) == 0x90) {
+				if (((*(midi_event.buffer) & 0xf0)) == 0x80
+					|| (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) == 0)) {
+					//! Note off
+					if((*(midi_event.buffer) & 0x0f) == channel)
+					{
+						for (unsigned int voice = 0; voice != voices->t.size(); ++voice) {
+							if (voices->t[voice].note == *(midi_event.buffer+1)) {
+								voices->t[voice].playing = false;
+							}
+						}	
+					}
+				}
+
+				if (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) != 0) {
 					//! Note on
 					if(
 						(*(midi_event.buffer) & 0x0f) == channel 
@@ -122,6 +135,7 @@ struct generator {
 						current_voice = (++current_voice) % voices->t.size();
 					}
 				}
+
 				jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
 				++midi_in_event_index;
 			}
