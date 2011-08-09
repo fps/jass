@@ -14,6 +14,7 @@
 #include "sample.h"
 
 struct voice {
+	enum { ATTACK, DECAY, SUSTAIN, RELEASE } state;
 	bool playing;
 
 	unsigned int note;

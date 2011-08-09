@@ -96,7 +96,7 @@ class main_window : public QMainWindow {
 				)
 			);
 
-			write_command(assign((*i)->t.voices, v));
+			write_blocking_command(assign((*i)->t.voices, v));
 			write_command(assign((*i)->t.name, std::string(((generator_table->item(row, 0))->text().toLatin1()))));
 			write_command(assign((*i)->t.channel, (((QSpinBox*)generator_table->cellWidget(row, 3))->value())));
 			write_command(assign((*i)->t.note, (((QSpinBox*)generator_table->cellWidget(row, 4))->value())));
