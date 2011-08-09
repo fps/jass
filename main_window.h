@@ -376,6 +376,7 @@ class main_window : public QMainWindow {
 			file_dialog_dock_widget = new QDockWidget();
 			file_dialog_dock_widget->setObjectName("FileDialogDockWidget");
 			file_dialog = new QFileDialog(this, Qt::SubWindow);
+			file_dialog->setOption(QFileDialog::DontUseNativeDialog);
 			connect(file_dialog, SIGNAL(finished(int)), file_dialog, SLOT(open()));
 			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(load_sample_file()));
 			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(audit_sample_file()));			
