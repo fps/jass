@@ -42,7 +42,7 @@ class main_window : public QMainWindow {
 
 	public slots:
 		void audit_sample_file() {
-			if(!QApplication::keyboardModifiers() & Qt::ShiftModifier) return;
+			if(!(QApplication::keyboardModifiers() & Qt::ShiftModifier)) return;
 
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
