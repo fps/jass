@@ -41,7 +41,9 @@ class main_window : public QMainWindow {
 		std::string setup_file_name;
 
 	public slots:
-		void sample_file_clicked() {
+		void audit_sample_file() {
+			if(!QApplication::keyboardModifiers() & Qt::ShiftModifier) return;
+
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
@@ -59,7 +61,9 @@ class main_window : public QMainWindow {
 
 		}
 
-		void sample_file_double_clicked() {
+		void load_sample_file() {
+			if(QApplication::keyboardModifiers() & Qt::ShiftModifier) return;
+
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
@@ -314,13 +318,15 @@ class main_window : public QMainWindow {
 		}
 
 		void remove_generator() {
-			std::cout << "current row: " << generator_table->currentRow() << std::endl;
-			disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
-			generator_list::iterator it = l->t.begin();
-			std::advance(it, generator_table->currentRow());
-			l->t.erase(it);
-			write_blocking_command(assign(engine_.gens, l));
-			deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
+			if (generator_table->currentRow() >= 0 && generator_table->currentRow() < generator_table->rowCount()) {
+				std::cout << "current row: " << generator_table->currentRow() << std::endl;
+				disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
+				generator_list::iterator it = l->t.begin();
+				std::advance(it, generator_table->currentRow());
+				l->t.erase(it);
+				write_blocking_command(assign(engine_.gens, l));
+				deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
+			}
 		}
 
 	public:
@@ -371,12 +377,12 @@ class main_window : public QMainWindow {
 			file_dialog_dock_widget->setObjectName("FileDialogDockWidget");
 			file_dialog = new QFileDialog(this, Qt::SubWindow);
 			connect(file_dialog, SIGNAL(finished(int)), file_dialog, SLOT(open()));
-			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(sample_file_double_clicked()));
-			
+			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(load_sample_file()));
+			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(audit_sample_file()));			
 
 			file_dialog_dock_widget->setWidget(file_dialog);
 			addDockWidget(Qt::LeftDockWidgetArea, file_dialog_dock_widget);
-			connect(file_dialog, SIGNAL(currentChanged(const QString&)), this, SLOT(sample_file_clicked()));
+
 
 			QSettings settings;
 			restoreGeometry(settings.value("geometry").toByteArray());
