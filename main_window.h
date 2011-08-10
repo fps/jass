@@ -760,6 +760,7 @@ class main_window : public QMainWindow {
 			log_text_edit = new QTextEdit();
 			log_text_edit->setReadOnly(true);
 			log_text_edit->setText("Motivational Message: Everything will be allright... Now get to making music, you sucker!!!\n");
+			log_text_edit->document()->setMaximumBlockCount(1000);
 			log_text_edit_dock_widget = new QDockWidget();
 			log_text_edit_dock_widget->setWidget(log_text_edit);
 			log_text_edit_dock_widget->setObjectName("LogDockWidget");
@@ -769,6 +770,8 @@ class main_window : public QMainWindow {
 			QSettings settings;
 			restoreGeometry(settings.value("geometry").toByteArray());
 			restoreState(settings.value("windowState").toByteArray());
+			
+			show_about_text();
 		}
 };
 
