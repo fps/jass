@@ -198,6 +198,29 @@ class main_window : public QMainWindow {
 			}
 			save_setup(setup_file_name);
 		}
+		
+		void set_continous_notes() {
+			//! Get selected items
+			QList<QTableWidgetItem*> items = generator_table->selectedItems();
+			if (items.size() < 2) return;
+
+			//! Get note of first selected generator
+
+			generator_list::iterator it = engine_.gens->t.begin();
+			std::advance(it, items[0]->row());
+			unsigned int note = (*it)->t.note;
+			write_command(assign((*it)->t.min_note, note));
+			write_command(assign((*it)->t.max_note, note));
+
+			for (unsigned int i = 1; i < items.size(); ++i) {
+				generator_list::iterator it = engine_.gens->t.begin();
+				std::advance(it, items[i]->row());
+				write_command(assign((*it)->t.note, ++note));
+				write_command(assign((*it)->t.min_note, note));
+				write_command(assign((*it)->t.max_note, note));
+			}
+			deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
+		}
 
 		//! This should only be called by deferred_gui_commands.read()()
 		void update_generator_table() {
@@ -654,7 +677,7 @@ class main_window : public QMainWindow {
 					parameter_menu->addAction("Set &Min. Note");
 					parameter_menu->addAction("Set &Max. Note");
 					parameter_menu->addSeparator();
-					parameter_menu->addAction("Set continous Notes...");
+					connect(parameter_menu->addAction("Set continous Notes"), SIGNAL(triggered(bool)), this, SLOT(set_continous_notes()));
 					
 				QMenu *help_menu = new QMenu("&Help");
 				menu_bar->addMenu(help_menu);

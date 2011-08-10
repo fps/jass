@@ -111,7 +111,7 @@ struct generator {
 				{
 					//std::cout << "note off" << std::endl;
 					for (unsigned int voice = 0; voice != voices->t.size(); ++voice) {
-						if (voices->t[voice].note == *(midi_event.buffer+1)) {
+						if (voices->t[voice].note == *(midi_event.buffer+1) && voices->t[voice].gain_envelope_state == voice::ATTACK) {
 							voices->t[voice].gain_envelope_state = voice::RELEASE;
 							voices->t[voice].gain_envelope_on_note_off = voices->t[voice].gain_envelope;
 							voices->t[voice].note_off_frame = last_frame_time + frame;
