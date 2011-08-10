@@ -77,26 +77,28 @@ class main_window : public QMainWindow {
 		void load_sample_file() {
 			if(QApplication::keyboardModifiers() & Qt::ShiftModifier) return;
 
-			try {
-				disposable_generator_ptr p = disposable_generator::create(
-					generator(
-						std::string(QFileInfo(file_dialog->selectedFiles()[0]).baseName().toLatin1()),
-						disposable_sample::create(
-							sample(std::string(file_dialog->selectedFiles()[0].toLatin1()), jack_get_sample_rate(engine_.jack_client))
-						)
-					)
-				);
-				std::cout << "writing command" << std::endl;
-				disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
-				l->t.push_back(p);
-				write_blocking_command(assign(engine_.gens, l));
-				deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
+			disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
 
-				log_text_edit->append("Loaded sample: ");
-				log_text_edit->append(file_dialog->selectedFiles()[0]);
-			} catch (...) {
-				std::cout << "something went wrong" << std::endl;
+			for (unsigned int index = 0; index < file_dialog->selectedFiles().size(); ++index) {
+				try {
+					disposable_generator_ptr p = disposable_generator::create(
+						generator(
+							std::string(QFileInfo(file_dialog->selectedFiles()[index]).baseName().toLatin1()),
+							disposable_sample::create(
+								sample(std::string(file_dialog->selectedFiles()[index].toLatin1()), jack_get_sample_rate(engine_.jack_client))
+							)
+						)
+					);
+					std::cout << "writing command" << std::endl;
+					l->t.push_back(p);
+					log_text_edit->append("Loaded sample: ");
+					log_text_edit->append(file_dialog->selectedFiles()[index]);
+				} catch (...) {
+					std::cout << "something went wrong" << std::endl;
+				}
 			}
+			write_blocking_command(assign(engine_.gens, l));
+			deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
 		}
 		
 
@@ -731,6 +733,8 @@ class main_window : public QMainWindow {
 			file_dialog_dock_widget->setObjectName("FileDialogDockWidget");
 			file_dialog = new QFileDialog(this, Qt::SubWindow);
 			file_dialog->setOption(QFileDialog::DontUseNativeDialog);
+			file_dialog->setFileMode(QFileDialog::ExistingFiles);
+			
 			connect(file_dialog, SIGNAL(finished(int)), file_dialog, SLOT(open()));
 			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(load_sample_file()));
 			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(audit_sample_file()));			
