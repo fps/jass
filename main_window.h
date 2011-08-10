@@ -65,6 +65,9 @@ class main_window : public QMainWindow {
 				);
 				write_blocking_command(assign(engine_.auditor_gen, p));
 				write_blocking_command(boost::bind(&engine::play_auditor, boost::ref(engine_)));
+				
+				log_text_edit->append("Loaded audit sample: ");
+				log_text_edit->append(file_dialog->selectedFiles()[0]);
 			} catch (...) {
 				std::cout << "something went wrong" << std::endl;
 			}
@@ -88,6 +91,9 @@ class main_window : public QMainWindow {
 				l->t.push_back(p);
 				write_blocking_command(assign(engine_.gens, l));
 				deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
+
+				log_text_edit->append("Loaded sample: ");
+				log_text_edit->append(file_dialog->selectedFiles()[0]);
 			} catch (...) {
 				std::cout << "something went wrong" << std::endl;
 			}
@@ -118,8 +124,8 @@ class main_window : public QMainWindow {
 		//! Write command without blocking the GUI
 		void write_command(boost::function<void(void)> f) {
 			if (engine_.commands.can_write()) {
-				engine_.commands.write(f);
 				++outstanding_acks;
+				engine_.commands.write(f);
 			}
 		}
 		
@@ -127,7 +133,7 @@ class main_window : public QMainWindow {
 			//! Will be reenabled by acknowledgement 
 			if (engine_.commands.can_write()) {
 				++outstanding_acks;
-				log_text_edit->append(QString("outstanding acks: %1").arg(outstanding_acks));
+				//log_text_edit->append(QString("outstanding acks: %1").arg(outstanding_acks));
 				setEnabled(false);
 				engine_.commands.write(f);
 			}
@@ -232,7 +238,7 @@ class main_window : public QMainWindow {
 
 				//! Looping
 				check_box = new QCheckBox(); check_box->setProperty("row", row);
-				check_box->setCheckState((*it)->t.looping ? Qt::Checked : Qt::Unchecked);
+				check_box->setChecked((*it)->t.looping);
 				connect(
 					check_box, SIGNAL(stateChanged(int)), this,
 					SLOT(generator_cell_widget_changed())
@@ -363,7 +369,7 @@ class main_window : public QMainWindow {
 				combo_box->addItem("None"); combo_box->addItem("LP"); 
 				combo_box->addItem("HP"); combo_box->addItem("BP");  combo_box->setCurrentIndex((*it)->t.filter);
 				connect(
-					double_spin_box, SIGNAL(currentIndexChanged(int)), this,
+					combo_box, SIGNAL(currentIndexChanged(int)), this,
 					SLOT(generator_cell_widget_changed())
 				);
 				generator_table->setCellWidget(row, col++, combo_box);
@@ -506,7 +512,7 @@ class main_window : public QMainWindow {
 			while(engine_.acknowledgements.can_read()) { 
 				engine_.acknowledgements.read(); 
 				--outstanding_acks; 
-				std::cout << outstanding_acks << std::endl; 
+				//std::cout << outstanding_acks << std::endl; 
 			}
 
 			assert(outstanding_acks >= 0);
