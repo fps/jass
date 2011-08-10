@@ -649,6 +649,7 @@ class main_window : public QMainWindow {
 			log_text_edit->append("This is jass - Jack Simple Sampler");
 			log_text_edit->append("License: Gnu General Public License v3.0 or later");
 			log_text_edit->append("Author: Florian Paul Schmidt (mista.tapas at gmx.net)");
+			log_text_edit->append("Thanks to the #lad inhabitants on irc.freenode.org, especially nedko, thorbenh, thorwil and others i forgot :D");
 			log_text_edit->append("-------------------");
 		}
 
