@@ -736,7 +736,6 @@ class main_window : public QMainWindow {
 	
 
 			generator_table->setHorizontalHeaderLabels(headers);
-			generator_table->setMouseTracking(true);
 			connect(generator_table, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(generator_item_changed(QTableWidgetItem*)));
 
 			setCentralWidget(generator_table);
