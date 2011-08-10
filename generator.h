@@ -220,9 +220,12 @@ struct generator {
 					if (current_frame >= 0 && current_frame < sample_->t.data_0.size())
 					{
 						//double gain = ((double)voices->t[voice_index].note_on_velocity/128.0) * velocity_factor;
+						double vel_gain = 
+							velocity_factor * (((double)voices->t[voice_index].note_on_velocity-min_velocity)
+							/(double)(max_velocity-min_velocity));
 
-						out_0[frame] += gain * sample_->t.data_0[current_frame];
-						out_1[frame] += gain * sample_->t.data_0[current_frame];
+						out_0[frame] += vel_gain * gain * sample_->t.data_0[current_frame];
+						out_1[frame] += vel_gain * gain * sample_->t.data_0[current_frame];
 					}
 				}
 			}
