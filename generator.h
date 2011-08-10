@@ -129,7 +129,6 @@ struct generator {
 					&& *(midi_event.buffer+2) >= min_velocity
 					&& *(midi_event.buffer+2) <= max_velocity
 				) {
-					std::cout << "note on" << std::endl;
 					//! We be responsible for this note command
 					voices->t[current_voice].note = *(midi_event.buffer+1);
 					voices->t[current_voice].note_on_velocity = *(midi_event.buffer+2);
