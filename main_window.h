@@ -13,6 +13,7 @@
 #include <QTreeView>
 #include <QTableWidget>
 #include <QFileSystemModel>
+#include <QComboBox>
 #include <QApplication>
 #include <QDoubleSpinBox>
 #include <QCheckBox>
@@ -92,28 +93,6 @@ class main_window : public QMainWindow {
 			}
 		}
 		
-		void generator_cell_widget_changed(void) {
-			int row = sender()->property("row").toInt();
-
-			generator_list::iterator i = engine_.gens->t.begin();
-			std::advance(i, row);
-			std::cout << "current row " << row << std::endl;
-
-			disposable_voice_vector_ptr v = disposable_voice_vector::create(
-				std::vector<voice>(
-					((QSpinBox*)generator_table->cellWidget(row, 2))->value()
-				)
-			);
-
-			write_command(assign((*i)->t.voices, v));
-			write_command(assign((*i)->t.channel, (((QSpinBox*)generator_table->cellWidget(row, 3))->value())));
-			write_command(assign((*i)->t.note, (((QSpinBox*)generator_table->cellWidget(row, 4))->value())));
-			write_command(assign((*i)->t.min_note, (((QSpinBox*)generator_table->cellWidget(row, 5))->value())));
-			write_command(assign((*i)->t.max_note, (((QSpinBox*)generator_table->cellWidget(row, 6))->value())));
-			write_command(assign((*i)->t.min_velocity, (((QSpinBox*)generator_table->cellWidget(row, 7))->value())));
-			write_command(assign((*i)->t.max_velocity, (((QSpinBox*)generator_table->cellWidget(row, 8))->value())));
-			write_command(assign((*i)->t.velocity_factor, (((QSlider*)generator_table->cellWidget(row, 9))->value())));
-		}
 
 		void handle_jack_session_event(jack_session_event_t *ev) {
 			//! Copy pasta slightly adapted from the jack session client walkthrough..
@@ -222,6 +201,7 @@ class main_window : public QMainWindow {
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
 				int col = 0;
+				QComboBox *combo_box;
 				QDoubleSpinBox *double_spin_box;
 				QSpinBox *spin_box;
 				QCheckBox *check_box;
@@ -341,6 +321,116 @@ class main_window : public QMainWindow {
 					SLOT(generator_cell_widget_changed())
 				);
 				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! AttackG
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.attack_g);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! DecayG
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.decay_g);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! SustainG
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.sustain_g);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! ReleaseG
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.release_g);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! Filter
+				combo_box = new QComboBox(); combo_box->setProperty("row", row);
+				combo_box->addItem("None"); combo_box->addItem("LP"); 
+				combo_box->addItem("HP"); combo_box->addItem("BP");  combo_box->setCurrentIndex((*it)->t.filter);
+				connect(
+					double_spin_box, SIGNAL(currentIndexChanged(int)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, combo_box);
+
+				//! FreqF
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(1.0); double_spin_box->setValue((*it)->t.freq_f);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! QF
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(1.0); double_spin_box->setValue((*it)->t.q_f);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! KeyFollowF
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(-100.0); double_spin_box->setMaximum(100.0); double_spin_box->setValue((*it)->t.key_follow_f);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! AttackF
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.attack_g);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! DecayF
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.decay_g);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! SustainF
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.sustain_g);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
+				//! ReleaseF
+				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.release_g);
+				connect(
+					double_spin_box, SIGNAL(valueChanged(double)), this,
+					SLOT(generator_cell_widget_changed())
+				);
+				generator_table->setCellWidget(row, col++, double_spin_box);
+
 			}
 		}
 	
@@ -427,8 +517,7 @@ class main_window : public QMainWindow {
 			}
 		}
 
-		void closeEvent(QCloseEvent *event)
-		 {
+		void closeEvent(QCloseEvent *event) {
 			QSettings settings;
 			settings.setValue("geometry", saveGeometry());
 			settings.setValue("windowState", saveState());
@@ -447,6 +536,33 @@ class main_window : public QMainWindow {
 			}
 		}
 
+		void generator_cell_widget_changed(void) {
+			int row = sender()->property("row").toInt();
+
+			generator_list::iterator i = engine_.gens->t.begin();
+			std::advance(i, row);
+			std::cout << "current row " << row << std::endl;
+
+			write_command(assign((*i)->t.sample_start, (((QDoubleSpinBox*)generator_table->cellWidget(row, 2))->value())));
+			write_command(assign((*i)->t.sample_end, (((QDoubleSpinBox*)generator_table->cellWidget(row, 3))->value())));
+			write_command(assign((*i)->t.looping, (((QCheckBox*)generator_table->cellWidget(row, 4))->isChecked())));
+			write_command(assign((*i)->t.gain, (((QDoubleSpinBox*)generator_table->cellWidget(row, 5))->value())));
+
+			disposable_voice_vector_ptr v = disposable_voice_vector::create(
+				std::vector<voice>(
+					((QSpinBox*)generator_table->cellWidget(row, 6))->value()
+				)
+			);
+			write_command(assign((*i)->t.voices, v));
+
+			write_command(assign((*i)->t.channel, (((QSpinBox*)generator_table->cellWidget(row, 7))->value())));
+			write_command(assign((*i)->t.note, (((QSpinBox*)generator_table->cellWidget(row, 8))->value())));
+			write_command(assign((*i)->t.min_note, (((QSpinBox*)generator_table->cellWidget(row, 9))->value())));
+			write_command(assign((*i)->t.max_note, (((QSpinBox*)generator_table->cellWidget(row, 10))->value())));
+			write_command(assign((*i)->t.min_velocity, (((QSpinBox*)generator_table->cellWidget(row, 11))->value())));
+			write_command(assign((*i)->t.max_velocity, (((QSpinBox*)generator_table->cellWidget(row, 12))->value())));
+			write_command(assign((*i)->t.velocity_factor, (((QSlider*)generator_table->cellWidget(row, 13))->value())));
+		}
 
 		void generator_item_changed(QTableWidgetItem *i) {
 			int row = i->row();
@@ -455,6 +571,10 @@ class main_window : public QMainWindow {
 			std::cout << "current row " << row << std::endl;
 
 			write_command(assign((*it)->t.name,std::string(generator_table->item(row,0)->text().toLatin1())));
+		}
+
+		void show_help_text() {
+			log_text_edit->append("\nQuick Tutorial:\n\nIn the file browser:\n\n  - Shift-DoubleClick to audit a sample\n  - DoubleClick to load it\n\nUse the Parameter menu to quickly-mass assign parameters to selected ranges of generators");
 		}
 
 	public:
@@ -466,6 +586,7 @@ class main_window : public QMainWindow {
 			setWindowTitle("jass - jack simple sampler");
 
 			QMenuBar *menu_bar = new QMenuBar();				
+
 				QMenu *file_menu = new QMenu("&File");
 				menu_bar->addMenu(file_menu);
 					connect(file_menu->addAction("&Open..."), SIGNAL(triggered(bool)), this, SLOT(load_setup()));
@@ -474,13 +595,25 @@ class main_window : public QMainWindow {
 					connect(file_menu->addAction("Save &As..."), SIGNAL(triggered(bool)), this, SLOT(save_setup_as()));
 					file_menu->addSeparator();
 					connect(file_menu->addAction("&Quit"), SIGNAL(triggered(bool)), this, SLOT(close()));
+
 				QMenu *generator_menu = new QMenu("&Generator");
 				menu_bar->addMenu(generator_menu);
 					generator_menu->addAction("&Duplicate");
 					generator_menu->addSeparator();
 					connect(generator_menu->addAction("&Remove"), SIGNAL(triggered(bool)), this, SLOT(remove_generator()));;
+
+				QMenu *parameter_menu = new QMenu("&Parameter");
+				menu_bar->addMenu(parameter_menu);
+					parameter_menu->addAction("Set &Channel");
+					parameter_menu->addAction("Set &Note");
+					parameter_menu->addAction("Set &Min. Note");
+					parameter_menu->addAction("Set &Max. Note");
+					parameter_menu->addSeparator();
+					parameter_menu->addAction("Set continous Notes...");
+					
 				QMenu *help_menu = new QMenu("&Help");
-					help_menu->addAction("&Help");
+				menu_bar->addMenu(help_menu);
+					connect(help_menu->addAction("&Help in Log"), SIGNAL(triggered(bool)), this, SLOT(show_help_text()));
 					help_menu->addAction("&About");
 	
 			setMenuBar(menu_bar);
@@ -488,7 +621,7 @@ class main_window : public QMainWindow {
 			generator_table = new QTableWidget();
 
 			//! If you change the headers, make sure you adapt also the functions update_generator_table, generator_item_changed and generator_cell_widget_changed to reflect the new indexes
-			generator_table->setColumnCount(23);
+			generator_table->setColumnCount(26);
 			QStringList headers;
 			headers 
 				<< "Name"
