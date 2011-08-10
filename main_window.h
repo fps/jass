@@ -94,7 +94,8 @@ class main_window : public QMainWindow {
 					log_text_edit->append("Loaded sample: ");
 					log_text_edit->append(file_dialog->selectedFiles()[index]);
 				} catch (...) {
-					std::cout << "something went wrong" << std::endl;
+					log_text_edit->append("Something went wrong loading Sample:");
+					log_text_edit->append(file_dialog->selectedFiles()[index]);
 				}
 			}
 			write_blocking_command(assign(engine_.gens, l));
@@ -643,8 +644,21 @@ class main_window : public QMainWindow {
 			write_command(assign((*it)->t.name,std::string(generator_table->item(row,0)->text().toLatin1())));
 		}
 
+		void show_about_text() {
+			log_text_edit->append("-------------------");
+			log_text_edit->append("This is jass - Jack Simple Sampler");
+			log_text_edit->append("License: Gnu General Public License v3.0 or later");
+			log_text_edit->append("Author: Florian Paul Schmidt (mista.tapas at gmx.net)");
+			log_text_edit->append("-------------------");
+		}
+
 		void show_help_text() {
-			log_text_edit->append("\nQuick Tutorial:\n\nIn the file browser:\n\n  - Shift-DoubleClick to audit a sample\n  - DoubleClick to load it\n\nUse the Parameter menu to quickly-mass assign parameters to selected ranges of generators");
+			log_text_edit->append("-------------------");
+			log_text_edit->append("Quick Tutorial:");
+			log_text_edit->append("In the file browser: Shift-DoubleClick to audit a sample. DoubleClick to load it");
+			log_text_edit->append("Use the Parameter menu to quickly-mass assign parameters to selected ranges of generators.");
+			log_text_edit->append("Set Continous notes: Set the note of a generator. Select a range of generators by clicking on their names or dragging across their names. Then use the function from the menu. Continous notes will be assigned to all generators, starting with the note of the first in the selection. Also their min and max notes will be set to that same note.");
+			log_text_edit->append("-------------------");
 		}
 
 	public:
@@ -674,17 +688,17 @@ class main_window : public QMainWindow {
 
 				QMenu *parameter_menu = new QMenu("&Parameter");
 				menu_bar->addMenu(parameter_menu);
-					parameter_menu->addAction("Set &Channel");
-					parameter_menu->addAction("Set &Note");
-					parameter_menu->addAction("Set &Min. Note");
-					parameter_menu->addAction("Set &Max. Note");
-					parameter_menu->addSeparator();
+					//parameter_menu->addAction("Set &Channel");
+					//parameter_menu->addAction("Set &Note");
+					//parameter_menu->addAction("Set &Min. Note");
+					//parameter_menu->addAction("Set &Max. Note");
+					//parameter_menu->addSeparator();
 					connect(parameter_menu->addAction("Set continous Notes"), SIGNAL(triggered(bool)), this, SLOT(set_continous_notes()));
 					
 				QMenu *help_menu = new QMenu("&Help");
 				menu_bar->addMenu(help_menu);
 					connect(help_menu->addAction("&Help in Log"), SIGNAL(triggered(bool)), this, SLOT(show_help_text()));
-					help_menu->addAction("&About");
+					connect(help_menu->addAction("&About"), SIGNAL(triggered(bool)), this, SLOT(show_about_text()));
 	
 			setMenuBar(menu_bar);
 
