@@ -11,6 +11,10 @@
 	 <xsd:sequence>
 		<xsd:element name="Name" type="xsd:string"/>
 		<xsd:element name="Sample" type="xsd:string"/>
+		<xsd:element name="SampleStart" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="SampleEnd" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="Looping" type="xsd:boolean"/>
+		<xsd:element name="Gain" type="xsd:float"/>
 		<xsd:element name="Polyphony" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="Channel" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="Note" type="xsd:nonNegativeInteger"/>
@@ -19,6 +23,18 @@
 		<xsd:element name="MinVelocity" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="MaxVelocity" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="VelocityFactor" type="xsd:float"/>
+		<xsd:element name="AttackGain" type="xsd:float"/>
+		<xsd:element name="DecayGain" type="xsd:float"/>
+		<xsd:element name="SustainGain" type="xsd:float"/>
+		<xsd:element name="ReleaseGain" type="xsd:float"/>
+		<xsd:element name="Filter" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="FreqFilter" type="xsd:float"/>
+		<xsd:element name="QFilter" type="xsd:float"/>
+		<xsd:element name="KeyFollowF" type="xsd:float"/>
+		<xsd:element name="AttackFilter" type="xsd:float"/>
+		<xsd:element name="DecayFilter" type="xsd:float"/>
+		<xsd:element name="SustainFilter" type="xsd:float"/>
+		<xsd:element name="ReleaseFilter" type="xsd:float"/>
 	 </xsd:sequence>
   </xsd:complexType>
 

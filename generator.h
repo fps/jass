@@ -38,30 +38,43 @@ typedef boost::shared_ptr<disposable_voice_vector> disposable_voice_vector_ptr;
 struct generator {
 	std::string name;
 
-	//! TODO: think about writing a copy constructor/assignment operator
+	disposable_sample_ptr sample_;
+	double sample_start;
+	double sample_end;
+	
+	bool looping;
+	
 	disposable_voice_vector_ptr voices;
-	unsigned int current_voice;
+	
+	double gain;
 
-	//! the channel this generator listens on
 	unsigned int channel;
-
-	//! the tuning note
 	unsigned int note;
 
-	//! lowest note to react to
 	unsigned int min_note;
-
-	//! highest note to react to
 	unsigned int max_note;
-
-	//! the lowest velocity to react to
+	
 	unsigned int min_velocity;
-
-	//! the highest velocity to react to
 	unsigned int max_velocity;
 
-	//! resulting velocity is velocity_factor * (velocity - high_velocity)/(high_velocity - low_velocity)
 	double velocity_factor;
+	
+	double attack_g;
+	double decay_g;
+	double sustain_g;
+	double release_g;
+	
+	enum filter_type { NONE, LOW_PASS, HIGH_PASS, BAND_PASS } filter;
+	double freq_f;
+	double q_f;
+	double key_follow_f;
+	
+	double attack_f;
+	double decay_f;
+	double sustain_f;
+	double release_f;
+
+	unsigned int current_voice;
 
 	virtual ~generator()
 	{ 
@@ -71,6 +84,10 @@ struct generator {
 	generator(
 		const std::string &name,
 		disposable_sample_ptr s,
+		double sample_start = 0,
+		double sample_end = 0,
+		bool looping = false,
+		double gain = 1.0,
 		unsigned int polyphony = 1, 
 		unsigned int channel = 0,
 		unsigned int note = 64,
@@ -78,19 +95,47 @@ struct generator {
 		unsigned int max_note = 127,
 		unsigned int min_velocity = 0,
 		unsigned int max_velocity = 127,
-		double velocity_factor = 1.0
+		double velocity_factor = 1.0,
+		double attack_g = 0.001,
+		double decay_g = 0.0,
+		double sustain_g = 1.0,
+		double release_g = 0.001,
+		filter_type filter = NONE,
+		double freq_f = 1.0,
+		double q_f = 0.5,
+		double key_follow_f = 0.0,
+		double attack_f = 0.001,
+		double decay_f = 0.0,
+		double sustain_f = 1.0,
+		double release_f = 0.001
 	) :
 		name(name),
-		voices(disposable_voice_vector::create(std::vector<voice>(polyphony))),
-		current_voice(0),
 		sample_(s),
+		sample_start(sample_start),
+		sample_end(sample_end),
+		looping(looping),
+		gain(gain),
+		voices(disposable_voice_vector::create(std::vector<voice>(polyphony))),
 		channel(channel),
 		note(note),
 		min_note(min_note),
 		max_note(max_note),
 		min_velocity(min_velocity),
 		max_velocity(max_velocity),
-		velocity_factor(velocity_factor)
+		velocity_factor(velocity_factor),
+		attack_g(attack_g),
+		decay_g(decay_g),
+		sustain_g(sustain_g),
+		release_g(release_g),
+		filter(filter),
+		freq_f(freq_f),
+		q_f(q_f),
+		key_follow_f(key_follow_f),
+		attack_f(attack_f),
+		decay_f(decay_f),
+		sustain_f(sustain_f),
+		release_f(release_f),
+		current_voice(0)
 	{ 
 		// std::cout << "generator()" << std::endl; 
 	}
@@ -172,7 +217,6 @@ struct generator {
 	}
 
 	protected:
-		disposable_sample_ptr sample_;
 };
 
 typedef disposable<generator> disposable_generator;

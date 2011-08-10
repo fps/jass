@@ -308,6 +308,62 @@ namespace Jass
     void
     Sample (::std::auto_ptr< Sample_type > p);
 
+    // SampleStart
+    // 
+    typedef ::xml_schema::non_negative_integer SampleStart_type;
+    typedef ::xsd::cxx::tree::traits< SampleStart_type, char > SampleStart_traits;
+
+    const SampleStart_type&
+    SampleStart () const;
+
+    SampleStart_type&
+    SampleStart ();
+
+    void
+    SampleStart (const SampleStart_type& x);
+
+    // SampleEnd
+    // 
+    typedef ::xml_schema::non_negative_integer SampleEnd_type;
+    typedef ::xsd::cxx::tree::traits< SampleEnd_type, char > SampleEnd_traits;
+
+    const SampleEnd_type&
+    SampleEnd () const;
+
+    SampleEnd_type&
+    SampleEnd ();
+
+    void
+    SampleEnd (const SampleEnd_type& x);
+
+    // Looping
+    // 
+    typedef ::xml_schema::boolean Looping_type;
+    typedef ::xsd::cxx::tree::traits< Looping_type, char > Looping_traits;
+
+    const Looping_type&
+    Looping () const;
+
+    Looping_type&
+    Looping ();
+
+    void
+    Looping (const Looping_type& x);
+
+    // Gain
+    // 
+    typedef ::xml_schema::float_ Gain_type;
+    typedef ::xsd::cxx::tree::traits< Gain_type, char > Gain_traits;
+
+    const Gain_type&
+    Gain () const;
+
+    Gain_type&
+    Gain ();
+
+    void
+    Gain (const Gain_type& x);
+
     // Polyphony
     // 
     typedef ::xml_schema::non_negative_integer Polyphony_type;
@@ -420,10 +476,182 @@ namespace Jass
     void
     VelocityFactor (const VelocityFactor_type& x);
 
+    // AttackGain
+    // 
+    typedef ::xml_schema::float_ AttackGain_type;
+    typedef ::xsd::cxx::tree::traits< AttackGain_type, char > AttackGain_traits;
+
+    const AttackGain_type&
+    AttackGain () const;
+
+    AttackGain_type&
+    AttackGain ();
+
+    void
+    AttackGain (const AttackGain_type& x);
+
+    // DecayGain
+    // 
+    typedef ::xml_schema::float_ DecayGain_type;
+    typedef ::xsd::cxx::tree::traits< DecayGain_type, char > DecayGain_traits;
+
+    const DecayGain_type&
+    DecayGain () const;
+
+    DecayGain_type&
+    DecayGain ();
+
+    void
+    DecayGain (const DecayGain_type& x);
+
+    // SustainGain
+    // 
+    typedef ::xml_schema::float_ SustainGain_type;
+    typedef ::xsd::cxx::tree::traits< SustainGain_type, char > SustainGain_traits;
+
+    const SustainGain_type&
+    SustainGain () const;
+
+    SustainGain_type&
+    SustainGain ();
+
+    void
+    SustainGain (const SustainGain_type& x);
+
+    // ReleaseGain
+    // 
+    typedef ::xml_schema::float_ ReleaseGain_type;
+    typedef ::xsd::cxx::tree::traits< ReleaseGain_type, char > ReleaseGain_traits;
+
+    const ReleaseGain_type&
+    ReleaseGain () const;
+
+    ReleaseGain_type&
+    ReleaseGain ();
+
+    void
+    ReleaseGain (const ReleaseGain_type& x);
+
+    // Filter
+    // 
+    typedef ::xml_schema::non_negative_integer Filter_type;
+    typedef ::xsd::cxx::tree::traits< Filter_type, char > Filter_traits;
+
+    const Filter_type&
+    Filter () const;
+
+    Filter_type&
+    Filter ();
+
+    void
+    Filter (const Filter_type& x);
+
+    // FreqFilter
+    // 
+    typedef ::xml_schema::float_ FreqFilter_type;
+    typedef ::xsd::cxx::tree::traits< FreqFilter_type, char > FreqFilter_traits;
+
+    const FreqFilter_type&
+    FreqFilter () const;
+
+    FreqFilter_type&
+    FreqFilter ();
+
+    void
+    FreqFilter (const FreqFilter_type& x);
+
+    // QFilter
+    // 
+    typedef ::xml_schema::float_ QFilter_type;
+    typedef ::xsd::cxx::tree::traits< QFilter_type, char > QFilter_traits;
+
+    const QFilter_type&
+    QFilter () const;
+
+    QFilter_type&
+    QFilter ();
+
+    void
+    QFilter (const QFilter_type& x);
+
+    // KeyFollowF
+    // 
+    typedef ::xml_schema::float_ KeyFollowF_type;
+    typedef ::xsd::cxx::tree::traits< KeyFollowF_type, char > KeyFollowF_traits;
+
+    const KeyFollowF_type&
+    KeyFollowF () const;
+
+    KeyFollowF_type&
+    KeyFollowF ();
+
+    void
+    KeyFollowF (const KeyFollowF_type& x);
+
+    // AttackFilter
+    // 
+    typedef ::xml_schema::float_ AttackFilter_type;
+    typedef ::xsd::cxx::tree::traits< AttackFilter_type, char > AttackFilter_traits;
+
+    const AttackFilter_type&
+    AttackFilter () const;
+
+    AttackFilter_type&
+    AttackFilter ();
+
+    void
+    AttackFilter (const AttackFilter_type& x);
+
+    // DecayFilter
+    // 
+    typedef ::xml_schema::float_ DecayFilter_type;
+    typedef ::xsd::cxx::tree::traits< DecayFilter_type, char > DecayFilter_traits;
+
+    const DecayFilter_type&
+    DecayFilter () const;
+
+    DecayFilter_type&
+    DecayFilter ();
+
+    void
+    DecayFilter (const DecayFilter_type& x);
+
+    // SustainFilter
+    // 
+    typedef ::xml_schema::float_ SustainFilter_type;
+    typedef ::xsd::cxx::tree::traits< SustainFilter_type, char > SustainFilter_traits;
+
+    const SustainFilter_type&
+    SustainFilter () const;
+
+    SustainFilter_type&
+    SustainFilter ();
+
+    void
+    SustainFilter (const SustainFilter_type& x);
+
+    // ReleaseFilter
+    // 
+    typedef ::xml_schema::float_ ReleaseFilter_type;
+    typedef ::xsd::cxx::tree::traits< ReleaseFilter_type, char > ReleaseFilter_traits;
+
+    const ReleaseFilter_type&
+    ReleaseFilter () const;
+
+    ReleaseFilter_type&
+    ReleaseFilter ();
+
+    void
+    ReleaseFilter (const ReleaseFilter_type& x);
+
     // Constructors.
     //
     Generator (const Name_type&,
                const Sample_type&,
+               const SampleStart_type&,
+               const SampleEnd_type&,
+               const Looping_type&,
+               const Gain_type&,
                const Polyphony_type&,
                const Channel_type&,
                const Note_type&,
@@ -431,7 +659,19 @@ namespace Jass
                const MaxNote_type&,
                const MinVelocity_type&,
                const MaxVelocity_type&,
-               const VelocityFactor_type&);
+               const VelocityFactor_type&,
+               const AttackGain_type&,
+               const DecayGain_type&,
+               const SustainGain_type&,
+               const ReleaseGain_type&,
+               const Filter_type&,
+               const FreqFilter_type&,
+               const QFilter_type&,
+               const KeyFollowF_type&,
+               const AttackFilter_type&,
+               const DecayFilter_type&,
+               const SustainFilter_type&,
+               const ReleaseFilter_type&);
 
     Generator (const ::xercesc::DOMElement& e,
                ::xml_schema::flags f = 0,
@@ -458,6 +698,10 @@ namespace Jass
     protected:
     ::xsd::cxx::tree::one< Name_type > Name_;
     ::xsd::cxx::tree::one< Sample_type > Sample_;
+    ::xsd::cxx::tree::one< SampleStart_type > SampleStart_;
+    ::xsd::cxx::tree::one< SampleEnd_type > SampleEnd_;
+    ::xsd::cxx::tree::one< Looping_type > Looping_;
+    ::xsd::cxx::tree::one< Gain_type > Gain_;
     ::xsd::cxx::tree::one< Polyphony_type > Polyphony_;
     ::xsd::cxx::tree::one< Channel_type > Channel_;
     ::xsd::cxx::tree::one< Note_type > Note_;
@@ -466,6 +710,18 @@ namespace Jass
     ::xsd::cxx::tree::one< MinVelocity_type > MinVelocity_;
     ::xsd::cxx::tree::one< MaxVelocity_type > MaxVelocity_;
     ::xsd::cxx::tree::one< VelocityFactor_type > VelocityFactor_;
+    ::xsd::cxx::tree::one< AttackGain_type > AttackGain_;
+    ::xsd::cxx::tree::one< DecayGain_type > DecayGain_;
+    ::xsd::cxx::tree::one< SustainGain_type > SustainGain_;
+    ::xsd::cxx::tree::one< ReleaseGain_type > ReleaseGain_;
+    ::xsd::cxx::tree::one< Filter_type > Filter_;
+    ::xsd::cxx::tree::one< FreqFilter_type > FreqFilter_;
+    ::xsd::cxx::tree::one< QFilter_type > QFilter_;
+    ::xsd::cxx::tree::one< KeyFollowF_type > KeyFollowF_;
+    ::xsd::cxx::tree::one< AttackFilter_type > AttackFilter_;
+    ::xsd::cxx::tree::one< DecayFilter_type > DecayFilter_;
+    ::xsd::cxx::tree::one< SustainFilter_type > SustainFilter_;
+    ::xsd::cxx::tree::one< ReleaseFilter_type > ReleaseFilter_;
   };
 
   class Jass: public ::xml_schema::type
