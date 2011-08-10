@@ -102,9 +102,9 @@ struct generator {
 		unsigned int &midi_in_event_index,
 		jack_midi_event_t &midi_event
 	) {
-		if (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
+		while (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
 			if (((*(midi_event.buffer) & 0xf0)) == 0x80
-				|| (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) == 0)
+				|| (((*(midi_event.buffer) & 0xf0) == 0x90 && *(midi_event.buffer+2) == 0))
 			) {
 				//! Note off
 				if((*(midi_event.buffer) & 0x0f) == channel)
@@ -129,7 +129,7 @@ struct generator {
 					&& *(midi_event.buffer+2) >= min_velocity
 					&& *(midi_event.buffer+2) <= max_velocity
 				) {
-					//std::cout << "note on" << std::endl;
+					std::cout << "note on" << std::endl;
 					//! We be responsible for this note command
 					voices->t[current_voice].note = *(midi_event.buffer+1);
 					voices->t[current_voice].note_on_velocity = *(midi_event.buffer+2);
@@ -138,8 +138,8 @@ struct generator {
 					current_voice = (++current_voice) % voices->t.size();
 				}
 			}
-			jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
 			++midi_in_event_index;
+			jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
 		}
 	}
 
@@ -248,16 +248,15 @@ struct generator {
 								double time_in_decay = time_in_sample - attack_g;
 								v.gain_envelope = (1.0 - time_in_decay/decay_g) * (1.0 - sustain_g) + sustain_g;
 							} else if (time_in_sample > (attack_g + decay_g)) {
-								//double time_in_release = time_in_sample - (attack_g + decay_g);
 								v.gain_envelope = sustain_g;
 							}
 						} else if (v.gain_envelope_state == voice::RELEASE) {
 							double time_in_release = (double)(last_frame_time + frame - v.note_off_frame)/(double)sample_rate;
-							v.gain_envelope = std::max(v.gain_envelope_on_note_off * (1.0 - (time_in_release/release_g)), 0.0);
+							v.gain_envelope = std::max(
+								v.gain_envelope_on_note_off * (1.0 - (time_in_release/release_g)), 
+								0.0
+							);
 						}
-						//if (time_in_sample > attack_g && time_in_sample << decay_g)
-						//	gain_envelope = 
-						//double gain = ((double)voices->t[voice_index].note_on_velocity/128.0) * velocity_factor;
 						double vel_gain = 
 							velocity_factor * (((double)v.note_on_velocity-min_velocity)
 							/(double)(max_velocity-min_velocity));
