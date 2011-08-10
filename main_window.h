@@ -475,7 +475,6 @@ class main_window : public QMainWindow {
  				int i = 0;
 				setEnabled(false);
 				for(Jass::Jass::Generator_const_iterator it = jass_.Generator().begin(); it != jass_.Generator().end(); ++it) {
-					std::cout << "loading sample " << (*it).Sample() << std::endl;
 					disposable_generator_ptr p = disposable_generator::create(
 						generator(
 							(*it).Name(),
@@ -506,6 +505,7 @@ class main_window : public QMainWindow {
 							(*it).ReleaseFilter()
 						));
 					l->t.push_back(p);
+					log_text_edit->append(QString("Loaded sample: %1").arg((*it).Sample().c_str()));
 				}
 				write_blocking_command(assign(engine_.gens, l));
 				setup_file_name = file_name;
@@ -578,7 +578,7 @@ class main_window : public QMainWindow {
 
 			write_command(assign((*i)->t.min_velocity, (((QSpinBox*)generator_table->cellWidget(row, 11))->value())));
 			write_command(assign((*i)->t.max_velocity, (((QSpinBox*)generator_table->cellWidget(row, 12))->value())));
-			write_command(assign((*i)->t.velocity_factor, (((QSlider*)generator_table->cellWidget(row, 13))->value())));
+			write_command(assign((*i)->t.velocity_factor, (((QDoubleSpinBox*)generator_table->cellWidget(row, 13))->value())));
 
 			write_command(assign((*i)->t.attack_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 14))->value())));
 			write_command(assign((*i)->t.decay_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 15))->value())));
