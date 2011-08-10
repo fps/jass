@@ -20,7 +20,7 @@ struct sample {
 
 	std::string file_name;
 
-	sample(const std::string &file_name) :
+	sample(const std::string &file_name, jack_nframes_t samplerate) :
 		file_name(file_name)
 	{
 		SF_INFO sf_info;

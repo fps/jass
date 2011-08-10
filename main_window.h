@@ -59,7 +59,7 @@ class main_window : public QMainWindow {
 					generator(
 						std::string(file_dialog->selectedFiles()[0].toLatin1()),
 						disposable_sample::create(
-							sample(std::string(file_dialog->selectedFiles()[0].toLatin1()))
+							sample(std::string(file_dialog->selectedFiles()[0].toLatin1()), jack_get_sample_rate(engine_.jack_client))
 						)
 					)
 				);
@@ -83,7 +83,7 @@ class main_window : public QMainWindow {
 					generator(
 						std::string(QFileInfo(file_dialog->selectedFiles()[0]).baseName().toLatin1()),
 						disposable_sample::create(
-							sample(std::string(file_dialog->selectedFiles()[0].toLatin1()))
+							sample(std::string(file_dialog->selectedFiles()[0].toLatin1()), jack_get_sample_rate(engine_.jack_client))
 						)
 					)
 				);
@@ -478,7 +478,7 @@ class main_window : public QMainWindow {
 					disposable_generator_ptr p = disposable_generator::create(
 						generator(
 							(*it).Name(),
-							disposable_sample::create((*it).Sample()),
+							disposable_sample::create(sample((*it).Sample(), jack_get_sample_rate(engine_.jack_client))),
 							(*it).SampleStart(),
 							(*it).SampleEnd(),
 							(*it).Looping(),
