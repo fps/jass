@@ -87,7 +87,7 @@ struct generator {
 		void *midi_in_buf, 
 		jack_nframes_t frame, 
 		jack_nframes_t last_frame_time,
-		unsigned int &midi_in_event_count, 
+		unsigned int midi_in_event_count, 
 		unsigned int &midi_in_event_index,
 		jack_midi_event_t &midi_event
 	) {
@@ -98,6 +98,7 @@ struct generator {
 				//! Note off
 				if((*(midi_event.buffer) & 0x0f) == channel)
 				{
+					std::cout << "note off" << std::endl;
 					for (unsigned int voice = 0; voice != voices->t.size(); ++voice) {
 						if (voices->t[voice].note == *(midi_event.buffer+1)) {
 							voices->t[voice].playing = false;
@@ -115,6 +116,7 @@ struct generator {
 					&& *(midi_event.buffer+2) >= min_velocity
 					&& *(midi_event.buffer+2) <= max_velocity
 				) {
+					std::cout << "note on" << std::endl;
 					//! We be responsible for this note command
 					voices->t[current_voice].note = *(midi_event.buffer+1);
 					voices->t[current_voice].note_on_velocity = *(midi_event.buffer+2);
@@ -217,7 +219,7 @@ struct generator {
 					int current_frame = floor(stretch * (last_frame_time + frame - voices->t[voice_index].note_on_frame));
 					if (current_frame >= 0 && current_frame < sample_->t.data_0.size())
 					{
-						double gain = ((double)voices->t[voice_index].note_on_velocity/128.0) * velocity_factor;
+						//double gain = ((double)voices->t[voice_index].note_on_velocity/128.0) * velocity_factor;
 
 						out_0[frame] += gain * sample_->t.data_0[current_frame];
 						out_1[frame] += gain * sample_->t.data_0[current_frame];
