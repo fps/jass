@@ -63,7 +63,6 @@ class main_window : public QMainWindow {
 						)
 					)
 				);
-				p->t.channel = 17;
 				write_blocking_command(assign(engine_.auditor_gen, p));
 				write_blocking_command(boost::bind(&engine::play_auditor, boost::ref(engine_)));
 				
@@ -147,7 +146,7 @@ class main_window : public QMainWindow {
 				for(generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) 
 					j.Generator().push_back(Jass::Generator(
 						(*it)->t.name,
-						(*it)->t.get_sample()->t.file_name,
+						(*it)->t.sample_->t.file_name,
 						(*it)->t.sample_start,
 						(*it)->t.sample_end,
 						(*it)->t.looping,
@@ -217,7 +216,7 @@ class main_window : public QMainWindow {
 				generator_table->setItem(row, col++, new QTableWidgetItem((*it)->t.name.c_str()));
 
 				//! Sample
-				generator_table->setItem(row, col++, new QTableWidgetItem((*it)->t.get_sample()->t.file_name.c_str()));
+				generator_table->setItem(row, col++, new QTableWidgetItem((*it)->t.sample_->t.file_name.c_str()));
 
 				//! Start
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
@@ -338,7 +337,7 @@ class main_window : public QMainWindow {
 
 				//! AttackG
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				double_spin_box->setEnabled(false);
+				//double_spin_box->setEnabled(false);
 				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.attack_g);
 				connect(
@@ -349,7 +348,7 @@ class main_window : public QMainWindow {
 
 				//! DecayG
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				double_spin_box->setEnabled(false);
+				//double_spin_box->setEnabled(false);
 				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.decay_g);
 				connect(
@@ -360,7 +359,7 @@ class main_window : public QMainWindow {
 
 				//! SustainG
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				double_spin_box->setEnabled(false);
+				//double_spin_box->setEnabled(false);
 				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.sustain_g);
 				connect(
@@ -371,7 +370,7 @@ class main_window : public QMainWindow {
 
 				//! ReleaseG
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				double_spin_box->setEnabled(false);
+				//double_spin_box->setEnabled(false);
 				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.release_g);
 				connect(
@@ -571,8 +570,6 @@ class main_window : public QMainWindow {
 			generator_list::iterator i = engine_.gens->t.begin();
 			std::advance(i, row);
 			
-			//std::cout << "current row " << row << std::endl;
-
 			write_command(assign((*i)->t.sample_start, (((QDoubleSpinBox*)generator_table->cellWidget(row, 2))->value())));
 			write_command(assign((*i)->t.sample_end, (((QDoubleSpinBox*)generator_table->cellWidget(row, 3))->value())));
 			write_command(assign((*i)->t.looping, (((QCheckBox*)generator_table->cellWidget(row, 4))->isChecked())));
@@ -598,7 +595,7 @@ class main_window : public QMainWindow {
 			write_command(assign((*i)->t.attack_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 14))->value())));
 			write_command(assign((*i)->t.decay_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 15))->value())));
 			write_command(assign((*i)->t.sustain_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 16))->value())));
-			write_command(assign((*i)->t.decay_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 17))->value())));
+			write_command(assign((*i)->t.release_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 17))->value())));
 
 			write_command(assign((*i)->t.filter, (((QComboBox*)generator_table->cellWidget(row, 18))->currentIndex())));
 
@@ -609,7 +606,7 @@ class main_window : public QMainWindow {
 			write_command(assign((*i)->t.attack_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 22))->value())));
 			write_command(assign((*i)->t.decay_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 23))->value())));
 			write_command(assign((*i)->t.sustain_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 24))->value())));
-			write_command(assign((*i)->t.decay_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 25))->value())));
+			write_command(assign((*i)->t.release_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 25))->value())));
 		}
 
 		void generator_item_changed(QTableWidgetItem *i) {

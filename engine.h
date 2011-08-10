@@ -105,9 +105,11 @@ class engine : public QObject {
 		}
 
 		void play_auditor() {
-			if(!auditor_gen.get()) return;
+			assert(auditor_gen.get());
 
-			auditor_gen->t.voices->t[0].playing = true;
+			auditor_gen->t.channel = 16;
+			auditor_gen->t.voices->t[0].gain_envelope_state = voice::ATTACK;
+			auditor_gen->t.voices->t[0].filter_envelope_state = voice::ATTACK;
 			auditor_gen->t.voices->t[0].note_on_frame = jack_last_frame_time(jack_client);
 			auditor_gen->t.voices->t[0].note_on_velocity = 64;
 			auditor_gen->t.voices->t[0].note = 64;
