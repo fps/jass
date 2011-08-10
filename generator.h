@@ -98,7 +98,7 @@ struct generator {
 				//! Note off
 				if((*(midi_event.buffer) & 0x0f) == channel)
 				{
-					std::cout << "note off" << std::endl;
+					//std::cout << "note off" << std::endl;
 					for (unsigned int voice = 0; voice != voices->t.size(); ++voice) {
 						if (voices->t[voice].note == *(midi_event.buffer+1)) {
 							voices->t[voice].playing = false;
@@ -116,7 +116,7 @@ struct generator {
 					&& *(midi_event.buffer+2) >= min_velocity
 					&& *(midi_event.buffer+2) <= max_velocity
 				) {
-					std::cout << "note on" << std::endl;
+					//std::cout << "note on" << std::endl;
 					//! We be responsible for this note command
 					voices->t[current_voice].note = *(midi_event.buffer+1);
 					voices->t[current_voice].note_on_velocity = *(midi_event.buffer+2);
