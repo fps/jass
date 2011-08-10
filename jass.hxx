@@ -574,19 +574,19 @@ namespace Jass
     void
     QFilter (const QFilter_type& x);
 
-    // KeyFollowF
+    // KeyFollowFilter
     // 
-    typedef ::xml_schema::float_ KeyFollowF_type;
-    typedef ::xsd::cxx::tree::traits< KeyFollowF_type, char > KeyFollowF_traits;
+    typedef ::xml_schema::float_ KeyFollowFilter_type;
+    typedef ::xsd::cxx::tree::traits< KeyFollowFilter_type, char > KeyFollowFilter_traits;
 
-    const KeyFollowF_type&
-    KeyFollowF () const;
+    const KeyFollowFilter_type&
+    KeyFollowFilter () const;
 
-    KeyFollowF_type&
-    KeyFollowF ();
+    KeyFollowFilter_type&
+    KeyFollowFilter ();
 
     void
-    KeyFollowF (const KeyFollowF_type& x);
+    KeyFollowFilter (const KeyFollowFilter_type& x);
 
     // AttackFilter
     // 
@@ -667,7 +667,7 @@ namespace Jass
                const Filter_type&,
                const FreqFilter_type&,
                const QFilter_type&,
-               const KeyFollowF_type&,
+               const KeyFollowFilter_type&,
                const AttackFilter_type&,
                const DecayFilter_type&,
                const SustainFilter_type&,
@@ -717,7 +717,7 @@ namespace Jass
     ::xsd::cxx::tree::one< Filter_type > Filter_;
     ::xsd::cxx::tree::one< FreqFilter_type > FreqFilter_;
     ::xsd::cxx::tree::one< QFilter_type > QFilter_;
-    ::xsd::cxx::tree::one< KeyFollowF_type > KeyFollowF_;
+    ::xsd::cxx::tree::one< KeyFollowFilter_type > KeyFollowFilter_;
     ::xsd::cxx::tree::one< AttackFilter_type > AttackFilter_;
     ::xsd::cxx::tree::one< DecayFilter_type > DecayFilter_;
     ::xsd::cxx::tree::one< SustainFilter_type > SustainFilter_;

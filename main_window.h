@@ -63,6 +63,7 @@ class main_window : public QMainWindow {
 						)
 					)
 				);
+				p->t.channel = 17;
 				write_blocking_command(assign(engine_.auditor_gen, p));
 				write_blocking_command(boost::bind(&engine::play_auditor, boost::ref(engine_)));
 				
@@ -220,6 +221,7 @@ class main_window : public QMainWindow {
 
 				//! Start
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setRange(0.0, 100000.0); double_spin_box->setValue((*it)->t.sample_start);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -229,6 +231,7 @@ class main_window : public QMainWindow {
 
 				//! End
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setRange(0.0,100000.0); double_spin_box->setValue((*it)->t.sample_end);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -248,6 +251,7 @@ class main_window : public QMainWindow {
 
 				//! Gain
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.gain);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -321,6 +325,7 @@ class main_window : public QMainWindow {
 				
 				//! VelocityFactor
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(-100000.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.velocity_factor);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -330,6 +335,7 @@ class main_window : public QMainWindow {
 
 				//! AttackG
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.attack_g);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -339,6 +345,7 @@ class main_window : public QMainWindow {
 
 				//! DecayG
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.decay_g);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -348,6 +355,7 @@ class main_window : public QMainWindow {
 
 				//! SustainG
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.sustain_g);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -357,6 +365,7 @@ class main_window : public QMainWindow {
 
 				//! ReleaseG
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.release_g);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -376,6 +385,7 @@ class main_window : public QMainWindow {
 
 				//! FreqF
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(1.0); double_spin_box->setValue((*it)->t.freq_f);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -385,6 +395,7 @@ class main_window : public QMainWindow {
 
 				//! QF
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(1.0); double_spin_box->setValue((*it)->t.q_f);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -394,6 +405,7 @@ class main_window : public QMainWindow {
 
 				//! KeyFollowF
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(-100.0); double_spin_box->setMaximum(100.0); double_spin_box->setValue((*it)->t.key_follow_f);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -403,6 +415,7 @@ class main_window : public QMainWindow {
 
 				//! AttackF
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.attack_g);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -412,6 +425,7 @@ class main_window : public QMainWindow {
 
 				//! DecayF
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.decay_g);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -421,6 +435,7 @@ class main_window : public QMainWindow {
 
 				//! SustainF
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.sustain_g);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -430,6 +445,7 @@ class main_window : public QMainWindow {
 
 				//! ReleaseF
 				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
+				double_spin_box->setDecimals(6);
 				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.release_g);
 				connect(
 					double_spin_box, SIGNAL(valueChanged(double)), this,
@@ -437,6 +453,7 @@ class main_window : public QMainWindow {
 				);
 				generator_table->setCellWidget(row, col++, double_spin_box);
 
+				++row;
 			}
 		}
 	
@@ -463,6 +480,10 @@ class main_window : public QMainWindow {
 						generator(
 							(*it).Name(),
 							disposable_sample::create((*it).Sample()),
+							(*it).SampleStart(),
+							(*it).SampleEnd(),
+							(*it).Looping(),
+							(*it).Gain(),
 							(*it).Polyphony(),
 							(*it).Channel(),
 							(*it).Note(),
@@ -470,34 +491,21 @@ class main_window : public QMainWindow {
 							(*it).MaxNote(),
 							(*it).MinVelocity(),
 							(*it).MaxVelocity(),
-							(*it).VelocityFactor()
+							(*it).VelocityFactor(),
+							(*it).AttackGain(),
+							(*it).DecayGain(),
+							(*it).SustainGain(),
+							(*it).ReleaseGain(),
+							(*it).Filter(),
+							(*it).FreqFilter(),
+							(*it).QFilter(),
+							(*it).KeyFollowFilter(),
+							(*it).AttackFilter(),
+							(*it).DecayFilter(),
+							(*it).SustainFilter(),
+							(*it).ReleaseFilter()
 						));
-					std::cout
-						<< "gen args: "
-						<< " " << p->t.name
-						<< " " << p->t.voices->t.size()
-						<< " " << p->t.channel
-						<< " " << p->t.note
-						<< " " << p->t.min_note
-						<< " " << p->t.max_note
-						<< " " << p->t.min_velocity
-						<< " " << p->t.max_velocity
-						<< " " << p->t.velocity_factor
-						<< std::endl;
-
 					l->t.push_back(p);
-					std::cout 
-						<< "gen args: " 
-						<< " " << (*it).Name()
-						<< " " << (*it).Polyphony()
-						<< " " << (*it).Channel()
-						<< " " << (*it).Note()
-						<< " " << (*it).MinNote()
-						<< " " << (*it).MaxNote()
-						<< " " << (*it).MinVelocity()
-						<< " " << (*it).MaxVelocity()
-						<< " " << (*it).VelocityFactor()
-						<< std::endl;
 				}
 				write_blocking_command(assign(engine_.gens, l));
 				setup_file_name = file_name;
@@ -547,7 +555,8 @@ class main_window : public QMainWindow {
 
 			generator_list::iterator i = engine_.gens->t.begin();
 			std::advance(i, row);
-			std::cout << "current row " << row << std::endl;
+			
+			//std::cout << "current row " << row << std::endl;
 
 			write_command(assign((*i)->t.sample_start, (((QDoubleSpinBox*)generator_table->cellWidget(row, 2))->value())));
 			write_command(assign((*i)->t.sample_end, (((QDoubleSpinBox*)generator_table->cellWidget(row, 3))->value())));
@@ -696,7 +705,7 @@ class main_window : public QMainWindow {
 
 			log_text_edit = new QTextEdit();
 			log_text_edit->setReadOnly(true);
-			log_text_edit->setText("Everything will be allright... Now get to making music, you sucker!!!");
+			log_text_edit->setText("Motivational Message: Everything will be allright... Now get to making music, you sucker!!!\n");
 			log_text_edit_dock_widget = new QDockWidget();
 			log_text_edit_dock_widget->setWidget(log_text_edit);
 			log_text_edit_dock_widget->setObjectName("LogDockWidget");

@@ -1,5 +1,6 @@
 Requirements:
 
+libjack
 libxerces-c
 libsamplerate
 libsndfile

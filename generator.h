@@ -83,6 +83,51 @@ struct generator {
 		//std::cout << "~generator()" << std::endl; 
 	}
 
+	void handle_midi_events(
+		void *midi_in_buf, 
+		jack_nframes_t frame, 
+		jack_nframes_t last_frame_time,
+		unsigned int &midi_in_event_count, 
+		unsigned int &midi_in_event_index,
+		jack_midi_event_t &midi_event
+	) {
+		if (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
+			if (((*(midi_event.buffer) & 0xf0)) == 0x80
+				|| (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) == 0)
+			) {
+				//! Note off
+				if((*(midi_event.buffer) & 0x0f) == channel)
+				{
+					for (unsigned int voice = 0; voice != voices->t.size(); ++voice) {
+						if (voices->t[voice].note == *(midi_event.buffer+1)) {
+							voices->t[voice].playing = false;
+						}
+					}	
+				}
+			}
+
+			if (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) != 0) {
+				//! Note on
+				if(
+					(*(midi_event.buffer) & 0x0f) == channel 
+					&& *(midi_event.buffer+1) >= min_note
+					&& *(midi_event.buffer+1) <= max_note
+					&& *(midi_event.buffer+2) >= min_velocity
+					&& *(midi_event.buffer+2) <= max_velocity
+				) {
+					//! We be responsible for this note command
+					voices->t[current_voice].note = *(midi_event.buffer+1);
+					voices->t[current_voice].note_on_velocity = *(midi_event.buffer+2);
+					voices->t[current_voice].note_on_frame = last_frame_time + frame;
+					voices->t[current_voice].playing = true;
+					current_voice = (++current_voice) % voices->t.size();
+				}
+			}
+			jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
+			++midi_in_event_index;
+		}
+	}
+
 	generator(
 		const std::string &name,
 		disposable_sample_ptr s,
@@ -152,43 +197,16 @@ struct generator {
 
 		jack_nframes_t last_frame_time = jack_last_frame_time(jack_client);
 		for (unsigned int frame = 0; frame < nframes; ++frame) {
-			if (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
-				if (((*(midi_event.buffer) & 0xf0)) == 0x80
-					|| (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) == 0)
-				) {
-					//! Note off
-					if((*(midi_event.buffer) & 0x0f) == channel)
-					{
-						for (unsigned int voice = 0; voice != voices->t.size(); ++voice) {
-							if (voices->t[voice].note == *(midi_event.buffer+1)) {
-								voices->t[voice].playing = false;
-							}
-						}	
-					}
-				}
+			handle_midi_events(
+				midi_in_buf, 
+				frame, 
+				last_frame_time, 
+				midi_in_event_count, 
+				midi_in_event_index, 
+				midi_event
+			);
 
-				if (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) != 0) {
-					//! Note on
-					if(
-						(*(midi_event.buffer) & 0x0f) == channel 
-						&& *(midi_event.buffer+1) >= min_note
-						&& *(midi_event.buffer+1) <= max_note
-						&& *(midi_event.buffer+2) >= min_velocity
-						&& *(midi_event.buffer+2) <= max_velocity
-					) {
-						//! We be responsible for this note command
-						voices->t[current_voice].note = *(midi_event.buffer+1);
-						voices->t[current_voice].note_on_velocity = *(midi_event.buffer+2);
-						voices->t[current_voice].note_on_frame = last_frame_time + frame;
-						voices->t[current_voice].playing = true;
-						current_voice = (++current_voice) % voices->t.size();
-					}
-				}
-
-				jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
-				++midi_in_event_index;
-			}
-
+			//! Actually generate output
 			for (unsigned int voice_index = 0; voice_index < voices->t.size(); ++voice_index) {
 				if (voices->t[voice_index].playing) 
 				{

@@ -435,22 +435,22 @@ namespace Jass
     this->QFilter_.set (x);
   }
 
-  const Generator::KeyFollowF_type& Generator::
-  KeyFollowF () const
+  const Generator::KeyFollowFilter_type& Generator::
+  KeyFollowFilter () const
   {
-    return this->KeyFollowF_.get ();
+    return this->KeyFollowFilter_.get ();
   }
 
-  Generator::KeyFollowF_type& Generator::
-  KeyFollowF ()
+  Generator::KeyFollowFilter_type& Generator::
+  KeyFollowFilter ()
   {
-    return this->KeyFollowF_.get ();
+    return this->KeyFollowFilter_.get ();
   }
 
   void Generator::
-  KeyFollowF (const KeyFollowF_type& x)
+  KeyFollowFilter (const KeyFollowFilter_type& x)
   {
-    this->KeyFollowF_.set (x);
+    this->KeyFollowFilter_.set (x);
   }
 
   const Generator::AttackFilter_type& Generator::
@@ -577,7 +577,7 @@ namespace Jass
              const Filter_type& Filter,
              const FreqFilter_type& FreqFilter,
              const QFilter_type& QFilter,
-             const KeyFollowF_type& KeyFollowF,
+             const KeyFollowFilter_type& KeyFollowFilter,
              const AttackFilter_type& AttackFilter,
              const DecayFilter_type& DecayFilter,
              const SustainFilter_type& SustainFilter,
@@ -604,7 +604,7 @@ namespace Jass
     Filter_ (Filter, ::xml_schema::flags (), this),
     FreqFilter_ (FreqFilter, ::xml_schema::flags (), this),
     QFilter_ (QFilter, ::xml_schema::flags (), this),
-    KeyFollowF_ (KeyFollowF, ::xml_schema::flags (), this),
+    KeyFollowFilter_ (KeyFollowFilter, ::xml_schema::flags (), this),
     AttackFilter_ (AttackFilter, ::xml_schema::flags (), this),
     DecayFilter_ (DecayFilter, ::xml_schema::flags (), this),
     SustainFilter_ (SustainFilter, ::xml_schema::flags (), this),
@@ -638,7 +638,7 @@ namespace Jass
     Filter_ (x.Filter_, f, this),
     FreqFilter_ (x.FreqFilter_, f, this),
     QFilter_ (x.QFilter_, f, this),
-    KeyFollowF_ (x.KeyFollowF_, f, this),
+    KeyFollowFilter_ (x.KeyFollowFilter_, f, this),
     AttackFilter_ (x.AttackFilter_, f, this),
     DecayFilter_ (x.DecayFilter_, f, this),
     SustainFilter_ (x.SustainFilter_, f, this),
@@ -672,7 +672,7 @@ namespace Jass
     Filter_ (f, this),
     FreqFilter_ (f, this),
     QFilter_ (f, this),
-    KeyFollowF_ (f, this),
+    KeyFollowFilter_ (f, this),
     AttackFilter_ (f, this),
     DecayFilter_ (f, this),
     SustainFilter_ (f, this),
@@ -932,13 +932,13 @@ namespace Jass
         }
       }
 
-      // KeyFollowF
+      // KeyFollowFilter
       //
-      if (n.name () == "KeyFollowF" && n.namespace_ ().empty ())
+      if (n.name () == "KeyFollowFilter" && n.namespace_ ().empty ())
       {
-        if (!KeyFollowF_.present ())
+        if (!KeyFollowFilter_.present ())
         {
-          this->KeyFollowF_.set (KeyFollowF_traits::create (i, f, this));
+          this->KeyFollowFilter_.set (KeyFollowFilter_traits::create (i, f, this));
           continue;
         }
       }
@@ -1137,10 +1137,10 @@ namespace Jass
         "");
     }
 
-    if (!KeyFollowF_.present ())
+    if (!KeyFollowFilter_.present ())
     {
       throw ::xsd::cxx::tree::expected_element< char > (
-        "KeyFollowF",
+        "KeyFollowFilter",
         "");
     }
 
@@ -1284,7 +1284,7 @@ namespace Jass
     o << ::std::endl << "Filter: " << i.Filter ();
     o << ::std::endl << "FreqFilter: " << i.FreqFilter ();
     o << ::std::endl << "QFilter: " << i.QFilter ();
-    o << ::std::endl << "KeyFollowF: " << i.KeyFollowF ();
+    o << ::std::endl << "KeyFollowFilter: " << i.KeyFollowFilter ();
     o << ::std::endl << "AttackFilter: " << i.AttackFilter ();
     o << ::std::endl << "DecayFilter: " << i.DecayFilter ();
     o << ::std::endl << "SustainFilter: " << i.SustainFilter ();
@@ -1983,15 +1983,15 @@ namespace Jass
       s << i.QFilter ();
     }
 
-    // KeyFollowF
+    // KeyFollowFilter
     //
     {
       ::xercesc::DOMElement& s (
         ::xsd::cxx::xml::dom::create_element (
-          "KeyFollowF",
+          "KeyFollowFilter",
           e));
 
-      s << i.KeyFollowF ();
+      s << i.KeyFollowFilter ();
     }
 
     // AttackFilter

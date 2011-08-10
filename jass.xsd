@@ -30,7 +30,7 @@
 		<xsd:element name="Filter" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="FreqFilter" type="xsd:float"/>
 		<xsd:element name="QFilter" type="xsd:float"/>
-		<xsd:element name="KeyFollowF" type="xsd:float"/>
+		<xsd:element name="KeyFollowFilter" type="xsd:float"/>
 		<xsd:element name="AttackFilter" type="xsd:float"/>
 		<xsd:element name="DecayFilter" type="xsd:float"/>
 		<xsd:element name="SustainFilter" type="xsd:float"/>
