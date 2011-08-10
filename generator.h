@@ -64,7 +64,9 @@ struct generator {
 	double sustain_g;
 	double release_g;
 	
-	enum filter_type { NONE, LOW_PASS, HIGH_PASS, BAND_PASS } filter;
+	enum filter_type { NONE, LOW_PASS, HIGH_PASS, BAND_PASS };
+	int filter;
+	
 	double freq_f;
 	double q_f;
 	double key_follow_f;
@@ -100,7 +102,7 @@ struct generator {
 		double decay_g = 0.0,
 		double sustain_g = 1.0,
 		double release_g = 0.001,
-		filter_type filter = NONE,
+		int filter = NONE,
 		double freq_f = 1.0,
 		double q_f = 0.5,
 		double key_follow_f = 0.0,

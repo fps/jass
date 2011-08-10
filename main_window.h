@@ -557,11 +557,29 @@ class main_window : public QMainWindow {
 
 			write_command(assign((*i)->t.channel, (((QSpinBox*)generator_table->cellWidget(row, 7))->value())));
 			write_command(assign((*i)->t.note, (((QSpinBox*)generator_table->cellWidget(row, 8))->value())));
+
 			write_command(assign((*i)->t.min_note, (((QSpinBox*)generator_table->cellWidget(row, 9))->value())));
 			write_command(assign((*i)->t.max_note, (((QSpinBox*)generator_table->cellWidget(row, 10))->value())));
+
 			write_command(assign((*i)->t.min_velocity, (((QSpinBox*)generator_table->cellWidget(row, 11))->value())));
 			write_command(assign((*i)->t.max_velocity, (((QSpinBox*)generator_table->cellWidget(row, 12))->value())));
 			write_command(assign((*i)->t.velocity_factor, (((QSlider*)generator_table->cellWidget(row, 13))->value())));
+
+			write_command(assign((*i)->t.attack_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 14))->value())));
+			write_command(assign((*i)->t.decay_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 15))->value())));
+			write_command(assign((*i)->t.sustain_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 16))->value())));
+			write_command(assign((*i)->t.decay_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, 17))->value())));
+
+			write_command(assign((*i)->t.filter, (((QComboBox*)generator_table->cellWidget(row, 18))->currentIndex())));
+
+			write_command(assign((*i)->t.freq_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 19))->value())));
+			write_command(assign((*i)->t.q_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 20))->value())));
+			write_command(assign((*i)->t.key_follow_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 21))->value())));
+
+			write_command(assign((*i)->t.attack_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 22))->value())));
+			write_command(assign((*i)->t.decay_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 23))->value())));
+			write_command(assign((*i)->t.sustain_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 24))->value())));
+			write_command(assign((*i)->t.decay_f, (((QDoubleSpinBox*)generator_table->cellWidget(row, 25))->value())));
 		}
 
 		void generator_item_changed(QTableWidgetItem *i) {
