@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include <sndfile.h>
+#include <samplerate.h>
 
 #include "disposable.h"
 
@@ -30,18 +31,28 @@ struct sample {
 			throw std::runtime_error("Couldn't read sound file: " + file_name);
 		}
 
-		data_0.resize(sf_info.frames);
-		data_1.resize(sf_info.frames);
-
 		if (sf_info.channels != 1 && sf_info.channels != 2) throw std::runtime_error("wrong channel count");
 
 		std::vector<float> frames(sf_info.channels * sf_info.frames);
 
 		std::cout << "read: " << sf_readf_float(snd_file, &frames[0], sf_info.frames) << " samples from " << file_name << std::endl;
+		
+		std::vector<float> out_frames(sf_info.channels * sf_info.frames * (samplerate/sf_info.samplerate));
+
+		SRC_DATA data;
+		data.data_in = &frames[0];
+		data.data_out = &out_frames[0];
+		data.input_frames = sf_info.frames;
+		data.output_frames = out_frames.size();
+		data.src_ratio = samplerate/sf_info.samplerate;
+		src_simple(&data, SRC_SINC_BEST_QUALITY, sf_info.channels);
+
+		data_0.resize(sf_info.frames * (samplerate/sf_info.samplerate));
+		data_1.resize(sf_info.frames * (samplerate/sf_info.samplerate));
 
 		if (sf_info.channels == 1) {
-			std::copy(frames.begin(), frames.end(), data_0.begin());
-			std::copy(frames.begin(), frames.end(), data_0.begin());
+			std::copy(out_frames.begin(), out_frames.end(), data_0.begin());
+			std::copy(out_frames.begin(), out_frames.end(), data_0.begin());
 		}
 
 		if (sf_info.channels == 2) {

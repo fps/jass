@@ -136,7 +136,6 @@ class main_window : public QMainWindow {
 			//! Will be reenabled by acknowledgement 
 			if (engine_.commands.can_write()) {
 				++outstanding_acks;
-				//log_text_edit->append(QString("outstanding acks: %1").arg(outstanding_acks));
 				setEnabled(false);
 				engine_.commands.write(f);
 			}
@@ -560,7 +559,6 @@ class main_window : public QMainWindow {
 			while(engine_.acknowledgements.can_read()) { 
 				engine_.acknowledgements.read(); 
 				--outstanding_acks; 
-				//std::cout << outstanding_acks << std::endl; 
 			}
 
 			assert(outstanding_acks >= 0);
@@ -656,7 +654,7 @@ class main_window : public QMainWindow {
 		void show_help_text() {
 			log_text_edit->append("-------------------");
 			log_text_edit->append("Quick Tutorial:");
-			log_text_edit->append("In the file browser: Shift-DoubleClick to audit a sample. DoubleClick to load it");
+			log_text_edit->append("In the file browser: Shift-DoubleClick to audit a sample. DoubleClick to load it. Note that you can also select multiple files and then press the Open button to load several samples at once.");
 			log_text_edit->append("Use the Parameter menu to quickly-mass assign parameters to selected ranges of generators.");
 			log_text_edit->append("Set Continous notes: Set the note of a generator. Select a range of generators by clicking on their names or dragging across their names. Then use the function from the menu. Continous notes will be assigned to all generators, starting with the note of the first in the selection. Also their min and max notes will be set to that same note.");
 			log_text_edit->append("-------------------");
@@ -739,7 +737,6 @@ class main_window : public QMainWindow {
 
 			generator_table->setHorizontalHeaderLabels(headers);
 			generator_table->setMouseTracking(true);
-			//connect(generator_table, SIGNAL(cellEntered(int, int)), this, SLOT(generator_cell_entered(int, int)));
 			connect(generator_table, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(generator_item_changed(QTableWidgetItem*)));
 
 			setCentralWidget(generator_table);
@@ -752,14 +749,14 @@ class main_window : public QMainWindow {
 			
 			connect(file_dialog, SIGNAL(finished(int)), file_dialog, SLOT(open()));
 			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(load_sample_file()));
-			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(audit_sample_file()));			
+			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(audit_sample_file()));
 
 			file_dialog_dock_widget->setWidget(file_dialog);
 			addDockWidget(Qt::LeftDockWidgetArea, file_dialog_dock_widget);
 
 			log_text_edit = new QTextEdit();
 			log_text_edit->setReadOnly(true);
-			log_text_edit->setText("Motivational Message: Everything will be allright... Now get to making music, you sucker!!!\n");
+			log_text_edit->append("Motivational Message: Everything will be allright... Now get to making music, you sucker!!!\n");
 			log_text_edit->document()->setMaximumBlockCount(1000);
 			log_text_edit_dock_widget = new QDockWidget();
 			log_text_edit_dock_widget->setWidget(log_text_edit);
