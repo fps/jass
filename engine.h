@@ -43,6 +43,15 @@ extern "C" {
 	void session_callback(jack_session_event_t *event, void *arg);
 }
 
+
+struct gvoice {
+	disposable_generator_ptr g;
+	voice v;
+};
+typedef disposable<std::vector<gvoice> > disposable_gvoice_vector;
+typedef boost::shared_ptr<disposable_gvoice_vector> disposable_gvoice_vector_ptr;
+
+
 class engine : public QObject {
 	Q_OBJECT
 
@@ -66,14 +75,17 @@ class engine : public QObject {
 		//! Set this member only using the set_samplerate method..
 		double sample_rate;
 
-		disposable_voice_vector_ptr voices;
+		disposable_gvoice_vector_ptr voices;
+		unsigned int current_voice;
 
 	public:
 		engine(const char *uuid = 0) 
 		: 
 			commands(1024),
 			acknowledgements(1024),
-			gens(disposable_generator_list::create(generator_list()))
+			gens(disposable_generator_list::create(generator_list())),
+			voices(disposable_gvoice_vector::create(std::vector<gvoice>(128))),
+			current_voice(0)
 		{
 			heap *h = heap::get();	
 
@@ -121,30 +133,107 @@ class engine : public QObject {
 			auditor_gen->t.voices->t[0].note = 64;
 #endif
 		}
-	
-		void process(jack_nframes_t nframes) {
-			float *out_0_buf = (float*)jack_port_get_buffer(out_0, nframes);
-			float *out_1_buf = (float*)jack_port_get_buffer(out_1, nframes);
-			void *midi_in_buf = jack_port_get_buffer(midi_in, nframes);	
 
-			//! zero the buffers first
-			std::fill(out_0_buf, out_0_buf + nframes, 0);
-			std::fill(out_1_buf, out_1_buf + nframes, 0);
-	
+		void process_note_on(jack_nframes_t nframes, unsigned int note, unsigned int velocity, unsigned int channel) {
+			// find responsible generator
+			for (generator_list::iterator it = gens->t.begin(); it != gens->t.end(); ++it) {
+				if (
+					(*it)->t.channel == channel &&
+					(*it)->t.min_note < note &&
+					(*it)->t.max_note > note &&
+					(*it)->t.min_velocity < velocity &&
+					(*it)->t.max_velocity > velocity
+				) {
+					//! setup voice with parameters
+					voices->t[current_voice].g = (*it);
+					voices->t[current_voice].v.channel = channel;
+					voices->t[current_voice].v.note = note;
+					voices->t[current_voice].v.note_on_velocity = velocity;
+					voices->t[current_voice].v.note_on_frame = nframes;
+					voices->t[current_voice].v.state = voice::ATTACK;
+
+					//! TODO: decide on better voice allocation algo
+					current_voice = (++current_voice) % voices->t.size();
+					//std::cout << "current_voice" << current_voice << std::endl;
+				}
+			}
+		}
+
+		//! switch envelope states off voices responsible for this note to RELEASE
+		void process_note_off(jack_nframes_t nframes, unsigned int note, unsigned int channel) {
+			for (unsigned int voice = 0; voice != voices->t.size(); ++voice) {
+				if (
+					voices->t[voice].v.state == voice::ATTACK && 
+					voices->t[voice].v.channel == channel && 
+					voices->t[voice].v.note == note
+				) {
+					voices->t[voice].v.state = voice::RELEASE;
+					//voices->t[voice].v.gain_envelope_on_note_off = voices->t[voice].v.gain_envelope;
+					voices->t[voice].v.note_off_frame = nframes;
+				}
+			}	
+		}
+
+		void process(jack_nframes_t nframes) {
 			//! Execute commands passed in through ringbuffer
 			while(commands.can_read()) { /* std::cout << "read()()" << std::endl; */ 
 				commands.read()(); 
 				if (!acknowledgements.can_write()) std::cout << "ack buffer full" << std::endl;
 				else acknowledgements.write(0);
 			}
-	
+
+			float *out_0_buf = (float*)jack_port_get_buffer(out_0, nframes);
+			float *out_1_buf = (float*)jack_port_get_buffer(out_1, nframes);
+			void *midi_in_buf = jack_port_get_buffer(midi_in, nframes);	
+
+			//process_midi(midi_in_buf, nframes, jack_client);
+
+			//! zero the buffers first
+			std::fill(out_0_buf, out_0_buf + nframes, 0);
+			std::fill(out_1_buf, out_1_buf + nframes, 0);
+
 			//! Synthesize
 			if (auditor_gen.get()) {
-				auditor_gen->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes, jack_client);
+				//auditor_gen->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes, jack_client);
 			}
+
+			jack_nframes_t last_frame_time = jack_last_frame_time(jack_client);
+
+			jack_nframes_t midi_in_event_index = 0;
+			jack_nframes_t midi_in_event_count = jack_midi_get_event_count(midi_in_buf);
 	
-			for (generator_list::iterator it = gens->t.begin(); it != gens->t.end(); ++it) {
-				(*it)->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes, jack_client);
+			jack_midi_event_t midi_event;
+			if (midi_in_event_count > 0)
+				jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
+
+			for (unsigned int frame = 0; frame < nframes; ++frame) {
+				while (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
+					if (((*(midi_event.buffer) & 0xf0)) == 0x80
+						|| (((*(midi_event.buffer) & 0xf0) == 0x90 && *(midi_event.buffer+2) == 0))
+					) {
+						process_note_off(
+							last_frame_time+frame, 
+							*(midi_event.buffer+1), 
+							(*(midi_event.buffer) & 0x0f)
+						);
+					}
+		
+					if (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) != 0) {
+						process_note_on(
+							last_frame_time + frame, 
+							*(midi_event.buffer+1), 
+							*(midi_event.buffer+2),
+							(*(midi_event.buffer) & 0x0f)
+						);
+					}
+					++midi_in_event_index;
+					jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
+				}
+				for (unsigned int index = 0; index < voices->t.size(); ++index) {
+					if (voices->t[index].v.state != voice::OFF) {
+						voices->t[index].g->t.process(out_0_buf, out_1_buf, last_frame_time, frame, jack_get_sample_rate(jack_client), voices->t[index].v);
+					}
+				}
 			}
 		}
 	

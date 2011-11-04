@@ -13,7 +13,8 @@
 
 #include "disposable.h"
 #include "sample.h"
-
+#include "voice.h"
+#include "adsr.h"
 
 struct generator {
 	std::string name;
@@ -59,56 +60,6 @@ struct generator {
 	virtual ~generator()
 	{ 
 		//std::cout << "~generator()" << std::endl; 
-	}
-
-	void handle_midi_events(
-		void *midi_in_buf, 
-		jack_nframes_t frame, 
-		jack_nframes_t last_frame_time,
-		unsigned int midi_in_event_count, 
-		unsigned int &midi_in_event_index,
-		jack_midi_event_t &midi_event
-	) {
-#if 0
-		while (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
-			if (((*(midi_event.buffer) & 0xf0)) == 0x80
-				|| (((*(midi_event.buffer) & 0xf0) == 0x90 && *(midi_event.buffer+2) == 0))
-			) {
-				//! Note off
-				if((*(midi_event.buffer) & 0x0f) == channel)
-				{
-					//std::cout << "note off" << std::endl;
-					for (unsigned int voice = 0; voice != voices->t.size(); ++voice) {
-						if (voices->t[voice].note == *(midi_event.buffer+1) && voices->t[voice].gain_envelope_state == voice::ATTACK) {
-							voices->t[voice].gain_envelope_state = voice::RELEASE;
-							voices->t[voice].gain_envelope_on_note_off = voices->t[voice].gain_envelope;
-							voices->t[voice].note_off_frame = last_frame_time + frame;
-						}
-					}	
-				}
-			}
-
-			if (((*(midi_event.buffer) & 0xf0)) == 0x90 && *(midi_event.buffer+2) != 0) {
-				//! Note on
-				if(
-					(*(midi_event.buffer) & 0x0f) == channel 
-					&& *(midi_event.buffer+1) >= min_note
-					&& *(midi_event.buffer+1) <= max_note
-					&& *(midi_event.buffer+2) >= min_velocity
-					&& *(midi_event.buffer+2) <= max_velocity
-				) {
-					//! We be responsible for this note command
-					voices->t[current_voice].note = *(midi_event.buffer+1);
-					voices->t[current_voice].note_on_velocity = *(midi_event.buffer+2);
-					voices->t[current_voice].note_on_frame = last_frame_time + frame;
-					voices->t[current_voice].gain_envelope_state = voice::ATTACK;
-					current_voice = (++current_voice) % voices->t.size();
-				}
-			}
-			++midi_in_event_index;
-			jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
-		}
-#endif
 	}
 
 	generator(
@@ -168,73 +119,40 @@ struct generator {
 		// std::cout << "generator()" << std::endl; 
 	}
 
-	void process(float *out_0, float *out_1, void * midi_in_buf, jack_nframes_t nframes, jack_client_t *jack_client) {
-#if 0
-		jack_nframes_t midi_in_event_index = 0;
-		jack_nframes_t midi_in_event_count = jack_midi_get_event_count(midi_in_buf);
+	//! Process a single frame
+	//! Updates voice info
+	inline void process(float *out_0, float *out_1, jack_nframes_t last_frame_time, jack_nframes_t frame, jack_nframes_t sample_rate, voice &v) {
+		//! Overall check if we play at all (short curcuit to save CPU time)
+		if (v.state != voice::OFF) 
+		{
+			double stretch = 1.0;
+			if (((int)v.note - (int)note) != 0) 
+				stretch = pow(pow(2.0, 1.0/12.0), (int)v.note - (int)note);
 
-		jack_midi_event_t midi_event;
-		if (midi_in_event_count > 0)
-			jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
-
-		jack_nframes_t sample_rate = jack_get_sample_rate(jack_client);
-		
-		jack_nframes_t last_frame_time = jack_last_frame_time(jack_client);
-		for (unsigned int frame = 0; frame < nframes; ++frame) {
-			
-			handle_midi_events(
-				midi_in_buf, 
-				frame, 
-				last_frame_time, 
-				midi_in_event_count, 
-				midi_in_event_index, 
-				midi_event
-			);
-
-			//! Actually generate output
-			for (unsigned int voice_index = 0; voice_index < voices->t.size(); ++voice_index) {
-				voice &v = voices->t[voice_index];
-				
-				//! Overall check if we play at all (short curcuit to save CPU time)
-				if (v.gain_envelope_state != voice::OFF) 
-				{
-					double stretch = 1.0;
-					if (((int)v.note - (int)note) != 0) 
-						stretch = pow(pow(2.0, 1.0/12.0), (int)v.note - (int)note);
-
-					int current_frame = floor(stretch * (last_frame_time + frame - v.note_on_frame));
-					double time_in_sample = (double)(last_frame_time + frame - v.note_on_frame)/(double)sample_rate;
+			int current_frame = floor(stretch * (last_frame_time + frame - v.note_on_frame));
+			double time_in_sample = (double)(last_frame_time + frame - v.note_on_frame)/(double)sample_rate;
 					
-					//! Check that we are currently in the sample bounds
-					if (current_frame >= 0 && current_frame < sample_->t.data_0.size())
-					{
-						if (v.gain_envelope_state == voice::ATTACK) {
-							if (time_in_sample <= attack_g) {
-								v.gain_envelope = time_in_sample/attack_g;
-							} else if (time_in_sample > attack_g && time_in_sample <= attack_g + decay_g) {
-								double time_in_decay = time_in_sample - attack_g;
-								v.gain_envelope = (1.0 - time_in_decay/decay_g) * (1.0 - sustain_g) + sustain_g;
-							} else if (time_in_sample > (attack_g + decay_g)) {
-								v.gain_envelope = sustain_g;
-							}
-						} else if (v.gain_envelope_state == voice::RELEASE) {
-							double time_in_release = (double)(last_frame_time + frame - v.note_off_frame)/(double)sample_rate;
-							v.gain_envelope = std::max(
-								v.gain_envelope_on_note_off * (1.0 - (time_in_release/release_g)), 
-								0.0
-							);
-						}
-						double vel_gain = 
-							velocity_factor * (((double)v.note_on_velocity-min_velocity)
-							/(double)(max_velocity-min_velocity));
+			//! Check that we are currently in the sample bounds
+			double gain_envelope = 0.0;
+			if (v.state == voice::ATTACK)
+				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_in_sample, time_in_sample + 1000000.0);
 
-						out_0[frame] += v.gain_envelope * vel_gain * gain * sample_->t.data_0[current_frame];
-						out_1[frame] += v.gain_envelope * vel_gain * gain * sample_->t.data_0[current_frame];
-					}
-				}
+			if (v.state == voice::RELEASE) {
+				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_in_sample, (double)(last_frame_time + frame - v.note_off_frame)/(double)sample_rate);
+				if (gain_envelope == 0.0 || time_in_sample > sample_->t.data_0.size()) 
+					v.state = voice::OFF;
+			}
+
+			if (current_frame >= 0 && current_frame < sample_->t.data_0.size())
+			{
+				double vel_gain = 
+					velocity_factor * (((double)v.note_on_velocity-min_velocity)
+						/(double)(max_velocity-min_velocity));
+
+				out_0[frame] += gain_envelope * vel_gain * gain * sample_->t.data_0[current_frame];
+				out_1[frame] += gain_envelope * vel_gain * gain * sample_->t.data_0[current_frame];
 			}
 		}
-#endif
 	}
 
 	protected:
