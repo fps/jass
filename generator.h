@@ -14,37 +14,6 @@
 #include "disposable.h"
 #include "sample.h"
 
-struct voice {
-	enum envelope_state {OFF, ATTACK, RELEASE };
-	int gain_envelope_state;
-	double gain_envelope;
-	double gain_envelope_on_note_off;
-	
-	int filter_envelope_state;
-	double filter_envelope;
-	
-	unsigned int note;
-
-	//! The frame the event to start this voice happened
-	jack_nframes_t note_on_frame;
-	jack_nframes_t note_off_frame;
-	
-	unsigned int note_on_velocity;
-
-	voice(unsigned int note_on_velocity = 0, jack_nframes_t note_on_frame = 0, bool playing = false) :
-		note_on_velocity(note_on_velocity),
-		note_on_frame(note_on_frame),
-		gain_envelope_state(OFF),
-		gain_envelope(0.0),
-		filter_envelope_state(OFF),
-		filter_envelope(0.0)
-	{
-
-	}
-};
-
-typedef disposable<std::vector<voice> > disposable_voice_vector;
-typedef boost::shared_ptr<disposable_voice_vector> disposable_voice_vector_ptr;
 
 struct generator {
 	std::string name;
@@ -54,8 +23,6 @@ struct generator {
 	double sample_end;
 	
 	bool looping;
-	
-	disposable_voice_vector_ptr voices;
 	
 	double gain;
 
@@ -102,6 +69,7 @@ struct generator {
 		unsigned int &midi_in_event_index,
 		jack_midi_event_t &midi_event
 	) {
+#if 0
 		while (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
 			if (((*(midi_event.buffer) & 0xf0)) == 0x80
 				|| (((*(midi_event.buffer) & 0xf0) == 0x90 && *(midi_event.buffer+2) == 0))
@@ -140,6 +108,7 @@ struct generator {
 			++midi_in_event_index;
 			jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
 		}
+#endif
 	}
 
 	generator(
@@ -149,7 +118,6 @@ struct generator {
 		double sample_end = 0,
 		bool looping = false,
 		double gain = 1.0,
-		unsigned int polyphony = 1, 
 		unsigned int channel = 0,
 		unsigned int note = 64,
 		unsigned int min_note = 0,
@@ -176,7 +144,6 @@ struct generator {
 		sample_end(sample_end),
 		looping(looping),
 		gain(gain),
-		voices(disposable_voice_vector::create(std::vector<voice>(polyphony))),
 		channel(channel),
 		note(note),
 		min_note(min_note),
@@ -202,6 +169,7 @@ struct generator {
 	}
 
 	void process(float *out_0, float *out_1, void * midi_in_buf, jack_nframes_t nframes, jack_client_t *jack_client) {
+#if 0
 		jack_nframes_t midi_in_event_index = 0;
 		jack_nframes_t midi_in_event_count = jack_midi_get_event_count(midi_in_buf);
 
@@ -266,6 +234,7 @@ struct generator {
 				}
 			}
 		}
+#endif
 	}
 
 	protected:

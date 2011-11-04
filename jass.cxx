@@ -165,24 +165,6 @@ namespace Jass
     this->Gain_.set (x);
   }
 
-  const Generator::Polyphony_type& Generator::
-  Polyphony () const
-  {
-    return this->Polyphony_.get ();
-  }
-
-  Generator::Polyphony_type& Generator::
-  Polyphony ()
-  {
-    return this->Polyphony_.get ();
-  }
-
-  void Generator::
-  Polyphony (const Polyphony_type& x)
-  {
-    this->Polyphony_.set (x);
-  }
-
   const Generator::Channel_type& Generator::
   Channel () const
   {
@@ -529,6 +511,24 @@ namespace Jass
   // Jass
   // 
 
+  const Jass::Polyphony_type& Jass::
+  Polyphony () const
+  {
+    return this->Polyphony_.get ();
+  }
+
+  Jass::Polyphony_type& Jass::
+  Polyphony ()
+  {
+    return this->Polyphony_.get ();
+  }
+
+  void Jass::
+  Polyphony (const Polyphony_type& x)
+  {
+    this->Polyphony_.set (x);
+  }
+
   const Jass::Generator_sequence& Jass::
   Generator () const
   {
@@ -562,7 +562,6 @@ namespace Jass
              const SampleEnd_type& SampleEnd,
              const Looping_type& Looping,
              const Gain_type& Gain,
-             const Polyphony_type& Polyphony,
              const Channel_type& Channel,
              const Note_type& Note,
              const MinNote_type& MinNote,
@@ -589,7 +588,6 @@ namespace Jass
     SampleEnd_ (SampleEnd, ::xml_schema::flags (), this),
     Looping_ (Looping, ::xml_schema::flags (), this),
     Gain_ (Gain, ::xml_schema::flags (), this),
-    Polyphony_ (Polyphony, ::xml_schema::flags (), this),
     Channel_ (Channel, ::xml_schema::flags (), this),
     Note_ (Note, ::xml_schema::flags (), this),
     MinNote_ (MinNote, ::xml_schema::flags (), this),
@@ -623,7 +621,6 @@ namespace Jass
     SampleEnd_ (x.SampleEnd_, f, this),
     Looping_ (x.Looping_, f, this),
     Gain_ (x.Gain_, f, this),
-    Polyphony_ (x.Polyphony_, f, this),
     Channel_ (x.Channel_, f, this),
     Note_ (x.Note_, f, this),
     MinNote_ (x.MinNote_, f, this),
@@ -657,7 +654,6 @@ namespace Jass
     SampleEnd_ (f, this),
     Looping_ (f, this),
     Gain_ (f, this),
-    Polyphony_ (f, this),
     Channel_ (f, this),
     Note_ (f, this),
     MinNote_ (f, this),
@@ -763,17 +759,6 @@ namespace Jass
         if (!Gain_.present ())
         {
           this->Gain_.set (Gain_traits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // Polyphony
-      //
-      if (n.name () == "Polyphony" && n.namespace_ ().empty ())
-      {
-        if (!Polyphony_.present ())
-        {
-          this->Polyphony_.set (Polyphony_traits::create (i, f, this));
           continue;
         }
       }
@@ -1032,13 +1017,6 @@ namespace Jass
         "");
     }
 
-    if (!Polyphony_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "Polyphony",
-        "");
-    }
-
     if (!Channel_.present ())
     {
       throw ::xsd::cxx::tree::expected_element< char > (
@@ -1189,8 +1167,9 @@ namespace Jass
   //
 
   Jass::
-  Jass ()
+  Jass (const Polyphony_type& Polyphony)
   : ::xml_schema::type (),
+    Polyphony_ (Polyphony, ::xml_schema::flags (), this),
     Generator_ (::xml_schema::flags (), this)
   {
   }
@@ -1200,6 +1179,7 @@ namespace Jass
         ::xml_schema::flags f,
         ::xml_schema::container* c)
   : ::xml_schema::type (x, f, c),
+    Polyphony_ (x.Polyphony_, f, this),
     Generator_ (x.Generator_, f, this)
   {
   }
@@ -1209,6 +1189,7 @@ namespace Jass
         ::xml_schema::flags f,
         ::xml_schema::container* c)
   : ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+    Polyphony_ (f, this),
     Generator_ (f, this)
   {
     if ((f & ::xml_schema::flags::base) == 0)
@@ -1228,6 +1209,17 @@ namespace Jass
       const ::xsd::cxx::xml::qualified_name< char > n (
         ::xsd::cxx::xml::dom::name< char > (i));
 
+      // Polyphony
+      //
+      if (n.name () == "Polyphony" && n.namespace_ ().empty ())
+      {
+        if (!Polyphony_.present ())
+        {
+          this->Polyphony_.set (Polyphony_traits::create (i, f, this));
+          continue;
+        }
+      }
+
       // Generator
       //
       if (n.name () == "Generator" && n.namespace_ ().empty ())
@@ -1240,6 +1232,13 @@ namespace Jass
       }
 
       break;
+    }
+
+    if (!Polyphony_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "Polyphony",
+        "");
     }
   }
 
@@ -1269,7 +1268,6 @@ namespace Jass
     o << ::std::endl << "SampleEnd: " << i.SampleEnd ();
     o << ::std::endl << "Looping: " << i.Looping ();
     o << ::std::endl << "Gain: " << i.Gain ();
-    o << ::std::endl << "Polyphony: " << i.Polyphony ();
     o << ::std::endl << "Channel: " << i.Channel ();
     o << ::std::endl << "Note: " << i.Note ();
     o << ::std::endl << "MinNote: " << i.MinNote ();
@@ -1295,6 +1293,7 @@ namespace Jass
   ::std::ostream&
   operator<< (::std::ostream& o, const Jass& i)
   {
+    o << ::std::endl << "Polyphony: " << i.Polyphony ();
     for (Jass::Generator_const_iterator
          b (i.Generator ().begin ()), e (i.Generator ().end ());
          b != e; ++b)
@@ -1818,17 +1817,6 @@ namespace Jass
       s << i.Gain ();
     }
 
-    // Polyphony
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "Polyphony",
-          e));
-
-      s << i.Polyphony ();
-    }
-
     // Channel
     //
     {
@@ -2043,6 +2031,17 @@ namespace Jass
   operator<< (::xercesc::DOMElement& e, const Jass& i)
   {
     e << static_cast< const ::xml_schema::type& > (i);
+
+    // Polyphony
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "Polyphony",
+          e));
+
+      s << i.Polyphony ();
+    }
 
     // Generator
     //

@@ -144,7 +144,7 @@ class main_window : public QMainWindow {
 		void save_setup(const std::string &file_name) {
 			try {
 				std::ofstream f(file_name.c_str());
-				Jass::Jass j;
+				Jass::Jass j(engine_.voices->t.size());
 				for(generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) 
 					j.Generator().push_back(Jass::Generator(
 						(*it)->t.name,
@@ -153,7 +153,6 @@ class main_window : public QMainWindow {
 						(*it)->t.sample_end,
 						(*it)->t.looping,
 						(*it)->t.gain,
-						(*it)->t.voices->t.size(),
 						(*it)->t.channel,
 						(*it)->t.note,
 						(*it)->t.min_note,
@@ -288,6 +287,8 @@ class main_window : public QMainWindow {
 
 
 				//! Polyphony
+				col++;
+#if 0
 				spin_box = new QSpinBox(); spin_box->setProperty("row", row);
 				spin_box->setRange(1,127); spin_box->setValue((*it)->t.voices->t.size());
 				connect(
@@ -295,6 +296,7 @@ class main_window : public QMainWindow {
 					SLOT(generator_cell_widget_changed())
 				);
 				generator_table->setCellWidget(row, col++, spin_box);
+#endif
 
 				//! Channel
 				spin_box = new QSpinBox(); spin_box->setProperty("row", row);
@@ -522,7 +524,6 @@ class main_window : public QMainWindow {
 							(*it).SampleEnd(),
 							(*it).Looping(),
 							(*it).Gain(),
-							(*it).Polyphony(),
 							(*it).Channel(),
 							(*it).Note(),
 							(*it).MinNote(),
@@ -599,12 +600,14 @@ class main_window : public QMainWindow {
 			write_command(assign((*i)->t.looping, (((QCheckBox*)generator_table->cellWidget(row, 4))->isChecked())));
 			write_command(assign((*i)->t.gain, (((QDoubleSpinBox*)generator_table->cellWidget(row, 5))->value())));
 
+#if 0
 			disposable_voice_vector_ptr v = disposable_voice_vector::create(
 				std::vector<voice>(
 					((QSpinBox*)generator_table->cellWidget(row, 6))->value()
 				)
 			);
 			write_command(assign((*i)->t.voices, v));
+#endif
 
 			write_command(assign((*i)->t.channel, (((QSpinBox*)generator_table->cellWidget(row, 7))->value())));
 			write_command(assign((*i)->t.note, (((QSpinBox*)generator_table->cellWidget(row, 8))->value())));

@@ -364,20 +364,6 @@ namespace Jass
     void
     Gain (const Gain_type& x);
 
-    // Polyphony
-    // 
-    typedef ::xml_schema::non_negative_integer Polyphony_type;
-    typedef ::xsd::cxx::tree::traits< Polyphony_type, char > Polyphony_traits;
-
-    const Polyphony_type&
-    Polyphony () const;
-
-    Polyphony_type&
-    Polyphony ();
-
-    void
-    Polyphony (const Polyphony_type& x);
-
     // Channel
     // 
     typedef ::xml_schema::non_negative_integer Channel_type;
@@ -652,7 +638,6 @@ namespace Jass
                const SampleEnd_type&,
                const Looping_type&,
                const Gain_type&,
-               const Polyphony_type&,
                const Channel_type&,
                const Note_type&,
                const MinNote_type&,
@@ -702,7 +687,6 @@ namespace Jass
     ::xsd::cxx::tree::one< SampleEnd_type > SampleEnd_;
     ::xsd::cxx::tree::one< Looping_type > Looping_;
     ::xsd::cxx::tree::one< Gain_type > Gain_;
-    ::xsd::cxx::tree::one< Polyphony_type > Polyphony_;
     ::xsd::cxx::tree::one< Channel_type > Channel_;
     ::xsd::cxx::tree::one< Note_type > Note_;
     ::xsd::cxx::tree::one< MinNote_type > MinNote_;
@@ -727,6 +711,20 @@ namespace Jass
   class Jass: public ::xml_schema::type
   {
     public:
+    // Polyphony
+    // 
+    typedef ::xml_schema::non_negative_integer Polyphony_type;
+    typedef ::xsd::cxx::tree::traits< Polyphony_type, char > Polyphony_traits;
+
+    const Polyphony_type&
+    Polyphony () const;
+
+    Polyphony_type&
+    Polyphony ();
+
+    void
+    Polyphony (const Polyphony_type& x);
+
     // Generator
     // 
     typedef ::Jass::Generator Generator_type;
@@ -746,7 +744,7 @@ namespace Jass
 
     // Constructors.
     //
-    Jass ();
+    Jass (const Polyphony_type&);
 
     Jass (const ::xercesc::DOMElement& e,
           ::xml_schema::flags f = 0,
@@ -771,6 +769,7 @@ namespace Jass
            ::xml_schema::flags);
 
     protected:
+    ::xsd::cxx::tree::one< Polyphony_type > Polyphony_;
     Generator_sequence Generator_;
   };
 }

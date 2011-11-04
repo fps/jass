@@ -15,7 +15,6 @@
 		<xsd:element name="SampleEnd" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="Looping" type="xsd:boolean"/>
 		<xsd:element name="Gain" type="xsd:float"/>
-		<xsd:element name="Polyphony" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="Channel" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="Note" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="MinNote" type="xsd:nonNegativeInteger"/>
@@ -40,6 +39,7 @@
 
   <xsd:complexType name="Jass">
     <xsd:sequence>
+		<xsd:element name="Polyphony" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="Generator" type="Jass:Generator" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>

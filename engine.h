@@ -21,6 +21,7 @@
 #include "jass.hxx"
 #include "xsd_error_handler.h"
 #include "assign.h"
+#include "voice.h"
 
 #include <QObject>
 
@@ -52,7 +53,6 @@ class engine : public QObject {
 		//! When the engine is done processing a command that possibly alters references, it will signal completion by writing a 0 in this ringbuffer
 		ringbuffer<char> acknowledgements;
 
-		//! disposable vector holding generators. This is a disposable_vector_ptr so that the whole collection of generators can be replaced in one step, which is useful for loading/reloading setups
 		disposable_generator_list_ptr gens;
 
 		//! a single generator to audit a sample
@@ -65,6 +65,8 @@ class engine : public QObject {
 
 		//! Set this member only using the set_samplerate method..
 		double sample_rate;
+
+		disposable_voice_vector_ptr voices;
 
 	public:
 		engine(const char *uuid = 0) 
@@ -93,6 +95,10 @@ class engine : public QObject {
 			jack_client_close(jack_client);
 		}
 
+		void set_number_of_voices(unsigned int num) {
+			disposable_voice_vector_ptr voices = disposable_voice_vector::create(std::vector<voice>(num));
+		}
+
 		void set_sample_rate(double rate) {
 			if (rate != sample_rate) {
 				sample_rate = rate;
@@ -106,13 +112,14 @@ class engine : public QObject {
 
 		void play_auditor() {
 			assert(auditor_gen.get());
-
+#if 0
 			auditor_gen->t.channel = 16;
 			auditor_gen->t.voices->t[0].gain_envelope_state = voice::ATTACK;
 			auditor_gen->t.voices->t[0].filter_envelope_state = voice::ATTACK;
 			auditor_gen->t.voices->t[0].note_on_frame = jack_last_frame_time(jack_client);
 			auditor_gen->t.voices->t[0].note_on_velocity = 64;
 			auditor_gen->t.voices->t[0].note = 64;
+#endif
 		}
 	
 		void process(jack_nframes_t nframes) {
@@ -131,6 +138,7 @@ class engine : public QObject {
 				else acknowledgements.write(0);
 			}
 	
+			//! Synthesize
 			if (auditor_gen.get()) {
 				auditor_gen->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes, jack_client);
 			}
@@ -138,7 +146,6 @@ class engine : public QObject {
 			for (generator_list::iterator it = gens->t.begin(); it != gens->t.end(); ++it) {
 				(*it)->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes, jack_client);
 			}
-			//! Synthesize
 		}
 	
 	signals:
