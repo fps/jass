@@ -159,7 +159,7 @@ class engine : public QObject {
 			}
 		}
 
-		//! switch envelope states off voices responsible for this note to RELEASE
+		//! switch envelope states of voices responsible for this note to RELEASE
 		void process_note_off(jack_nframes_t nframes, unsigned int note, unsigned int channel) {
 			for (unsigned int voice = 0; voice != voices->t.size(); ++voice) {
 				if (
@@ -168,11 +168,11 @@ class engine : public QObject {
 					voices->t[voice].v.note == note
 				) {
 					voices->t[voice].v.state = voice::RELEASE;
-					//voices->t[voice].v.gain_envelope_on_note_off = voices->t[voice].v.gain_envelope;
 					voices->t[voice].v.note_off_frame = nframes;
 				}
 			}	
 		}
+
 
 		void process(jack_nframes_t nframes) {
 			//! Execute commands passed in through ringbuffer

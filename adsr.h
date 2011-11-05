@@ -16,13 +16,13 @@ inline double adsr_attack(double attack, double decay, double sustain, double re
 
 //! If release_time > time give envelope after note on, if release_time <= time give envelope after note off at release_time
 inline double adsr(double attack, double decay, double sustain, double release, double time, double release_time) {
-	if (release_time > time) return adsr_attack(attack, decay, sustain, release, time);
+	if (time < release_time) return adsr_attack(attack, decay, sustain, release, time);
 
 	//! Ok, we are in release time
-	double last_gain = adsr_attack(attack, decay,sustain, release, release_time);
+	double release_gain = adsr_attack(attack, decay, sustain, release, release_time);
 	return std::max(
-				last_gain * (1.0 - ((time - release_time)/release)), 
-				0.0
+		release_gain * (1.0 - ((time - release_time)/release)), 
+		0.0
 	);
 }
 

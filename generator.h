@@ -121,10 +121,18 @@ struct generator {
 
 	//! Process a single frame
 	//! Updates voice info
-	inline void process(float *out_0, float *out_1, jack_nframes_t last_frame_time, jack_nframes_t frame, jack_nframes_t sample_rate, voice &v) {
+	inline void process(
+		float *out_0, float *out_1, 
+		jack_nframes_t last_frame_time, 
+		jack_nframes_t frame, 
+		jack_nframes_t 
+		sample_rate, 
+		voice &v
+	) {
 		//! Overall check if we play at all (short curcuit to save CPU time)
 		if (v.state != voice::OFF) 
 		{
+			//! TODO: replace retarded sample and hold interpolation
 			double stretch = 1.0;
 			if (((int)v.note - (int)note) != 0) 
 				stretch = pow(pow(2.0, 1.0/12.0), (int)v.note - (int)note);
@@ -132,29 +140,33 @@ struct generator {
 			int current_frame = floor(stretch * (last_frame_time + frame - v.note_on_frame));
 			double time_in_sample = (double)(last_frame_time + frame - v.note_on_frame)/(double)sample_rate;
 					
-			//! Check that we are currently in the sample bounds
+			if (current_frame < 0 || current_frame >= sample_->t.data_0.size()) {
+				v.state = voice::OFF;
+				return;
+			} 
+
 			double gain_envelope = 0.0;
+
 			if (v.state == voice::ATTACK)
 				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_in_sample, time_in_sample + 1000000.0);
 
 			if (v.state == voice::RELEASE) {
-				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_in_sample, (double)(last_frame_time + frame - v.note_off_frame)/(double)sample_rate);
-
+				double release_time = (double)(v.note_off_frame - v.note_on_frame)/(double)sample_rate;
+				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_in_sample, release_time);
 			}
 
-			if ((v.state == voice::RELEASE && gain_envelope == 0.0) || time_in_sample > sample_->t.data_0.size()) 
+#if 0
+			if (v.state == voice::RELEASE && gain_envelope == 0.0) {
 				v.state = voice::OFF;
-
-
-			if (current_frame >= 0 && current_frame < sample_->t.data_0.size())
-			{
-				double vel_gain = 
-					velocity_factor * (((double)v.note_on_velocity-min_velocity)
-						/(double)(max_velocity-min_velocity));
-
-				out_0[frame] += gain_envelope * vel_gain * gain * sample_->t.data_0[current_frame];
-				out_1[frame] += gain_envelope * vel_gain * gain * sample_->t.data_0[current_frame];
+				return;
 			}
+#endif
+			double vel_gain = 
+				velocity_factor * (((double)v.note_on_velocity-min_velocity)
+					/(double)(max_velocity-min_velocity));
+
+			out_0[frame] += gain_envelope * vel_gain * gain * sample_->t.data_0[current_frame];
+			out_1[frame] += gain_envelope * vel_gain * gain * sample_->t.data_0[current_frame];
 		}
 	}
 
