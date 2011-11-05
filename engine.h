@@ -229,6 +229,7 @@ class engine : public QObject {
 					++midi_in_event_index;
 					jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
 				}
+
 				for (unsigned int index = 0; index < voices->t.size(); ++index) {
 					if (voices->t[index].v.state != voice::OFF) {
 						voices->t[index].g->t.process(out_0_buf, out_1_buf, last_frame_time, frame, jack_get_sample_rate(jack_client), voices->t[index].v);
