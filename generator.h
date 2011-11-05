@@ -155,12 +155,11 @@ struct generator {
 				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_in_sample, release_time);
 			}
 
-#if 0
 			if (v.state == voice::RELEASE && gain_envelope == 0.0) {
 				v.state = voice::OFF;
 				return;
 			}
-#endif
+
 			double vel_gain = 
 				velocity_factor * (((double)v.note_on_velocity-min_velocity)
 					/(double)(max_velocity-min_velocity));
