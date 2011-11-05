@@ -84,7 +84,7 @@ class engine : public QObject {
 			commands(1024),
 			acknowledgements(1024),
 			gens(disposable_generator_list::create(generator_list())),
-			voices(disposable_gvoice_vector::create(std::vector<gvoice>(128))),
+			voices(disposable_gvoice_vector::create(std::vector<gvoice>(32))),
 			current_voice(0)
 		{
 			heap *h = heap::get();	

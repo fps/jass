@@ -548,6 +548,10 @@ class main_window : public QMainWindow {
 					log_text_edit->append(QString("Loaded sample: %1").arg((*it).Sample().c_str()));
 				}
 				write_blocking_command(assign(engine_.gens, l));
+
+				disposable_gvoice_vector_ptr voices(disposable_gvoice_vector::create(std::vector<gvoice>(jass_.Polyphony())));
+				write_blocking_command(assign(engine_.voices, voices));
+
 				setup_file_name = file_name;
 				deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
 				//! Then write them in one go, replacing the whole gens collection
