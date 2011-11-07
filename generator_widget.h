@@ -7,6 +7,7 @@
 #include <QSpinBox>
 #include <QSlider>
 #include <QLineEdit>
+#include <QSplitter>
 
 #include "generator.h"
 #include "waveform_widget.h"
@@ -21,6 +22,7 @@ struct generator_widget : public QWidget {
 	QLineEdit *sample;
 
 	waveform_widget *waveform;
+	adsr_widget *adsr;
 
 	public:
 		generator_widget(disposable_generator_ptr gen, QWidget *parent = 0) :
@@ -42,12 +44,22 @@ struct generator_widget : public QWidget {
 
 			layout->addLayout(sample_layout, 0, col++);
 
+			adsr = new adsr_widget(gen);
+			layout->addWidget(adsr, 0, col++);
+
 			waveform = new waveform_widget(gen);
 			layout->addWidget(waveform, 0, col++);
 
 			setLayout(layout);
 			
 			//show();
+		}
+		void set_generator(disposable_generator_ptr g) {
+			if (g.get()) {
+
+			} else {
+				setEnabled(false);
+			}
 		}
 };
 

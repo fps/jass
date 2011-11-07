@@ -1,5 +1,5 @@
-#ifndef JASS_ADSR_HH
-#define JASS_ADSR_HH
+#ifndef JASS_ADSR_WIDGET_HH
+#define JASS_ADSR_WIDGET_HH
 
 #include <QWidget>
 #include <QGraphicsScene>
@@ -35,17 +35,47 @@ struct adsr_widget : public QWidget {
 		{
 			QPainter painter(this);
 			painter.setRenderHint(QPainter::Antialiasing);
-			painter.setPen(Qt::darkGreen);
-			painter.setBrush(Qt::darkGreen);
+			painter.setPen(Qt::blue);
+			painter.setBrush(Qt::blue);
+
+			double total_length = gen->t.attack_g + gen->t.decay_g + 1.0 + gen->t.release_g;
+			double stretch = width() / total_length;
 
 			unsigned int n = 500;
 			QVector<QPointF> points;
-			points.push_back(QPointF(0.0, height()-1));
-			points.push_back(QPointF(gen->t.attack_g * 50.0, 0.0));
-			points.push_back(QPointF(gen->t.attack_g + gen->t.decay_g * 50.0, height() * (1.0 - gen->t.sustain_g)));
-			points.push_back(QPointF(gen->t.attack_g + gen->t.decay_g + gen->t.sustain_g * 50.0, height() * (1.0 - gen->t.sustain_g)));
+			points.push_back(QPointF(
+				0.0, 
+				height()-1
+			));
+
+			points.push_back(QPointF(
+				gen->t.attack_g * stretch, 
+				0.0
+			));
+
+			points.push_back(QPointF(
+				(gen->t.attack_g + gen->t.decay_g) * stretch, 
+				height() * (1.0 - gen->t.sustain_g)
+			));
+
+			points.push_back(QPointF(
+				(gen->t.attack_g + gen->t.decay_g + 1.0) * stretch, 
+				height() * (1.0 - gen->t.sustain_g)
+			));
+
+			points.push_back(QPointF(
+				width(), 
+				height()-1.0
+			));
 
 			painter.drawPolygon(&points[0], points.size(), Qt::OddEvenFill);
+
+			painter.setPen(Qt::black);
+			//painter.setCompositionMode(QPainter::CompositionMode_Difference);
+			painter.drawLine(0, height() * (1.0 - gen->t.sustain_g), width(), height() * (1.0 - gen->t.sustain_g));
+			painter.drawLine(stretch * gen->t.attack_g, 0, stretch * gen->t.attack_g, height());
+			painter.drawLine(stretch * (gen->t.attack_g + gen->t.decay_g), 0, stretch * (gen->t.attack_g + gen->t.decay_g), height());
+			painter.drawLine(stretch * (gen->t.attack_g + gen->t.decay_g + 1.0), 0, stretch * (gen->t.attack_g + gen->t.decay_g + 1.0), height());
 		}
 
 		QSize minimumSizeHint() const

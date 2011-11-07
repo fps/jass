@@ -24,11 +24,13 @@
 #include <QMenu>
 #include <QFileDialog>
 #include <QTextEdit>
+#include <QDial>
 
 #include "engine.h"
 #include "assign.h"
 #include "generator.h"
 #include "generator_widget.h"
+#include "keyboard_widget.h"
 #include "jass.hxx"
 
 class main_window : public QMainWindow {
@@ -223,8 +225,15 @@ class main_window : public QMainWindow {
 
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
-				generator_widget *w = new generator_widget(*it);
-				generator_table->setCellWidget(row++, 0, w);
+				int col = 0;
+				generator_table->setCellWidget(row, col++, new QSlider(Qt::Horizontal));
+				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.name.c_str())));
+				generator_table->setCellWidget(row, col++, new keyboard_widget((*it)));
+				generator_table->setCellWidget(row, col++, new waveform_widget((*it)));
+				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.sample_->t.file_name.c_str())));
+				//generator_widget *w = new generator_widget(*it);
+				//generator_table->setCellWidget(row++, 0, w);
+				row++;
 			}
 
 			generator_table->resizeColumnsToContents();
@@ -420,6 +429,7 @@ class main_window : public QMainWindow {
  				int i = 0;
 				setEnabled(false);
 				for(Jass::Jass::Generator_const_iterator it = jass_.Generator().begin(); it != jass_.Generator().end(); ++it) {
+					log_text_edit->append(QString("Loading sample: %1").arg((*it).Sample().c_str()));
 					disposable_generator_ptr p = disposable_generator::create(
 						generator(
 							(*it).Name(),
@@ -441,7 +451,7 @@ class main_window : public QMainWindow {
 							(*it).ReleaseGain()
 						));
 					l->t.push_back(p);
-					log_text_edit->append(QString("Loaded sample: %1").arg((*it).Sample().c_str()));
+					log_text_edit->append(QString("Done loading sample: %1").arg((*it).Sample().c_str()));
 				}
 				write_blocking_command(assign(engine_.gens, l));
 
@@ -590,40 +600,19 @@ class main_window : public QMainWindow {
 			setMenuBar(menu_bar);
 
 			generator_table = new QTableWidget();
-			generator_table->setColumnCount(1);
 			QStringList headers;
 			headers 
-				<< "Generator";
-	
-			generator_table->setHorizontalHeaderLabels(headers);
-
-#if 0
-			//! If you change the headers, make sure you adapt also the functions update_generator_table, generator_item_changed and generator_cell_widget_changed to reflect the new indexes
-			generator_table->setColumnCount(17);
-			QStringList headers;
-			headers 
+				<< "Gain"
 				<< "Name"
-				<< "Sample" 
-				<< "Start"
-				<< "End"
-				<< "Looping"
-				<< "Gain" 
-				<< "Ch." 
-				<< "Note."
-				<< "Min. Note" 
-				<< "Max. Note" 
-				<< "Min. Vel." 
-				<< "Max. Vel." 
-				<< "Vel. Factor"
-				<< "Attack(G)"
-				<< "Decay(G)"
-				<< "Sustain(G)"
-				<< "Release(G)";
-	
+				<< "Note-Range"
+				<< "Waveform"
+				<< "Sample";
 
+			generator_table->setColumnCount(headers.size());
 			generator_table->setHorizontalHeaderLabels(headers);
+			generator_table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel); 
+			generator_table->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel); 
 			connect(generator_table, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(generator_item_changed(QTableWidgetItem*)));
-#endif
 			setCentralWidget(generator_table);
 
 			file_dialog_dock_widget = new QDockWidget();
