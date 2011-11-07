@@ -4,7 +4,6 @@
 #include <jack/jack.h>
 #include <boost/shared_ptr.hpp>
 #include <vector>
-#include <ladspa.h>
 
 #include "disposable.h"
 

@@ -21,7 +21,7 @@ add_executable(jass voice.cc adsr_widget.cc keyboard_widget.cc generator_widget.
 
 pkg_check_modules(JASS samplerate sndfile jack)
 find_library(XERCES_C xerces-c)
-target_link_libraries(jass ${XERCES_C} ${QT_LIBRARIES} samplerate sndfile jack ${Boost_PROGRAM_OPTIONS_LIBRARY} lilv-0)
+target_link_libraries(jass ${XERCES_C} ${QT_LIBRARIES} samplerate sndfile jack ${Boost_PROGRAM_OPTIONS_LIBRARY})
 include_directories(${JASS_INCLUDE_DIRS})
 
 install(TARGETS jass RUNTIME DESTINATION bin)
