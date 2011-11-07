@@ -363,150 +363,6 @@ namespace Jass
     this->ReleaseGain_.set (x);
   }
 
-  const Generator::Filter_type& Generator::
-  Filter () const
-  {
-    return this->Filter_.get ();
-  }
-
-  Generator::Filter_type& Generator::
-  Filter ()
-  {
-    return this->Filter_.get ();
-  }
-
-  void Generator::
-  Filter (const Filter_type& x)
-  {
-    this->Filter_.set (x);
-  }
-
-  const Generator::FreqFilter_type& Generator::
-  FreqFilter () const
-  {
-    return this->FreqFilter_.get ();
-  }
-
-  Generator::FreqFilter_type& Generator::
-  FreqFilter ()
-  {
-    return this->FreqFilter_.get ();
-  }
-
-  void Generator::
-  FreqFilter (const FreqFilter_type& x)
-  {
-    this->FreqFilter_.set (x);
-  }
-
-  const Generator::QFilter_type& Generator::
-  QFilter () const
-  {
-    return this->QFilter_.get ();
-  }
-
-  Generator::QFilter_type& Generator::
-  QFilter ()
-  {
-    return this->QFilter_.get ();
-  }
-
-  void Generator::
-  QFilter (const QFilter_type& x)
-  {
-    this->QFilter_.set (x);
-  }
-
-  const Generator::KeyFollowFilter_type& Generator::
-  KeyFollowFilter () const
-  {
-    return this->KeyFollowFilter_.get ();
-  }
-
-  Generator::KeyFollowFilter_type& Generator::
-  KeyFollowFilter ()
-  {
-    return this->KeyFollowFilter_.get ();
-  }
-
-  void Generator::
-  KeyFollowFilter (const KeyFollowFilter_type& x)
-  {
-    this->KeyFollowFilter_.set (x);
-  }
-
-  const Generator::AttackFilter_type& Generator::
-  AttackFilter () const
-  {
-    return this->AttackFilter_.get ();
-  }
-
-  Generator::AttackFilter_type& Generator::
-  AttackFilter ()
-  {
-    return this->AttackFilter_.get ();
-  }
-
-  void Generator::
-  AttackFilter (const AttackFilter_type& x)
-  {
-    this->AttackFilter_.set (x);
-  }
-
-  const Generator::DecayFilter_type& Generator::
-  DecayFilter () const
-  {
-    return this->DecayFilter_.get ();
-  }
-
-  Generator::DecayFilter_type& Generator::
-  DecayFilter ()
-  {
-    return this->DecayFilter_.get ();
-  }
-
-  void Generator::
-  DecayFilter (const DecayFilter_type& x)
-  {
-    this->DecayFilter_.set (x);
-  }
-
-  const Generator::SustainFilter_type& Generator::
-  SustainFilter () const
-  {
-    return this->SustainFilter_.get ();
-  }
-
-  Generator::SustainFilter_type& Generator::
-  SustainFilter ()
-  {
-    return this->SustainFilter_.get ();
-  }
-
-  void Generator::
-  SustainFilter (const SustainFilter_type& x)
-  {
-    this->SustainFilter_.set (x);
-  }
-
-  const Generator::ReleaseFilter_type& Generator::
-  ReleaseFilter () const
-  {
-    return this->ReleaseFilter_.get ();
-  }
-
-  Generator::ReleaseFilter_type& Generator::
-  ReleaseFilter ()
-  {
-    return this->ReleaseFilter_.get ();
-  }
-
-  void Generator::
-  ReleaseFilter (const ReleaseFilter_type& x)
-  {
-    this->ReleaseFilter_.set (x);
-  }
-
 
   // Jass
   // 
@@ -572,15 +428,7 @@ namespace Jass
              const AttackGain_type& AttackGain,
              const DecayGain_type& DecayGain,
              const SustainGain_type& SustainGain,
-             const ReleaseGain_type& ReleaseGain,
-             const Filter_type& Filter,
-             const FreqFilter_type& FreqFilter,
-             const QFilter_type& QFilter,
-             const KeyFollowFilter_type& KeyFollowFilter,
-             const AttackFilter_type& AttackFilter,
-             const DecayFilter_type& DecayFilter,
-             const SustainFilter_type& SustainFilter,
-             const ReleaseFilter_type& ReleaseFilter)
+             const ReleaseGain_type& ReleaseGain)
   : ::xml_schema::type (),
     Name_ (Name, ::xml_schema::flags (), this),
     Sample_ (Sample, ::xml_schema::flags (), this),
@@ -598,15 +446,7 @@ namespace Jass
     AttackGain_ (AttackGain, ::xml_schema::flags (), this),
     DecayGain_ (DecayGain, ::xml_schema::flags (), this),
     SustainGain_ (SustainGain, ::xml_schema::flags (), this),
-    ReleaseGain_ (ReleaseGain, ::xml_schema::flags (), this),
-    Filter_ (Filter, ::xml_schema::flags (), this),
-    FreqFilter_ (FreqFilter, ::xml_schema::flags (), this),
-    QFilter_ (QFilter, ::xml_schema::flags (), this),
-    KeyFollowFilter_ (KeyFollowFilter, ::xml_schema::flags (), this),
-    AttackFilter_ (AttackFilter, ::xml_schema::flags (), this),
-    DecayFilter_ (DecayFilter, ::xml_schema::flags (), this),
-    SustainFilter_ (SustainFilter, ::xml_schema::flags (), this),
-    ReleaseFilter_ (ReleaseFilter, ::xml_schema::flags (), this)
+    ReleaseGain_ (ReleaseGain, ::xml_schema::flags (), this)
   {
   }
 
@@ -631,15 +471,7 @@ namespace Jass
     AttackGain_ (x.AttackGain_, f, this),
     DecayGain_ (x.DecayGain_, f, this),
     SustainGain_ (x.SustainGain_, f, this),
-    ReleaseGain_ (x.ReleaseGain_, f, this),
-    Filter_ (x.Filter_, f, this),
-    FreqFilter_ (x.FreqFilter_, f, this),
-    QFilter_ (x.QFilter_, f, this),
-    KeyFollowFilter_ (x.KeyFollowFilter_, f, this),
-    AttackFilter_ (x.AttackFilter_, f, this),
-    DecayFilter_ (x.DecayFilter_, f, this),
-    SustainFilter_ (x.SustainFilter_, f, this),
-    ReleaseFilter_ (x.ReleaseFilter_, f, this)
+    ReleaseGain_ (x.ReleaseGain_, f, this)
   {
   }
 
@@ -664,15 +496,7 @@ namespace Jass
     AttackGain_ (f, this),
     DecayGain_ (f, this),
     SustainGain_ (f, this),
-    ReleaseGain_ (f, this),
-    Filter_ (f, this),
-    FreqFilter_ (f, this),
-    QFilter_ (f, this),
-    KeyFollowFilter_ (f, this),
-    AttackFilter_ (f, this),
-    DecayFilter_ (f, this),
-    SustainFilter_ (f, this),
-    ReleaseFilter_ (f, this)
+    ReleaseGain_ (f, this)
   {
     if ((f & ::xml_schema::flags::base) == 0)
     {
@@ -884,94 +708,6 @@ namespace Jass
         }
       }
 
-      // Filter
-      //
-      if (n.name () == "Filter" && n.namespace_ ().empty ())
-      {
-        if (!Filter_.present ())
-        {
-          this->Filter_.set (Filter_traits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // FreqFilter
-      //
-      if (n.name () == "FreqFilter" && n.namespace_ ().empty ())
-      {
-        if (!FreqFilter_.present ())
-        {
-          this->FreqFilter_.set (FreqFilter_traits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // QFilter
-      //
-      if (n.name () == "QFilter" && n.namespace_ ().empty ())
-      {
-        if (!QFilter_.present ())
-        {
-          this->QFilter_.set (QFilter_traits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // KeyFollowFilter
-      //
-      if (n.name () == "KeyFollowFilter" && n.namespace_ ().empty ())
-      {
-        if (!KeyFollowFilter_.present ())
-        {
-          this->KeyFollowFilter_.set (KeyFollowFilter_traits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // AttackFilter
-      //
-      if (n.name () == "AttackFilter" && n.namespace_ ().empty ())
-      {
-        if (!AttackFilter_.present ())
-        {
-          this->AttackFilter_.set (AttackFilter_traits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // DecayFilter
-      //
-      if (n.name () == "DecayFilter" && n.namespace_ ().empty ())
-      {
-        if (!DecayFilter_.present ())
-        {
-          this->DecayFilter_.set (DecayFilter_traits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // SustainFilter
-      //
-      if (n.name () == "SustainFilter" && n.namespace_ ().empty ())
-      {
-        if (!SustainFilter_.present ())
-        {
-          this->SustainFilter_.set (SustainFilter_traits::create (i, f, this));
-          continue;
-        }
-      }
-
-      // ReleaseFilter
-      //
-      if (n.name () == "ReleaseFilter" && n.namespace_ ().empty ())
-      {
-        if (!ReleaseFilter_.present ())
-        {
-          this->ReleaseFilter_.set (ReleaseFilter_traits::create (i, f, this));
-          continue;
-        }
-      }
-
       break;
     }
 
@@ -1091,62 +827,6 @@ namespace Jass
     {
       throw ::xsd::cxx::tree::expected_element< char > (
         "ReleaseGain",
-        "");
-    }
-
-    if (!Filter_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "Filter",
-        "");
-    }
-
-    if (!FreqFilter_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "FreqFilter",
-        "");
-    }
-
-    if (!QFilter_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "QFilter",
-        "");
-    }
-
-    if (!KeyFollowFilter_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "KeyFollowFilter",
-        "");
-    }
-
-    if (!AttackFilter_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "AttackFilter",
-        "");
-    }
-
-    if (!DecayFilter_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "DecayFilter",
-        "");
-    }
-
-    if (!SustainFilter_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "SustainFilter",
-        "");
-    }
-
-    if (!ReleaseFilter_.present ())
-    {
-      throw ::xsd::cxx::tree::expected_element< char > (
-        "ReleaseFilter",
         "");
     }
   }
@@ -1279,14 +959,6 @@ namespace Jass
     o << ::std::endl << "DecayGain: " << i.DecayGain ();
     o << ::std::endl << "SustainGain: " << i.SustainGain ();
     o << ::std::endl << "ReleaseGain: " << i.ReleaseGain ();
-    o << ::std::endl << "Filter: " << i.Filter ();
-    o << ::std::endl << "FreqFilter: " << i.FreqFilter ();
-    o << ::std::endl << "QFilter: " << i.QFilter ();
-    o << ::std::endl << "KeyFollowFilter: " << i.KeyFollowFilter ();
-    o << ::std::endl << "AttackFilter: " << i.AttackFilter ();
-    o << ::std::endl << "DecayFilter: " << i.DecayFilter ();
-    o << ::std::endl << "SustainFilter: " << i.SustainFilter ();
-    o << ::std::endl << "ReleaseFilter: " << i.ReleaseFilter ();
     return o;
   }
 
@@ -1936,94 +1608,6 @@ namespace Jass
           e));
 
       s << i.ReleaseGain ();
-    }
-
-    // Filter
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "Filter",
-          e));
-
-      s << i.Filter ();
-    }
-
-    // FreqFilter
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "FreqFilter",
-          e));
-
-      s << i.FreqFilter ();
-    }
-
-    // QFilter
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "QFilter",
-          e));
-
-      s << i.QFilter ();
-    }
-
-    // KeyFollowFilter
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "KeyFollowFilter",
-          e));
-
-      s << i.KeyFollowFilter ();
-    }
-
-    // AttackFilter
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "AttackFilter",
-          e));
-
-      s << i.AttackFilter ();
-    }
-
-    // DecayFilter
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "DecayFilter",
-          e));
-
-      s << i.DecayFilter ();
-    }
-
-    // SustainFilter
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "SustainFilter",
-          e));
-
-      s << i.SustainFilter ();
-    }
-
-    // ReleaseFilter
-    //
-    {
-      ::xercesc::DOMElement& s (
-        ::xsd::cxx::xml::dom::create_element (
-          "ReleaseFilter",
-          e));
-
-      s << i.ReleaseFilter ();
     }
   }
 

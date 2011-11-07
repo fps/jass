@@ -43,18 +43,6 @@ struct generator {
 	double sustain_g;
 	double release_g;
 	
-	enum filter_type { NONE, LOW_PASS, HIGH_PASS, BAND_PASS };
-	int filter;
-	
-	double freq_f;
-	double q_f;
-	double key_follow_f;
-	
-	double attack_f;
-	double decay_f;
-	double sustain_f;
-	double release_f;
-
 	unsigned int current_voice;
 
 	virtual ~generator()
@@ -79,15 +67,7 @@ struct generator {
 		double attack_g = 0.001,
 		double decay_g = 0.0,
 		double sustain_g = 1.0,
-		double release_g = 0.001,
-		int filter = NONE,
-		double freq_f = 1.0,
-		double q_f = 0.5,
-		double key_follow_f = 0.0,
-		double attack_f = 0.001,
-		double decay_f = 0.0,
-		double sustain_f = 1.0,
-		double release_f = 0.001
+		double release_g = 0.001
 	) :
 		name(name),
 		sample_(s),
@@ -106,14 +86,6 @@ struct generator {
 		decay_g(decay_g),
 		sustain_g(sustain_g),
 		release_g(release_g),
-		filter(filter),
-		freq_f(freq_f),
-		q_f(q_f),
-		key_follow_f(key_follow_f),
-		attack_f(attack_f),
-		decay_f(decay_f),
-		sustain_f(sustain_f),
-		release_f(release_f),
 		current_voice(0)
 	{ 
 		// std::cout << "generator()" << std::endl; 
@@ -137,22 +109,24 @@ struct generator {
 			if (((int)v.note - (int)note) != 0) 
 				stretch = pow(pow(2.0, 1.0/12.0), (int)v.note - (int)note);
 
-			int current_frame = floor(stretch * (last_frame_time + frame - v.note_on_frame));
-			double time_in_sample = (double)(last_frame_time + frame - v.note_on_frame)/(double)sample_rate;
+			int current_frame = sample_start + floor(stretch * (last_frame_time + frame - v.note_on_frame));
 					
-			if (current_frame < 0 || current_frame >= sample_->t.data_0.size()) {
+			if (current_frame < 0 || current_frame >= sample_->t.data_0.size() + sample_end) {
 				v.state = voice::OFF;
 				return;
 			} 
 
+			double time_since_note_on = (double)(last_frame_time + frame - v.note_on_frame)/(double)sample_rate;
+
 			double gain_envelope = 0.0;
 
-			if (v.state == voice::ATTACK)
-				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_in_sample, time_in_sample + 1000000.0);
+			if (v.state == voice::ATTACK) {
+				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_since_note_on, time_since_note_on + 1000000.0);
+			}
 
 			if (v.state == voice::RELEASE) {
 				double release_time = (double)(v.note_off_frame - v.note_on_frame)/(double)sample_rate;
-				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_in_sample, release_time);
+				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_since_note_on, release_time);
 			}
 
 			if (v.state == voice::RELEASE && gain_envelope == 0.0) {

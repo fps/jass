@@ -1,7 +1,13 @@
 #ifndef JASS_VOICE_HH
 #define JASS_VOICE_HH
 
-#include "generator.h"
+#include <jack/jack.h>
+#include <boost/shared_ptr.hpp>
+#include <vector>
+#include <ladspa.h>
+
+#include "disposable.h"
+
 
 struct voice {
 	enum envelope_state {OFF, ATTACK, RELEASE };
@@ -12,7 +18,7 @@ struct voice {
 	unsigned int channel;
 	unsigned int note_on_velocity;
 
-	//! The frame the event to start this voice happened
+	//! The frame on which the event to start this voice happened
 	jack_nframes_t note_on_frame;
 
 	//! Dito for note off
@@ -23,7 +29,11 @@ struct voice {
 		note_on_frame(note_on_frame),
 		state(OFF)
 	{
+		setup_filters();
+	}
 
+	void setup_filters() {
+		
 	}
 };
 

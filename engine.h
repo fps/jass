@@ -77,7 +77,7 @@ class engine : public QObject {
 
 		disposable_gvoice_vector_ptr voices;
 		unsigned int current_voice;
-
+		
 	public:
 		engine(const char *uuid = 0) 
 		: 
@@ -139,10 +139,10 @@ class engine : public QObject {
 			for (generator_list::iterator it = gens->t.begin(); it != gens->t.end(); ++it) {
 				if (
 					(*it)->t.channel == channel &&
-					(*it)->t.min_note < note &&
-					(*it)->t.max_note > note &&
-					(*it)->t.min_velocity < velocity &&
-					(*it)->t.max_velocity > velocity
+					(*it)->t.min_note <= note &&
+					(*it)->t.max_note >= note &&
+					(*it)->t.min_velocity <= velocity &&
+					(*it)->t.max_velocity >= velocity
 				) {
 					//! setup voice with parameters
 					voices->t[current_voice].g = (*it);
@@ -186,8 +186,6 @@ class engine : public QObject {
 			float *out_1_buf = (float*)jack_port_get_buffer(out_1, nframes);
 			void *midi_in_buf = jack_port_get_buffer(midi_in, nframes);	
 
-			//process_midi(midi_in_buf, nframes, jack_client);
-
 			//! zero the buffers first
 			std::fill(out_0_buf, out_0_buf + nframes, 0);
 			std::fill(out_1_buf, out_1_buf + nframes, 0);
@@ -207,6 +205,7 @@ class engine : public QObject {
 				jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
 
 			for (unsigned int frame = 0; frame < nframes; ++frame) {
+				//! process midi events first to update voice states
 				while (midi_in_event_index < midi_in_event_count && midi_event.time == frame) {
 					if (((*(midi_event.buffer) & 0xf0)) == 0x80
 						|| (((*(midi_event.buffer) & 0xf0) == 0x90 && *(midi_event.buffer+2) == 0))
@@ -230,6 +229,8 @@ class engine : public QObject {
 					jack_midi_event_get(&midi_event, midi_in_buf, midi_in_event_index);
 				}
 
+				//! then process voices
+				//! TODO: introduce linked list in the preallocated voices to make this faster. i.e. only iterate over active voices
 				for (unsigned int index = 0; index < voices->t.size(); ++index) {
 					if (voices->t[index].v.state != voice::OFF) {
 						voices->t[index].g->t.process(out_0_buf, out_1_buf, last_frame_time, frame, jack_get_sample_rate(jack_client), voices->t[index].v);

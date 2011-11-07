@@ -518,118 +518,6 @@ namespace Jass
     void
     ReleaseGain (const ReleaseGain_type& x);
 
-    // Filter
-    // 
-    typedef ::xml_schema::non_negative_integer Filter_type;
-    typedef ::xsd::cxx::tree::traits< Filter_type, char > Filter_traits;
-
-    const Filter_type&
-    Filter () const;
-
-    Filter_type&
-    Filter ();
-
-    void
-    Filter (const Filter_type& x);
-
-    // FreqFilter
-    // 
-    typedef ::xml_schema::float_ FreqFilter_type;
-    typedef ::xsd::cxx::tree::traits< FreqFilter_type, char > FreqFilter_traits;
-
-    const FreqFilter_type&
-    FreqFilter () const;
-
-    FreqFilter_type&
-    FreqFilter ();
-
-    void
-    FreqFilter (const FreqFilter_type& x);
-
-    // QFilter
-    // 
-    typedef ::xml_schema::float_ QFilter_type;
-    typedef ::xsd::cxx::tree::traits< QFilter_type, char > QFilter_traits;
-
-    const QFilter_type&
-    QFilter () const;
-
-    QFilter_type&
-    QFilter ();
-
-    void
-    QFilter (const QFilter_type& x);
-
-    // KeyFollowFilter
-    // 
-    typedef ::xml_schema::float_ KeyFollowFilter_type;
-    typedef ::xsd::cxx::tree::traits< KeyFollowFilter_type, char > KeyFollowFilter_traits;
-
-    const KeyFollowFilter_type&
-    KeyFollowFilter () const;
-
-    KeyFollowFilter_type&
-    KeyFollowFilter ();
-
-    void
-    KeyFollowFilter (const KeyFollowFilter_type& x);
-
-    // AttackFilter
-    // 
-    typedef ::xml_schema::float_ AttackFilter_type;
-    typedef ::xsd::cxx::tree::traits< AttackFilter_type, char > AttackFilter_traits;
-
-    const AttackFilter_type&
-    AttackFilter () const;
-
-    AttackFilter_type&
-    AttackFilter ();
-
-    void
-    AttackFilter (const AttackFilter_type& x);
-
-    // DecayFilter
-    // 
-    typedef ::xml_schema::float_ DecayFilter_type;
-    typedef ::xsd::cxx::tree::traits< DecayFilter_type, char > DecayFilter_traits;
-
-    const DecayFilter_type&
-    DecayFilter () const;
-
-    DecayFilter_type&
-    DecayFilter ();
-
-    void
-    DecayFilter (const DecayFilter_type& x);
-
-    // SustainFilter
-    // 
-    typedef ::xml_schema::float_ SustainFilter_type;
-    typedef ::xsd::cxx::tree::traits< SustainFilter_type, char > SustainFilter_traits;
-
-    const SustainFilter_type&
-    SustainFilter () const;
-
-    SustainFilter_type&
-    SustainFilter ();
-
-    void
-    SustainFilter (const SustainFilter_type& x);
-
-    // ReleaseFilter
-    // 
-    typedef ::xml_schema::float_ ReleaseFilter_type;
-    typedef ::xsd::cxx::tree::traits< ReleaseFilter_type, char > ReleaseFilter_traits;
-
-    const ReleaseFilter_type&
-    ReleaseFilter () const;
-
-    ReleaseFilter_type&
-    ReleaseFilter ();
-
-    void
-    ReleaseFilter (const ReleaseFilter_type& x);
-
     // Constructors.
     //
     Generator (const Name_type&,
@@ -648,15 +536,7 @@ namespace Jass
                const AttackGain_type&,
                const DecayGain_type&,
                const SustainGain_type&,
-               const ReleaseGain_type&,
-               const Filter_type&,
-               const FreqFilter_type&,
-               const QFilter_type&,
-               const KeyFollowFilter_type&,
-               const AttackFilter_type&,
-               const DecayFilter_type&,
-               const SustainFilter_type&,
-               const ReleaseFilter_type&);
+               const ReleaseGain_type&);
 
     Generator (const ::xercesc::DOMElement& e,
                ::xml_schema::flags f = 0,
@@ -698,14 +578,6 @@ namespace Jass
     ::xsd::cxx::tree::one< DecayGain_type > DecayGain_;
     ::xsd::cxx::tree::one< SustainGain_type > SustainGain_;
     ::xsd::cxx::tree::one< ReleaseGain_type > ReleaseGain_;
-    ::xsd::cxx::tree::one< Filter_type > Filter_;
-    ::xsd::cxx::tree::one< FreqFilter_type > FreqFilter_;
-    ::xsd::cxx::tree::one< QFilter_type > QFilter_;
-    ::xsd::cxx::tree::one< KeyFollowFilter_type > KeyFollowFilter_;
-    ::xsd::cxx::tree::one< AttackFilter_type > AttackFilter_;
-    ::xsd::cxx::tree::one< DecayFilter_type > DecayFilter_;
-    ::xsd::cxx::tree::one< SustainFilter_type > SustainFilter_;
-    ::xsd::cxx::tree::one< ReleaseFilter_type > ReleaseFilter_;
   };
 
   class Jass: public ::xml_schema::type
