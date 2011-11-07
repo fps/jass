@@ -226,6 +226,9 @@ class main_window : public QMainWindow {
 				generator_widget *w = new generator_widget(*it);
 				generator_table->setCellWidget(row++, 0, w);
 			}
+
+			generator_table->resizeColumnsToContents();
+			generator_table->resizeRowsToContents();
 #if 0
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
@@ -587,6 +590,13 @@ class main_window : public QMainWindow {
 			setMenuBar(menu_bar);
 
 			generator_table = new QTableWidget();
+			generator_table->setColumnCount(1);
+			QStringList headers;
+			headers 
+				<< "Generator";
+	
+			generator_table->setHorizontalHeaderLabels(headers);
+
 #if 0
 			//! If you change the headers, make sure you adapt also the functions update_generator_table, generator_item_changed and generator_cell_widget_changed to reflect the new indexes
 			generator_table->setColumnCount(17);
