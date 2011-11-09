@@ -559,13 +559,13 @@ class main_window : public QMainWindow {
 		}
 
 		void show_keyboard(bool show) {
-			generator_table->setColumnHidden(3, !show);
+			generator_table->setColumnHidden(2, !show);
 
 		}
 
 
 		void show_waveform(bool show) {
-			generator_table->setColumnHidden(4, !show);
+			generator_table->setColumnHidden(3, !show);
 
 		}
 
@@ -577,44 +577,6 @@ class main_window : public QMainWindow {
 			deferred_gui_commands(1024)
 		{
 			setWindowTitle("jass - jack simple sampler");
-
-			QMenuBar *menu_bar = new QMenuBar();				
-
-				QMenu *file_menu = new QMenu("&File");
-				menu_bar->addMenu(file_menu);
-					connect(file_menu->addAction("&Open..."), SIGNAL(triggered(bool)), this, SLOT(load_setup()));
-					file_menu->addSeparator();
-					connect(file_menu->addAction("&Save"), SIGNAL(triggered(bool)), this, SLOT(save_setup()));
-					connect(file_menu->addAction("Save &As..."), SIGNAL(triggered(bool)), this, SLOT(save_setup_as()));
-					file_menu->addSeparator();
-					connect(file_menu->addAction("&Quit"), SIGNAL(triggered(bool)), this, SLOT(close()));
-
-				QMenu *generator_menu = new QMenu("&Generator");
-				menu_bar->addMenu(generator_menu);
-					generator_menu->addAction("&Duplicate");
-					generator_menu->addSeparator();
-					connect(generator_menu->addAction("&Remove"), SIGNAL(triggered(bool)), this, SLOT(remove_generator()));;
-
-				QMenu *parameter_menu = new QMenu("&Parameter");
-				menu_bar->addMenu(parameter_menu);
-					//parameter_menu->addAction("Set &Channel");
-					//parameter_menu->addAction("Set &Note");
-					//parameter_menu->addAction("Set &Min. Note");
-					//parameter_menu->addAction("Set &Max. Note");
-					//parameter_menu->addSeparator();
-					connect(parameter_menu->addAction("Set continous Notes"), SIGNAL(triggered(bool)), this, SLOT(set_continous_notes()));
-					
-
-				QMenu *view_menu = new QMenu("&View");
-				menu_bar->addMenu(view_menu);
-					
-
-				QMenu *help_menu = new QMenu("&Help");
-				menu_bar->addMenu(help_menu);
-					connect(help_menu->addAction("&Help in Log"), SIGNAL(triggered(bool)), this, SLOT(show_help_text()));
-					connect(help_menu->addAction("&About"), SIGNAL(triggered(bool)), this, SLOT(show_about_text()));
-	
-			setMenuBar(menu_bar);
 
 			generator_table = new QTableWidget();
 			QStringList headers;
@@ -660,6 +622,54 @@ class main_window : public QMainWindow {
 			restoreState(settings.value("windowState").toByteArray());
 			
 			show_about_text();
+
+			QMenuBar *menu_bar = new QMenuBar();				
+
+				QMenu *file_menu = new QMenu("&File");
+				menu_bar->addMenu(file_menu);
+					connect(file_menu->addAction("&Open..."), SIGNAL(triggered(bool)), this, SLOT(load_setup()));
+					file_menu->addSeparator();
+					connect(file_menu->addAction("&Save"), SIGNAL(triggered(bool)), this, SLOT(save_setup()));
+					connect(file_menu->addAction("Save &As..."), SIGNAL(triggered(bool)), this, SLOT(save_setup_as()));
+					file_menu->addSeparator();
+					connect(file_menu->addAction("&Quit"), SIGNAL(triggered(bool)), this, SLOT(close()));
+
+				QMenu *generator_menu = new QMenu("&Generator");
+				menu_bar->addMenu(generator_menu);
+					generator_menu->addAction("&Duplicate");
+					generator_menu->addSeparator();
+					connect(generator_menu->addAction("&Remove"), SIGNAL(triggered(bool)), this, SLOT(remove_generator()));;
+
+				QMenu *parameter_menu = new QMenu("&Parameter");
+				menu_bar->addMenu(parameter_menu);
+					//parameter_menu->addAction("Set &Channel");
+					//parameter_menu->addAction("Set &Note");
+					//parameter_menu->addAction("Set &Min. Note");
+					//parameter_menu->addAction("Set &Max. Note");
+					//parameter_menu->addSeparator();
+					connect(parameter_menu->addAction("Set continous Notes"), SIGNAL(triggered(bool)), this, SLOT(set_continous_notes()));
+					
+
+				QMenu *view_menu = new QMenu("&View");
+				menu_bar->addMenu(view_menu);
+					QAction *show_keyboard_action = new QAction("Show &Note Range", 0);
+						show_keyboard_action->setCheckable(true);
+						view_menu->addAction(show_keyboard_action);
+						connect(show_keyboard_action, SIGNAL(toggled(bool)), this, SLOT(show_keyboard(bool)));
+						show_keyboard_action->setChecked(true);
+					QAction *show_waveform_action = new QAction("Show &Wavevorm", 0);
+						show_waveform_action->setCheckable(true);
+						view_menu->addAction(show_waveform_action);
+						connect(show_waveform_action, SIGNAL(toggled(bool)), this, SLOT(show_waveform(bool)));
+						show_waveform_action->setChecked(true);
+
+				QMenu *help_menu = new QMenu("&Help");
+				menu_bar->addMenu(help_menu);
+					connect(help_menu->addAction("&Help in Log"), SIGNAL(triggered(bool)), this, SLOT(show_help_text()));
+					connect(help_menu->addAction("&About"), SIGNAL(triggered(bool)), this, SLOT(show_about_text()));
+	
+			setMenuBar(menu_bar);
+
 		}
 };
 
