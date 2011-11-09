@@ -558,7 +558,19 @@ class main_window : public QMainWindow {
 			log_text_edit->append("-------------------");
 		}
 
+		void show_keyboard(bool show) {
+			generator_table->setColumnHidden(3, !show);
+
+		}
+
+
+		void show_waveform(bool show) {
+			generator_table->setColumnHidden(4, !show);
+
+		}
+
 	public:
+
 		main_window(engine &e) :
 			outstanding_acks(0),
 			engine_(e),
