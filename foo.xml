@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<p1:Jass xmlns:p1="http://shirkhan.dyndns.org/Jass">
+
+  <Polyphony>32</Polyphony>
+
+  <Generator>
+    <Name>bop kick - snares on - 3</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/bop kick - snares on - 3.wav</Sample>
+    <SampleStart>1000</SampleStart>
+    <SampleEnd>100000</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>10000</LoopStart>
+    <LoopEnd>50000</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>bop kick - snares on - 4</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/bop kick - snares on - 4.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>bop kick - snares on - 7</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/bop kick - snares on - 7.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>flat ride - 5</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/flat ride - 5.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>bop kick - snares on - 1</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/bop kick - snares on - 1.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>flat ride - crash - 2</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/flat ride - crash - 2.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>floor tom - snares off - 2</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/floor tom - snares off - 2.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>floor tom - snares on - 8</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/floor tom - snares on - 8.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>floor tom - snares on - 1</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/floor tom - snares on - 1.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>floor tom - snares off - 6</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/floor tom - snares off - 6.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>hihat - closed - 6</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/hihat - closed - 6.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>hihat - closed side - 3</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/hihat - closed side - 3.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>64</Note>
+    <MinNote>0</MinNote>
+    <MaxNote>127</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+</p1:Jass>

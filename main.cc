@@ -73,9 +73,6 @@ int main(int argc, char **argv) {
 		engine e(uuid);
 
 		main_window w(e);
-
-		if (vm.count("state")) w.load_setup(vm["state"].as<std::vector<std::string> >()[0]);
-
 		//! The session_signal is received possibly in the process thread thus we need to use a QueuedConnection
 		QObject::connect(
 			&e, SIGNAL(session_event(jack_session_event_t*)), 
@@ -86,7 +83,12 @@ int main(int argc, char **argv) {
 		//! register SIGUSR1 for ladish session support
 		signal(SIGUSR1, signal_handler);
 
+		w.setEnabled(false);
 		w.show();
+
+		q_application.processEvents();
+
+		if (vm.count("state")) w.load_setup(vm["state"].as<std::vector<std::string> >()[0]);
 
 		//! Register a timed function to clean the heap
 		timed_functor tf1(boost::bind(&heap::cleanup, heap::get()), 1000);
@@ -97,6 +99,7 @@ int main(int argc, char **argv) {
 		//! This one checks for ladish save signals..
 		timed_functor tf3(boost::bind(check_signalled, boost::ref(w)), 100);
 
+		w.setEnabled(true);
 		q_application.exec();
 	}
 	std::cout << "exiting" << std::endl;

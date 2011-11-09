@@ -24,6 +24,8 @@ struct generator {
 	double sample_end;
 	
 	bool looping;
+	double loop_start;
+	double loop_end;
 	
 	double gain;
 
@@ -56,6 +58,8 @@ struct generator {
 		double sample_start = 0,
 		double sample_end = 0,
 		bool looping = false,
+		double loop_start = 0,
+		double loop_end = 0,
 		double gain = 1.0,
 		unsigned int channel = 0,
 		unsigned int note = 64,
@@ -74,6 +78,8 @@ struct generator {
 		sample_start(sample_start),
 		sample_end(sample_end),
 		looping(looping),
+		loop_start(loop_start),
+		loop_end(loop_end),
 		gain(gain),
 		channel(channel),
 		note(note),

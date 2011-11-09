@@ -147,6 +147,42 @@ namespace Jass
     this->Looping_.set (x);
   }
 
+  const Generator::LoopStart_type& Generator::
+  LoopStart () const
+  {
+    return this->LoopStart_.get ();
+  }
+
+  Generator::LoopStart_type& Generator::
+  LoopStart ()
+  {
+    return this->LoopStart_.get ();
+  }
+
+  void Generator::
+  LoopStart (const LoopStart_type& x)
+  {
+    this->LoopStart_.set (x);
+  }
+
+  const Generator::LoopEnd_type& Generator::
+  LoopEnd () const
+  {
+    return this->LoopEnd_.get ();
+  }
+
+  Generator::LoopEnd_type& Generator::
+  LoopEnd ()
+  {
+    return this->LoopEnd_.get ();
+  }
+
+  void Generator::
+  LoopEnd (const LoopEnd_type& x)
+  {
+    this->LoopEnd_.set (x);
+  }
+
   const Generator::Gain_type& Generator::
   Gain () const
   {
@@ -417,6 +453,8 @@ namespace Jass
              const SampleStart_type& SampleStart,
              const SampleEnd_type& SampleEnd,
              const Looping_type& Looping,
+             const LoopStart_type& LoopStart,
+             const LoopEnd_type& LoopEnd,
              const Gain_type& Gain,
              const Channel_type& Channel,
              const Note_type& Note,
@@ -435,6 +473,8 @@ namespace Jass
     SampleStart_ (SampleStart, ::xml_schema::flags (), this),
     SampleEnd_ (SampleEnd, ::xml_schema::flags (), this),
     Looping_ (Looping, ::xml_schema::flags (), this),
+    LoopStart_ (LoopStart, ::xml_schema::flags (), this),
+    LoopEnd_ (LoopEnd, ::xml_schema::flags (), this),
     Gain_ (Gain, ::xml_schema::flags (), this),
     Channel_ (Channel, ::xml_schema::flags (), this),
     Note_ (Note, ::xml_schema::flags (), this),
@@ -460,6 +500,8 @@ namespace Jass
     SampleStart_ (x.SampleStart_, f, this),
     SampleEnd_ (x.SampleEnd_, f, this),
     Looping_ (x.Looping_, f, this),
+    LoopStart_ (x.LoopStart_, f, this),
+    LoopEnd_ (x.LoopEnd_, f, this),
     Gain_ (x.Gain_, f, this),
     Channel_ (x.Channel_, f, this),
     Note_ (x.Note_, f, this),
@@ -485,6 +527,8 @@ namespace Jass
     SampleStart_ (f, this),
     SampleEnd_ (f, this),
     Looping_ (f, this),
+    LoopStart_ (f, this),
+    LoopEnd_ (f, this),
     Gain_ (f, this),
     Channel_ (f, this),
     Note_ (f, this),
@@ -572,6 +616,28 @@ namespace Jass
         if (!Looping_.present ())
         {
           this->Looping_.set (Looping_traits::create (i, f, this));
+          continue;
+        }
+      }
+
+      // LoopStart
+      //
+      if (n.name () == "LoopStart" && n.namespace_ ().empty ())
+      {
+        if (!LoopStart_.present ())
+        {
+          this->LoopStart_.set (LoopStart_traits::create (i, f, this));
+          continue;
+        }
+      }
+
+      // LoopEnd
+      //
+      if (n.name () == "LoopEnd" && n.namespace_ ().empty ())
+      {
+        if (!LoopEnd_.present ())
+        {
+          this->LoopEnd_.set (LoopEnd_traits::create (i, f, this));
           continue;
         }
       }
@@ -743,6 +809,20 @@ namespace Jass
     {
       throw ::xsd::cxx::tree::expected_element< char > (
         "Looping",
+        "");
+    }
+
+    if (!LoopStart_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "LoopStart",
+        "");
+    }
+
+    if (!LoopEnd_.present ())
+    {
+      throw ::xsd::cxx::tree::expected_element< char > (
+        "LoopEnd",
         "");
     }
 
@@ -947,6 +1027,8 @@ namespace Jass
     o << ::std::endl << "SampleStart: " << i.SampleStart ();
     o << ::std::endl << "SampleEnd: " << i.SampleEnd ();
     o << ::std::endl << "Looping: " << i.Looping ();
+    o << ::std::endl << "LoopStart: " << i.LoopStart ();
+    o << ::std::endl << "LoopEnd: " << i.LoopEnd ();
     o << ::std::endl << "Gain: " << i.Gain ();
     o << ::std::endl << "Channel: " << i.Channel ();
     o << ::std::endl << "Note: " << i.Note ();
@@ -1476,6 +1558,28 @@ namespace Jass
           e));
 
       s << i.Looping ();
+    }
+
+    // LoopStart
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "LoopStart",
+          e));
+
+      s << i.LoopStart ();
+    }
+
+    // LoopEnd
+    //
+    {
+      ::xercesc::DOMElement& s (
+        ::xsd::cxx::xml::dom::create_element (
+          "LoopEnd",
+          e));
+
+      s << i.LoopEnd ();
     }
 
     // Gain

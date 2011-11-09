@@ -155,6 +155,8 @@ class main_window : public QMainWindow {
 						(*it)->t.sample_start,
 						(*it)->t.sample_end,
 						(*it)->t.looping,
+						(*it)->t.loop_start,
+						(*it)->t.loop_end,
 						(*it)->t.gain,
 						(*it)->t.channel,
 						(*it)->t.note,
@@ -437,6 +439,8 @@ class main_window : public QMainWindow {
 							(*it).SampleStart(),
 							(*it).SampleEnd(),
 							(*it).Looping(),
+							(*it).LoopStart(),
+							(*it).LoopEnd(),
 							(*it).Gain(),
 							(*it).Channel(),
 							(*it).Note(),
@@ -452,6 +456,7 @@ class main_window : public QMainWindow {
 						));
 					l->t.push_back(p);
 					log_text_edit->append(QString("Done loading sample: %1").arg((*it).Sample().c_str()));
+					QApplication::processEvents();
 				}
 				write_blocking_command(assign(engine_.gens, l));
 

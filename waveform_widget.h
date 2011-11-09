@@ -47,7 +47,17 @@ struct waveform_widget : public QWidget {
 				points.push_back(QPointF(width()*(double(i)/double(n)), height() * (1.0 - fabs(gen->t.sample_->t.data_0[sample_index]))));
 			}
 			painter.drawPolygon(&points[0], points.size(), Qt::OddEvenFill);
-		}
+
+			//! Draw start/end range
+			painter.setPen(QColor(0, 0, 128, 64));
+			painter.setBrush(QColor(0, 0, 128, 64));
+			painter.drawRect(width() * gen->t.sample_start/gen->t.sample_->t.data_0.size(), 0, width() * gen->t.sample_end/gen->t.sample_->t.data_0.size(), height());
+	
+			//! Draw loop range
+			painter.setPen(QColor(128, 0, 0, 64));
+			painter.setBrush(QColor(128, 0, 0, 64));
+			painter.drawRect(width() * gen->t.loop_start/gen->t.sample_->t.data_0.size(), 0, width() * gen->t.loop_end/gen->t.sample_->t.data_0.size(), height());
+			}
 
 		QSize minimumSizeHint() const
 		{

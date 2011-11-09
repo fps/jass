@@ -350,6 +350,34 @@ namespace Jass
     void
     Looping (const Looping_type& x);
 
+    // LoopStart
+    // 
+    typedef ::xml_schema::non_negative_integer LoopStart_type;
+    typedef ::xsd::cxx::tree::traits< LoopStart_type, char > LoopStart_traits;
+
+    const LoopStart_type&
+    LoopStart () const;
+
+    LoopStart_type&
+    LoopStart ();
+
+    void
+    LoopStart (const LoopStart_type& x);
+
+    // LoopEnd
+    // 
+    typedef ::xml_schema::non_negative_integer LoopEnd_type;
+    typedef ::xsd::cxx::tree::traits< LoopEnd_type, char > LoopEnd_traits;
+
+    const LoopEnd_type&
+    LoopEnd () const;
+
+    LoopEnd_type&
+    LoopEnd ();
+
+    void
+    LoopEnd (const LoopEnd_type& x);
+
     // Gain
     // 
     typedef ::xml_schema::float_ Gain_type;
@@ -525,6 +553,8 @@ namespace Jass
                const SampleStart_type&,
                const SampleEnd_type&,
                const Looping_type&,
+               const LoopStart_type&,
+               const LoopEnd_type&,
                const Gain_type&,
                const Channel_type&,
                const Note_type&,
@@ -566,6 +596,8 @@ namespace Jass
     ::xsd::cxx::tree::one< SampleStart_type > SampleStart_;
     ::xsd::cxx::tree::one< SampleEnd_type > SampleEnd_;
     ::xsd::cxx::tree::one< Looping_type > Looping_;
+    ::xsd::cxx::tree::one< LoopStart_type > LoopStart_;
+    ::xsd::cxx::tree::one< LoopEnd_type > LoopEnd_;
     ::xsd::cxx::tree::one< Gain_type > Gain_;
     ::xsd::cxx::tree::one< Channel_type > Channel_;
     ::xsd::cxx::tree::one< Note_type > Note_;
