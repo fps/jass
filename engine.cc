@@ -1,3 +1,10 @@
+#ifdef SWIG
+%module engine
+%{
+#include "engine.h"
+%}
+#endif
+
 #include "engine.h"
 
 extern "C" {

@@ -592,6 +592,11 @@ class main_window : public QMainWindow {
 					//parameter_menu->addSeparator();
 					connect(parameter_menu->addAction("Set continous Notes"), SIGNAL(triggered(bool)), this, SLOT(set_continous_notes()));
 					
+
+				QMenu *view_menu = new QMenu("&View");
+				menu_bar->addMenu(view_menu);
+					
+
 				QMenu *help_menu = new QMenu("&Help");
 				menu_bar->addMenu(help_menu);
 					connect(help_menu->addAction("&Help in Log"), SIGNAL(triggered(bool)), this, SLOT(show_help_text()));
