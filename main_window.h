@@ -228,8 +228,12 @@ class main_window : public QMainWindow {
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
 				int col = 0;
-				generator_table->setCellWidget(row, col++, new QSlider(Qt::Horizontal));
+				generator_table->setCellWidget(row, col++, new QSlider(Qt::Vertical));
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.name.c_str())));
+				generator_table->setCellWidget(row, col++, new QSlider(Qt::Vertical));
+				generator_table->setCellWidget(row, col++, new QSlider(Qt::Vertical));
+				generator_table->setCellWidget(row, col++, new QSlider(Qt::Vertical));
+				generator_table->setCellWidget(row, col++, new QSlider(Qt::Vertical));
 				generator_table->setCellWidget(row, col++, new keyboard_widget((*it)));
 				generator_table->setCellWidget(row, col++, new waveform_widget((*it)));
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.sample_->t.file_name.c_str())));
@@ -565,13 +569,13 @@ class main_window : public QMainWindow {
 		}
 
 		void show_keyboard(bool show) {
-			generator_table->setColumnHidden(2, !show);
+			generator_table->setColumnHidden(6, !show);
 
 		}
 
 
 		void show_waveform(bool show) {
-			generator_table->setColumnHidden(3, !show);
+			generator_table->setColumnHidden(7, !show);
 
 		}
 
@@ -589,6 +593,7 @@ class main_window : public QMainWindow {
 			headers 
 				<< "Gain"
 				<< "Name"
+				<< "A" << "D" << "S" << "R"
 				<< "Note-Range"
 				<< "Waveform"
 				<< "Sample";
