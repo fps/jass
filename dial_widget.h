@@ -9,9 +9,6 @@
 #include <cmath>
 #include <algorithm>
 
-#include "generator.h"
-
-
 struct dial_widget : public QWidget {
 	Q_OBJECT
 
@@ -47,7 +44,7 @@ struct dial_widget : public QWidget {
 
 			painter.drawArc(r, -16 * 60, 16 * 300);
 
-			p.setWidth(5);
+			p.setWidth(4);
 			painter.setPen(p);
 			int angle = 300 * 16 - ((val-min_val)/(max_val-min_val) * 300 * 16) - 16 * 60;
 			painter.drawArc(r, angle, 1);
@@ -84,7 +81,7 @@ struct dial_widget : public QWidget {
 				double angle =  fmod((270 + 180.0 * atan2(y,x)/M_PI), 360.0);
 				//std::cout << angle << std::endl;
 				val = min_val + (max_val - min_val) * (1.0/300.0) * (std::max(std::min(angle, 330.0), 30.0) - 30.0);
-				std::cout << val << std::endl;
+				//std::cout << val << std::endl;
 				emit valueChanged(val);
 				e->accept();
 				update();
@@ -98,7 +95,7 @@ struct dial_widget : public QWidget {
 
 		QSize sizeHint() const
 		{
-			return QSize(30, 30);
+			return QSize(20, 20);
 		}
 	signals:
 		void valueChanged(double);
