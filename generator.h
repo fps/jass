@@ -20,6 +20,9 @@ struct generator {
 	std::string name;
 
 	disposable_sample_ptr sample_;
+
+	//! sample start and sample end are times instead of frames, so that stuff still works when
+	//! loading a setup with a different engine samplerate
 	double sample_start;
 	double sample_end;
 	

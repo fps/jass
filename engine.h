@@ -78,7 +78,13 @@ class engine : public QObject {
 		disposable_gvoice_vector_ptr voices;
 		unsigned int current_voice;
 		
-	public:
+		static engine *get(const char *uuid = 0) {
+			if (instance) return instance;
+			return (instance = new engine(uuid));
+		}
+
+	protected:
+		static engine *instance;
 		engine(const char *uuid = 0) 
 		: 
 			commands(1024),
@@ -102,9 +108,11 @@ class engine : public QObject {
 			jack_activate(jack_client);
 		}
 
+	public:
 		~engine() {
 			jack_deactivate(jack_client);
 			jack_client_close(jack_client);
+			instance = 0;
 		}
 
 		void set_number_of_voices(unsigned int num) {

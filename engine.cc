@@ -1,11 +1,6 @@
-#ifdef SWIG
-%module engine
-%{
 #include "engine.h"
-%}
-#endif
 
-#include "engine.h"
+engine *engine::instance = 0;
 
 extern "C" {
 	int process_callback(jack_nframes_t frames, void *p) {

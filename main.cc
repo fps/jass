@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 	{
 		const char *uuid = 0;
 		if (vm.count("UUID")) uuid = vm["UUID"].as<std::string>().c_str();
-		engine e(uuid);
+		engine &e = *engine::get(uuid);
 
 		main_window w(e);
 		//! The session_signal is received possibly in the process thread thus we need to use a QueuedConnection
@@ -101,6 +101,7 @@ int main(int argc, char **argv) {
 
 		w.setEnabled(true);
 		q_application.exec();
+		delete &e;
 	}
 	std::cout << "exiting" << std::endl;
 
