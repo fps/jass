@@ -11,26 +11,92 @@
 #include <QPointF>
 #include <QPalette>
 #include <QPainter>
+#include <QSlider>
+#include <QDial>
+#include <QGridLayout>
 
 #include <cmath>
 
 #include "generator.h"
+#include "dial_widget.h"
 
 struct adsr_widget : public QWidget {
 	Q_OBJECT
 
 	disposable_generator_ptr gen;
 
+	dial_widget *gain;
+	dial_widget *a;
+	dial_widget *d;
+	dial_widget *s;
+	dial_widget *r;
+		
+	public slots:
+		void changed(double) {
+			gen->t.gain = gain->value();
+			gen->t.attack_g = a->value();
+			gen->t.decay_g = d->value();
+			gen->t.sustain_g = s->value();
+			gen->t.release_g = r->value();
+		}
+
+
 	public:
 		adsr_widget(disposable_generator_ptr gen, QWidget *parent = 0) :
 			QWidget(parent),
 			gen(gen)
 		{
+
+			gain = new dial_widget();
+			gain->setToolTip("Gain");
+			gain->set_value(gen->t.gain);
+			gain->set_min_value(0);
+			gain->set_max_value(2);
+			connect(gain, SIGNAL(valueChanged(double)), this, SLOT(changed(double)));
+
+			a = new dial_widget();
+			a->setToolTip("Attack");
+			a->set_value(gen->t.attack_g);
+			a->set_min_value(0.001);
+			a->set_max_value(3);
+			connect(a, SIGNAL(valueChanged(double)), this, SLOT(changed(double)));
+
+			d = new dial_widget();
+			d->setToolTip("Decay");
+			d->set_value(gen->t.decay_g);
+			d->set_min_value(0.001);
+			d->set_max_value(3);
+			connect(d, SIGNAL(valueChanged(double)), this, SLOT(changed(double)));
+
+			s = new dial_widget();
+			s->setToolTip("Sustain");
+			s->set_value(gen->t.sustain_g);
+			s->set_min_value(0);
+			s->set_max_value(1);
+			connect(s, SIGNAL(valueChanged(double)), this, SLOT(changed(double)));
+
+			r = new dial_widget();
+			r->setToolTip("Release");
+			r->set_value(gen->t.release_g);
+			r->set_min_value(0.001);
+			r->set_max_value(10);
+			connect(r, SIGNAL(valueChanged(double)), this, SLOT(changed(double)));
+
+			QGridLayout *layout = new QGridLayout();
+			layout->addWidget(gain, 0, 0);
+			layout->addWidget(a, 0, 1);
+			layout->addWidget(d, 0, 2);
+			layout->addWidget(s, 0, 3);
+			layout->addWidget(r, 0, 4);
+			setLayout(layout);
+#if 0
 			QPalette palette = QWidget::palette();
 			palette.setColor(backgroundRole(), Qt::white);
 			setPalette(palette);
+#endif
 		}
 
+#if 0
 		void paintEvent(QPaintEvent *)
 		{
 			QPainter painter(this);
@@ -78,6 +144,7 @@ struct adsr_widget : public QWidget {
 			painter.drawLine(stretch * (gen->t.attack_g + gen->t.decay_g + 1.0), 0, stretch * (gen->t.attack_g + gen->t.decay_g + 1.0), height());
 		}
 
+
 		QSize minimumSizeHint() const
 		{
 			return QSize(50, 100);
@@ -87,6 +154,7 @@ struct adsr_widget : public QWidget {
 		{
 			return QSize(200, 100);
 		}
+#endif
 };
 
 #endif

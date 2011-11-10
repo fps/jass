@@ -228,12 +228,8 @@ class main_window : public QMainWindow {
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
 				int col = 0;
-				generator_table->setCellWidget(row, col++, new QSlider(Qt::Vertical));
+				generator_table->setCellWidget(row, col++, new adsr_widget(*it));
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.name.c_str())));
-				generator_table->setCellWidget(row, col++, new QSlider(Qt::Vertical));
-				generator_table->setCellWidget(row, col++, new QSlider(Qt::Vertical));
-				generator_table->setCellWidget(row, col++, new QSlider(Qt::Vertical));
-				generator_table->setCellWidget(row, col++, new QSlider(Qt::Vertical));
 				generator_table->setCellWidget(row, col++, new keyboard_widget((*it)));
 				generator_table->setCellWidget(row, col++, new waveform_widget((*it)));
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.sample_->t.file_name.c_str())));
@@ -243,178 +239,7 @@ class main_window : public QMainWindow {
 			}
 
 			generator_table->resizeColumnsToContents();
-			generator_table->resizeRowsToContents();
-#if 0
-			int row = 0;
-			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
-				int col = 0;
-				QComboBox *combo_box;
-				QDoubleSpinBox *double_spin_box;
-				QSpinBox *spin_box;
-				QCheckBox *check_box;
-
-				//! Name
-				generator_table->setItem(row, col++, new QTableWidgetItem((*it)->t.name.c_str()));
-
-				//! Sample
-				generator_table->setItem(row, col++, new QTableWidgetItem((*it)->t.sample_->t.file_name.c_str()));
-
-				//! Start
-				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				double_spin_box->setDecimals(6);
-				double_spin_box->setEnabled(false);
-				double_spin_box->setRange(0.0, 100000.0); double_spin_box->setValue((*it)->t.sample_start);
-				connect(
-					double_spin_box, SIGNAL(valueChanged(double)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, double_spin_box);
-
-				//! End
-				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				double_spin_box->setEnabled(false);
-				double_spin_box->setDecimals(6);
-				double_spin_box->setRange(0.0,100000.0); double_spin_box->setValue((*it)->t.sample_end);
-				connect(
-					double_spin_box, SIGNAL(valueChanged(double)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, double_spin_box);
-
-				//! Looping
-				check_box = new QCheckBox(); check_box->setProperty("row", row);
-				check_box->setEnabled(false);
-				check_box->setChecked((*it)->t.looping);
-				connect(
-					check_box, SIGNAL(stateChanged(int)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, check_box);
-
-
-				//! Gain
-				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				double_spin_box->setDecimals(6);
-				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.gain);
-				connect(
-					double_spin_box, SIGNAL(valueChanged(double)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, double_spin_box);
-
-
-				//! Channel
-				spin_box = new QSpinBox(); spin_box->setProperty("row", row);
-				spin_box->setRange(0,15); spin_box->setValue((*it)->t.channel);
-				connect(
-					spin_box, SIGNAL(valueChanged(int)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, spin_box);
-
-				//! Note
-				spin_box = new QSpinBox(); spin_box->setProperty("row", row);
-				spin_box->setRange(0,127); spin_box->setValue((*it)->t.note);
-				connect(
-					spin_box, SIGNAL(valueChanged(int)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, spin_box);
-
-				//! MinNote
-				spin_box = new QSpinBox(); spin_box->setProperty("row", row);
-				spin_box->setRange(0,127); spin_box->setValue((*it)->t.min_note);
-				connect(
-					spin_box, SIGNAL(valueChanged(int)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, spin_box);
-
-				//! MaxNote
-				spin_box = new QSpinBox(); spin_box->setProperty("row", row);
-				spin_box->setRange(0,127); spin_box->setValue((*it)->t.max_note);
-				connect(
-					spin_box, SIGNAL(valueChanged(int)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, spin_box);
-
-				//! MinVelocity
-				spin_box = new QSpinBox(); spin_box->setProperty("row", row);
-				spin_box->setRange(0,127); spin_box->setValue((*it)->t.min_velocity);
-				connect(
-					spin_box, SIGNAL(valueChanged(int)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, spin_box);
-
-				//! MaxVelocity
-				spin_box = new QSpinBox(); spin_box->setProperty("row", row);
-				spin_box->setRange(0,127); spin_box->setValue((*it)->t.max_velocity);
-				connect(
-					spin_box, SIGNAL(valueChanged(int)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, spin_box);
-				
-				//! VelocityFactor
-				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				double_spin_box->setDecimals(6);
-				double_spin_box->setMinimum(-100000.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.velocity_factor);
-				connect(
-					double_spin_box, SIGNAL(valueChanged(double)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, double_spin_box);
-
-				//! AttackG
-				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				//double_spin_box->setEnabled(false);
-				double_spin_box->setDecimals(6);
-				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.attack_g);
-				connect(
-					double_spin_box, SIGNAL(valueChanged(double)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, double_spin_box);
-
-				//! DecayG
-				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				//double_spin_box->setEnabled(false);
-				double_spin_box->setDecimals(6);
-				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.decay_g);
-				connect(
-					double_spin_box, SIGNAL(valueChanged(double)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, double_spin_box);
-
-				//! SustainG
-				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				//double_spin_box->setEnabled(false);
-				double_spin_box->setDecimals(6);
-				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.sustain_g);
-				connect(
-					double_spin_box, SIGNAL(valueChanged(double)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, double_spin_box);
-
-				//! ReleaseG
-				double_spin_box = new QDoubleSpinBox(); double_spin_box->setProperty("row", row);
-				//double_spin_box->setEnabled(false);
-				double_spin_box->setDecimals(6);
-				double_spin_box->setMinimum(0.0); double_spin_box->setMaximum(100000.0); double_spin_box->setValue((*it)->t.release_g);
-				connect(
-					double_spin_box, SIGNAL(valueChanged(double)), this,
-					SLOT(generator_cell_widget_changed())
-				);
-				generator_table->setCellWidget(row, col++, double_spin_box);
-
-
-				++row;
-			}
-#endif
+			//generator_table->resizeRowsToContents();
 		}
 	
 		void load_setup(const std::string &file_name) {
@@ -569,13 +394,13 @@ class main_window : public QMainWindow {
 		}
 
 		void show_keyboard(bool show) {
-			generator_table->setColumnHidden(6, !show);
+			generator_table->setColumnHidden(2, !show);
 
 		}
 
 
 		void show_waveform(bool show) {
-			generator_table->setColumnHidden(7, !show);
+			generator_table->setColumnHidden(3, !show);
 
 		}
 
@@ -591,9 +416,8 @@ class main_window : public QMainWindow {
 			generator_table = new QTableWidget();
 			QStringList headers;
 			headers 
-				<< "Gain"
+				<< "Gain/ADSR"
 				<< "Name"
-				<< "A" << "D" << "S" << "R"
 				<< "Note-Range"
 				<< "Waveform"
 				<< "Sample";
