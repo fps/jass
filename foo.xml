@@ -13,9 +13,9 @@
     <LoopEnd>50000</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>60</Note>
+    <MinNote>60</MinNote>
+    <MaxNote>60</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -35,9 +35,9 @@
     <LoopEnd>0</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>62</Note>
+    <MinNote>62</MinNote>
+    <MaxNote>62</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -58,8 +58,8 @@
     <Gain>1</Gain>
     <Channel>0</Channel>
     <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <MinNote>64</MinNote>
+    <MaxNote>64</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -79,9 +79,9 @@
     <LoopEnd>0</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>65</Note>
+    <MinNote>65</MinNote>
+    <MaxNote>65</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -101,9 +101,9 @@
     <LoopEnd>0</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>67</Note>
+    <MinNote>67</MinNote>
+    <MaxNote>67</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -123,9 +123,9 @@
     <LoopEnd>0</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>69</Note>
+    <MinNote>69</MinNote>
+    <MaxNote>69</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -145,9 +145,9 @@
     <LoopEnd>0</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>71</Note>
+    <MinNote>71</MinNote>
+    <MaxNote>71</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -167,9 +167,9 @@
     <LoopEnd>0</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>72</Note>
+    <MinNote>72</MinNote>
+    <MaxNote>72</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -189,9 +189,9 @@
     <LoopEnd>0</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>74</Note>
+    <MinNote>74</MinNote>
+    <MaxNote>74</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -211,9 +211,9 @@
     <LoopEnd>0</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>76</Note>
+    <MinNote>76</MinNote>
+    <MaxNote>76</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -233,9 +233,9 @@
     <LoopEnd>0</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>77</Note>
+    <MinNote>77</MinNote>
+    <MaxNote>77</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
@@ -255,9 +255,9 @@
     <LoopEnd>0</LoopEnd>
     <Gain>1</Gain>
     <Channel>0</Channel>
-    <Note>64</Note>
-    <MinNote>0</MinNote>
-    <MaxNote>127</MaxNote>
+    <Note>79</Note>
+    <MinNote>79</MinNote>
+    <MaxNote>79</MaxNote>
     <MinVelocity>0</MinVelocity>
     <MaxVelocity>127</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
