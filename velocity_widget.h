@@ -34,6 +34,7 @@ struct velocity_widget : public QWidget {
 			factor->set_min_value(0);
 			factor->set_max_value(2);
 			factor->set_value(gen->t.velocity_factor);
+			factor->setToolTip("Factor");
 			connect(factor, SIGNAL(valueChanged(double)), this, SLOT(factor_changed(double)));
 			layout->addWidget(factor, 0);
 			layout->addWidget(new velocity_range_widget(gen), 1);
