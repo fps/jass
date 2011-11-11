@@ -27,13 +27,13 @@ struct ringbuffer {
 	ringbuffer(unsigned int size) : size(size) {
 		jack_ringbuffer = jack_ringbuffer_create(sizeof(T) * size);
 
-		for (int i = 0; i < size; ++i) {
+		for (unsigned int i = 0; i < size; ++i) {
 			T *t = new (jack_ringbuffer->buf + sizeof(T) * i) T();
 		}
 	}
 
 	~ringbuffer() {
-		for (int i = 0; i < size; ++i) {
+		for (unsigned int i = 0; i < size; ++i) {
 			((T*)(jack_ringbuffer->buf + sizeof(T) * i))->~T();
 		}
 

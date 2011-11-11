@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 
 #include <iostream>
+#include <algorithm>
 
 #include "generator.h"
 #include "engine.h"
@@ -93,7 +94,7 @@ struct keyboard_widget : public QWidget {
 
 		void mouseMoveEvent(QMouseEvent *e) {
 			if ((e->buttons() & Qt::LeftButton) && (e->modifiers() & Qt::ShiftModifier)) {
-				gen->t.max_note = (double)(e->x())/width() * 128;
+				gen->t.max_note = std::max((unsigned int)((double)(e->x())/width() * 128), gen->t.min_note);
 			}
 			update();
 			e->accept();

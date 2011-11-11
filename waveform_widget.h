@@ -18,6 +18,48 @@
 
 #include "generator.h"
 
+//! snap all sample/loop start/end points to the closest following zero crossing
+inline void snap_to_zero(disposable_generator_ptr g) {
+	double thresh = 0.001;
+	unsigned int sample_length = g->t.sample_->t.data_0.size();
+	unsigned int i;
+
+	//! Adjust sample/loop start by finding zero crossing left of point
+	unsigned int sstart = sample_length * g->t.sample_start;
+	for (i = sstart; i >= 0; --i) {
+		if (fabs(g->t.sample_->t.data_0[i]) < thresh) {
+			break;
+		}
+	}
+	g->t.sample_start = (double)i/sample_length;
+
+	unsigned int lstart = sample_length * g->t.loop_start;
+	for (i = lstart; i >= 0; --i) {
+		if (fabs(g->t.sample_->t.data_0[i]) < thresh) {
+			break;
+		}
+	}
+	g->t.loop_start = (double)i/sample_length;
+
+	//! Adjust sample/loop end by finding zero crossing right of point	
+	unsigned int send = sample_length * g->t.sample_end;
+	for (i = send; i < sample_length; ++i) {
+		if (fabs(g->t.sample_->t.data_0[i]) < thresh) {
+			break;
+		}
+	}
+	g->t.sample_end = (double)i/sample_length;
+
+	unsigned int lend = sample_length * g->t.loop_end;
+	for (i = lend; i < sample_length; ++i) {
+		if (fabs(g->t.sample_->t.data_0[i]) < thresh) {
+			break;
+		}
+	}
+	g->t.loop_end = (double)i/sample_length;
+
+}
+
 struct waveform_widget : public QWidget {
 	Q_OBJECT
 
@@ -68,11 +110,17 @@ struct waveform_widget : public QWidget {
 		void mouseMoveEvent(QMouseEvent *e) {
 			if ((e->buttons() & Qt::LeftButton)) {
 				if (e->modifiers() & Qt::ShiftModifier) {
-					gen->t.loop_end = std::max(std::min((double)(e->x())/width(), gen->t.sample_end), gen->t.loop_start);
+					gen->t.loop_end = std::max(
+								std::min((double)(e->x())/width(), gen->t.sample_end), 
+								gen->t.loop_start
+					);
+					snap_to_zero(gen);
 					e->accept();
 					update();
 				} else {
 					gen->t.sample_end = std::max((double)(e->x())/width(), gen->t.sample_start);
+					gen->t.loop_end = std::min(gen->t.sample_end, gen->t.loop_end);
+					snap_to_zero(gen);
 					e->accept();
 					update();
 				}
@@ -83,10 +131,27 @@ struct waveform_widget : public QWidget {
 			if (e->button() == Qt::LeftButton) {
 				if (e->modifiers() & Qt::ShiftModifier) {
 					gen->t.loop_start = std::min(std::max((double)(e->x())/width(), gen->t.sample_start), gen->t.sample_end);
+					snap_to_zero(gen);
 					e->accept();
 					update();
 				} else {
 					gen->t.sample_start = std::min((double)(e->x())/width(), gen->t.sample_end);
+					gen->t.loop_start = std::max(gen->t.sample_start, gen->t.loop_start);
+					snap_to_zero(gen);
+					e->accept();
+					update();
+				}
+			}
+			if (e->button() == Qt::RightButton) {
+				if (e->modifiers() & Qt::ShiftModifier) {
+					gen->t.loop_end = std::max(std::min((double)(e->x())/width(), gen->t.sample_end), gen->t.sample_start);
+					snap_to_zero(gen);
+					e->accept();
+					update();
+				} else {
+					gen->t.sample_end = std::max((double)(e->x())/width(), gen->t.sample_start);
+					gen->t.loop_end = std::min(gen->t.sample_end, gen->t.loop_end);
+					snap_to_zero(gen);
 					e->accept();
 					update();
 				}

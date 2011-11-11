@@ -33,7 +33,7 @@ struct velocity_range_widget : public QWidget {
 
 		void mouseMoveEvent(QMouseEvent *e) {
 			if ((e->buttons() & Qt::LeftButton)) {
-				gen->t.max_velocity = (double)(e->x())/width() * 128;
+				gen->t.max_velocity = std::max((unsigned int)((double)(e->x())/width() * 128), gen->t.min_velocity);
 				e->accept();
 				update();
 			}
