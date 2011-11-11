@@ -117,9 +117,18 @@ struct generator {
 			if (((int)v.note - (int)note) != 0) 
 				stretch = pow(pow(2.0, 1.0/12.0), (int)v.note - (int)note);
 
-			int current_frame = sample_->t.data_0.size() * sample_start + floor(stretch * (last_frame_time + frame - v.note_on_frame));
+			unsigned int sample_length = sample_->t.data_0.size();
+			unsigned int current_frame = sample_length * sample_start + floor(stretch * (last_frame_time + frame - v.note_on_frame));
+
+			if (looping) {
+				if (current_frame >= loop_end * sample_length) 
+					current_frame = 
+						(unsigned int)(loop_start * sample_length) + 
+							(current_frame - (unsigned int)(loop_start * sample_length)) % (unsigned int)(sample_length * 
+								(loop_end - loop_start));
+			}
 					
-			if (current_frame < 0 || current_frame >= sample_->t.data_0.size() * sample_end) {
+			if (current_frame < 0 || current_frame >= sample_length * sample_end) {
 				v.state = voice::OFF;
 				return;
 			} 
