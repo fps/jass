@@ -390,10 +390,7 @@ class main_window : public QMainWindow {
 		void show_help_text() {
 			log_text_edit->append("-------------------");
 			log_text_edit->append("Quick Tutorial:");
-			log_text_edit->append("In the file browser: Shift-DoubleClick to audit a sample. DoubleClick to load it. Note that you can also select multiple files and then press the Open button to load several samples at once.");
-			log_text_edit->append("Use the Parameter menu to quickly-mass assign parameters to selected ranges of generators.");
-			log_text_edit->append("Set Continous notes: Set the note of a generator. Select a range of generators by clicking on their names or dragging across their names. Then use the function from the menu. Continous notes will be assigned to all generators, starting with the note of the first in the selection. Also their min and max notes will be set to that same note.");
-			log_text_edit->append("To edit the midi note range a generator responds to use the view->show Note Range menu entry and: Doubleclick to set note, min_note and max_note at the same time. Hold shift and the left mouse button down to drag a range. Click a note to set note only");
+			log_text_edit->append("Take note of the tooltips. They should explain ALL THE THINGS!!!");
 			log_text_edit->append("-------------------");
 		}
 
