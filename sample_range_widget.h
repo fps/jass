@@ -27,6 +27,7 @@ struct sample_range_widget : public QWidget {
 		{
 			QHBoxLayout *layout = new QHBoxLayout();
 			looping = new QCheckBox();
+			looping->setToolTip("Toggle to enable looping");
 			connect(looping, SIGNAL(toggled(bool)), this, SLOT(loop_changed(bool)));
 			layout->addWidget(looping, 0);
 			layout->addWidget(new waveform_widget(gen), 1);
