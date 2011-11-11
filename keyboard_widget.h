@@ -64,7 +64,7 @@ struct keyboard_widget : public QWidget {
 
 			painter.setPen(QColor(0, 0, 255, 63));
 			painter.setBrush(QColor(0, 0, 255, 63));
-			painter.drawRect(width() * (double(gen->t.min_note)/128), 0, width() * (gen->t.max_note - gen->t.min_note)/(double)128 - 1, height());
+			painter.drawRect(width() * (double(gen->t.min_note)/128), 0, width() * (gen->t.max_note - gen->t.min_note + 1)/(double)128 - 1, height());
 
 		}
 
@@ -83,11 +83,17 @@ struct keyboard_widget : public QWidget {
 		void mousePressEvent(QMouseEvent *e) {
 			if (e->button() == Qt::LeftButton) {
 				if (e->modifiers() & Qt::ShiftModifier) 
-					gen->t.min_note = (double)(e->x())/width() * 128;
+					gen->t.min_note = std::min((double)(e->x())/width() * 128, (double)(gen->t.max_note));
 				else {
 					gen->t.note = (double)(e->x())/width() * 128;
 				}
 			}
+
+			if (e->button() == Qt::RightButton) {
+				if (e->modifiers() & Qt::ShiftModifier) 
+					gen->t.max_note = std::max((double)(e->x())/width() * 128, (double)(gen->t.min_note));
+			}
+
 			update();
 			e->accept();
 		}
@@ -100,6 +106,7 @@ struct keyboard_widget : public QWidget {
 			e->accept();
 		}
 
+#if 0
 		void mouseReleaseEvent(QMouseEvent *e) {
 			if (e->modifiers() & Qt::ShiftModifier) {
 				e->accept();
@@ -113,7 +120,7 @@ struct keyboard_widget : public QWidget {
 			update();
 			e->accept();
 		}
-
+#endif
 		void mouseDoubleClickEvent(QMouseEvent *e) {
 			if (e->button() == Qt::LeftButton) {
 				gen->t.note = gen->t.min_note = gen->t.max_note = (double)(e->x())/width() * 128;

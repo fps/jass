@@ -17,7 +17,7 @@ struct velocity_range_widget : public QWidget {
 			QWidget(parent),
 			gen(g) 
 		{
-			setToolTip("Left Click and Drag to the right to sweep a velocity range (0..127) which this generator responds to");
+			setToolTip("Left click to set minimum velocity. Right click to set maximum. Left Click and Drag to the right to sweep a velocity range (0..127) which this generator responds to");
 		}
 
 		void paintEvent(QPaintEvent *)
@@ -28,7 +28,7 @@ struct velocity_range_widget : public QWidget {
 			painter.setPen(QColor(0, 0, 128, 64));
 			painter.setBrush(QColor(0,0, 128, 64));
 
-			painter.drawRect(width() * gen->t.min_velocity/128.0, 0, width() * (gen->t.max_velocity - gen->t.min_velocity)/128.0, height());
+			painter.drawRect(width() * gen->t.min_velocity/128.0, 0, width() * (gen->t.max_velocity - gen->t.min_velocity + 1)/128.0, height());
 		}
 
 		void mouseMoveEvent(QMouseEvent *e) {
@@ -41,7 +41,12 @@ struct velocity_range_widget : public QWidget {
 
 		void mousePressEvent(QMouseEvent *e) {
 			if (e->button() == Qt::LeftButton) {
-				gen->t.min_velocity = (double)(e->x())/width() * 128;
+				gen->t.min_velocity = std::min((double)(e->x())/width() * 128, (double)(gen->t.max_velocity));
+				e->accept();
+				update();
+			}
+			if (e->button() == Qt::RightButton) {
+				gen->t.max_velocity = std::max((double)(e->x())/width() * 128, (double)(gen->t.min_velocity));
 				e->accept();
 				update();
 			}
