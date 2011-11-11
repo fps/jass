@@ -11,11 +11,11 @@
 	 <xsd:sequence>
 		<xsd:element name="Name" type="xsd:string"/>
 		<xsd:element name="Sample" type="xsd:string"/>
-		<xsd:element name="SampleStart" type="xsd:nonNegativeInteger"/>
-		<xsd:element name="SampleEnd" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="SampleStart" type="xsd:float"/>
+		<xsd:element name="SampleEnd" type="xsd:float"/>
 		<xsd:element name="Looping" type="xsd:boolean"/>
-		<xsd:element name="LoopStart" type="xsd:nonNegativeInteger"/>
-		<xsd:element name="LoopEnd" type="xsd:nonNegativeInteger"/>
+		<xsd:element name="LoopStart" type="xsd:float"/>
+		<xsd:element name="LoopEnd" type="xsd:float"/>
 		<xsd:element name="Gain" type="xsd:float"/>
 		<xsd:element name="Channel" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="Note" type="xsd:nonNegativeInteger"/>

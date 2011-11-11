@@ -11,6 +11,7 @@
 #include <QPointF>
 #include <QPalette>
 #include <QPainter>
+#include <QMouseEvent>
 
 #include <cmath>
 
@@ -52,13 +53,44 @@ struct waveform_widget : public QWidget {
 			//! Draw start/end range
 			painter.setPen(QColor(0, 0, 128, 64));
 			painter.setBrush(QColor(0, 0, 128, 64));
-			painter.drawRect(width() * gen->t.sample_start/gen->t.sample_->t.data_0.size(), 0, width() * gen->t.sample_end/gen->t.sample_->t.data_0.size(), height());
+			painter.drawRect(width() * gen->t.sample_start, 0, width() * (gen->t.sample_end - gen->t.sample_start), height());
 	
 			//! Draw loop range
 			painter.setPen(QColor(128, 0, 0, 64));
 			painter.setBrush(QColor(128, 0, 0, 64));
-			painter.drawRect(width() * gen->t.loop_start/gen->t.sample_->t.data_0.size(), 0, width() * gen->t.loop_end/gen->t.sample_->t.data_0.size(), height());
+			painter.drawRect(width() * gen->t.loop_start, 0, width() * (gen->t.loop_end - gen->t.loop_start), height());
+		}
+
+
+		void mouseMoveEvent(QMouseEvent *e) {
+			if ((e->buttons() & Qt::LeftButton)) {
+				if (e->modifiers() & Qt::ShiftModifier) {
+					gen->t.loop_end = (double)(e->x())/width();
+					e->accept();
+					update();
+				} else {
+					gen->t.sample_end = (double)(e->x())/width();
+					e->accept();
+					update();
+				}
 			}
+		}
+
+		void mousePressEvent(QMouseEvent *e) {
+			if (e->button() == Qt::LeftButton) {
+				if (e->modifiers() & Qt::ShiftModifier) {
+					gen->t.loop_start = (double)(e->x())/width();
+					e->accept();
+					update();
+				} else {
+					gen->t.sample_start = (double)(e->x())/width();
+					e->accept();
+					update();
+				}
+			}
+		}
+
+
 
 		QSize minimumSizeHint() const
 		{

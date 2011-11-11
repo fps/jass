@@ -21,8 +21,7 @@ struct generator {
 
 	disposable_sample_ptr sample_;
 
-	//! sample start and sample end are times instead of frames, so that stuff still works when
-	//! loading a setup with a different engine samplerate
+	//! sample start and sample end are fractions of the total length of the sample 
 	double sample_start;
 	double sample_end;
 	
@@ -59,10 +58,10 @@ struct generator {
 		const std::string &name,
 		disposable_sample_ptr s,
 		double sample_start = 0,
-		double sample_end = 0,
+		double sample_end = 1.0,
 		bool looping = false,
 		double loop_start = 0,
-		double loop_end = 0,
+		double loop_end = 1.0,
 		double gain = 1.0,
 		unsigned int channel = 0,
 		unsigned int note = 64,
@@ -118,9 +117,9 @@ struct generator {
 			if (((int)v.note - (int)note) != 0) 
 				stretch = pow(pow(2.0, 1.0/12.0), (int)v.note - (int)note);
 
-			int current_frame = sample_start + floor(stretch * (last_frame_time + frame - v.note_on_frame));
+			int current_frame = sample_->t.data_0.size() * sample_start + floor(stretch * (last_frame_time + frame - v.note_on_frame));
 					
-			if (current_frame < 0 || current_frame >= sample_->t.data_0.size() + sample_end) {
+			if (current_frame < 0 || current_frame >= sample_->t.data_0.size() * sample_end) {
 				v.state = voice::OFF;
 				return;
 			} 

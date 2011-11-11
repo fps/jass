@@ -26,13 +26,15 @@
 #include <QTextEdit>
 #include <QDial>
 
+#include "jass.hxx"
+
 #include "engine.h"
 #include "assign.h"
 #include "generator.h"
 #include "generator_widget.h"
 #include "keyboard_widget.h"
-#include "jass.hxx"
 #include "velocity_widget.h"
+#include "sample_range_widget.h"
 
 class main_window : public QMainWindow {
 	Q_OBJECT
@@ -233,7 +235,7 @@ class main_window : public QMainWindow {
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.name.c_str())));
 				generator_table->setCellWidget(row, col++, new keyboard_widget((*it)));
 				generator_table->setCellWidget(row, col++, new velocity_widget((*it)));
-				generator_table->setCellWidget(row, col++, new waveform_widget((*it)));
+				generator_table->setCellWidget(row, col++, new sample_range_widget((*it)));
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.sample_->t.file_name.c_str())));
 				//generator_widget *w = new generator_widget(*it);
 				//generator_table->setCellWidget(row++, 0, w);
