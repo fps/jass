@@ -14,6 +14,7 @@
 #include <QMouseEvent>
 
 #include <cmath>
+#include <algorithm>
 
 #include "generator.h"
 
@@ -67,11 +68,11 @@ struct waveform_widget : public QWidget {
 		void mouseMoveEvent(QMouseEvent *e) {
 			if ((e->buttons() & Qt::LeftButton)) {
 				if (e->modifiers() & Qt::ShiftModifier) {
-					gen->t.loop_end = (double)(e->x())/width();
+					gen->t.loop_end = std::max(std::min((double)(e->x())/width(), gen->t.sample_end), gen->t.loop_start);
 					e->accept();
 					update();
 				} else {
-					gen->t.sample_end = (double)(e->x())/width();
+					gen->t.sample_end = std::max((double)(e->x())/width(), gen->t.sample_start);
 					e->accept();
 					update();
 				}
@@ -81,11 +82,11 @@ struct waveform_widget : public QWidget {
 		void mousePressEvent(QMouseEvent *e) {
 			if (e->button() == Qt::LeftButton) {
 				if (e->modifiers() & Qt::ShiftModifier) {
-					gen->t.loop_start = (double)(e->x())/width();
+					gen->t.loop_start = std::min(std::max((double)(e->x())/width(), gen->t.sample_start), gen->t.sample_end);
 					e->accept();
 					update();
 				} else {
-					gen->t.sample_start = (double)(e->x())/width();
+					gen->t.sample_start = std::min((double)(e->x())/width(), gen->t.sample_end);
 					e->accept();
 					update();
 				}
