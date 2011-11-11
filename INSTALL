@@ -10,7 +10,7 @@ boost::bind
 boost::function
 xsdcxx
 
-If all requirements are met, these commands should build the project:
+If all requirements are met, these commands should build the project (using 4 compiler instances in parallel):
 
 mkdir bld
 cd bld
