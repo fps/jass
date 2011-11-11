@@ -473,19 +473,8 @@ class main_window : public QMainWindow {
 
 				QMenu *generator_menu = new QMenu("&Generator");
 				menu_bar->addMenu(generator_menu);
-					generator_menu->addAction("&Duplicate");
-					generator_menu->addSeparator();
 					connect(generator_menu->addAction("&Remove"), SIGNAL(triggered(bool)), this, SLOT(remove_generator()));;
 
-				QMenu *parameter_menu = new QMenu("&Parameter");
-				menu_bar->addMenu(parameter_menu);
-					//parameter_menu->addAction("Set &Channel");
-					//parameter_menu->addAction("Set &Note");
-					//parameter_menu->addAction("Set &Min. Note");
-					//parameter_menu->addAction("Set &Max. Note");
-					//parameter_menu->addSeparator();
-					connect(parameter_menu->addAction("Set continous Notes"), SIGNAL(triggered(bool)), this, SLOT(set_continous_notes()));
-					
 
 				QMenu *view_menu = new QMenu("&View");
 				menu_bar->addMenu(view_menu);
