@@ -29,6 +29,7 @@ struct waveform_widget : public QWidget {
 			QPalette palette = QWidget::palette();
 			palette.setColor(backgroundRole(), Qt::white);
 			setPalette(palette);
+			setToolTip("Left-Click and drag to the right to sweep sample-start to sample-end. Shift-left-click and drag to the right to set loop-min to loop-max");
 		}
 
 		void paintEvent(QPaintEvent *)

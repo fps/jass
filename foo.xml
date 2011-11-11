@@ -17,7 +17,7 @@
     <MinNote>60</MinNote>
     <MaxNote>60</MaxNote>
     <MinVelocity>0</MinVelocity>
-    <MaxVelocity>127</MaxVelocity>
+    <MaxVelocity>26</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
     <AttackGain>52.7751</AttackGain>
     <DecayGain>0</DecayGain>
@@ -38,8 +38,8 @@
     <Note>62</Note>
     <MinNote>62</MinNote>
     <MaxNote>62</MaxNote>
-    <MinVelocity>0</MinVelocity>
-    <MaxVelocity>127</MaxVelocity>
+    <MinVelocity>26</MinVelocity>
+    <MaxVelocity>131</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
     <AttackGain>0.001</AttackGain>
     <DecayGain>0</DecayGain>
@@ -61,7 +61,7 @@
     <MinNote>64</MinNote>
     <MaxNote>64</MaxNote>
     <MinVelocity>0</MinVelocity>
-    <MaxVelocity>127</MaxVelocity>
+    <MaxVelocity>136</MaxVelocity>
     <VelocityFactor>1</VelocityFactor>
     <AttackGain>0.001</AttackGain>
     <DecayGain>0</DecayGain>

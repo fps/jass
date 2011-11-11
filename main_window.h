@@ -32,6 +32,7 @@
 #include "generator_widget.h"
 #include "keyboard_widget.h"
 #include "jass.hxx"
+#include "velocity_widget.h"
 
 class main_window : public QMainWindow {
 	Q_OBJECT
@@ -231,6 +232,7 @@ class main_window : public QMainWindow {
 				generator_table->setCellWidget(row, col++, new adsr_widget(*it));
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.name.c_str())));
 				generator_table->setCellWidget(row, col++, new keyboard_widget((*it)));
+				generator_table->setCellWidget(row, col++, new velocity_widget((*it)));
 				generator_table->setCellWidget(row, col++, new waveform_widget((*it)));
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.sample_->t.file_name.c_str())));
 				//generator_widget *w = new generator_widget(*it);
@@ -400,7 +402,7 @@ class main_window : public QMainWindow {
 
 
 		void show_waveform(bool show) {
-			generator_table->setColumnHidden(3, !show);
+			generator_table->setColumnHidden(4, !show);
 
 		}
 
@@ -419,6 +421,7 @@ class main_window : public QMainWindow {
 				<< "Gain/ADSR"
 				<< "Name"
 				<< "Note-Range"
+				<< "Velocity Factor/Range"
 				<< "Waveform"
 				<< "Sample";
 

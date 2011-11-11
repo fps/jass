@@ -23,6 +23,7 @@ struct keyboard_widget : public QWidget {
 			QPalette palette = QWidget::palette();
 			//palette.setColor(backgroundRole(), Qt::white);
 			setPalette(palette);
+			setToolTip("Doubleclick to set Note/Min/Max. Left-click to set Note. Shift-left-click and drag to the right to sweep Note-Min to Note-Max");
 		}
 
 		void paintEvent(QPaintEvent *)
