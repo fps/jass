@@ -200,29 +200,6 @@ class main_window : public QMainWindow {
 			save_setup(setup_file_name);
 		}
 		
-		void set_continous_notes() {
-			//! Get selected items
-			QList<QTableWidgetItem*> items = generator_table->selectedItems();
-			if (items.size() < 2) return;
-
-			//! Get note of first selected generator
-
-			generator_list::iterator it = engine_.gens->t.begin();
-			std::advance(it, items[0]->row());
-			unsigned int note = (*it)->t.note;
-			write_command(assign((*it)->t.min_note, note));
-			write_command(assign((*it)->t.max_note, note));
-
-			for (unsigned int i = 1; i < items.size(); ++i) {
-				generator_list::iterator it = engine_.gens->t.begin();
-				std::advance(it, items[i]->row());
-				write_command(assign((*it)->t.note, ++note));
-				write_command(assign((*it)->t.min_note, note));
-				write_command(assign((*it)->t.max_note, note));
-			}
-			deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
-		}
-
 		//! This should only be called by deferred_gui_commands.read()()
 		void update_generator_table() {
 			//generator_table->setRowCount(0);
@@ -335,47 +312,6 @@ class main_window : public QMainWindow {
 				write_blocking_command(assign(engine_.gens, l));
 				deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
 			}
-		}
-
-		void generator_cell_widget_changed(void) {
-#if 0
-			int row = sender()->property("row").toInt();
-
-			generator_list::iterator i = engine_.gens->t.begin();
-			std::advance(i, row);
-
-			int col = 2;
-			write_command(assign((*i)->t.sample_start, (((QDoubleSpinBox*)generator_table->cellWidget(row, col++))->value())));
-			write_command(assign((*i)->t.sample_end, (((QDoubleSpinBox*)generator_table->cellWidget(row, col++))->value())));
-			write_command(assign((*i)->t.looping, (((QCheckBox*)generator_table->cellWidget(row, col++))->isChecked())));
-			write_command(assign((*i)->t.gain, (((QDoubleSpinBox*)generator_table->cellWidget(row, col++))->value())));
-
-			write_command(assign((*i)->t.channel, (((QSpinBox*)generator_table->cellWidget(row, col++))->value())));
-			write_command(assign((*i)->t.note, (((QSpinBox*)generator_table->cellWidget(row, col++))->value())));
-
-			write_command(assign((*i)->t.min_note, (((QSpinBox*)generator_table->cellWidget(row, col++))->value())));
-			write_command(assign((*i)->t.max_note, (((QSpinBox*)generator_table->cellWidget(row, col++))->value())));
-
-			write_command(assign((*i)->t.min_velocity, (((QSpinBox*)generator_table->cellWidget(row, col++))->value())));
-			write_command(assign((*i)->t.max_velocity, (((QSpinBox*)generator_table->cellWidget(row, col++))->value())));
-			write_command(assign((*i)->t.velocity_factor, (((QDoubleSpinBox*)generator_table->cellWidget(row, col++))->value())));
-
-			write_command(assign((*i)->t.attack_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, col++))->value())));
-			write_command(assign((*i)->t.decay_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, col++))->value())));
-			write_command(assign((*i)->t.sustain_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, col++))->value())));
-			write_command(assign((*i)->t.release_g, (((QDoubleSpinBox*)generator_table->cellWidget(row, col++))->value())));
-#endif
-		}
-
-		void generator_item_changed(QTableWidgetItem *i) {
-#if 0
-			int row = i->row();
-			generator_list::iterator it = engine_.gens->t.begin();
-			std::advance(it, row);
-			std::cout << "current row " << row << std::endl;
-
-			write_command(assign((*it)->t.name,std::string(generator_table->item(row,0)->text().toLatin1())));
-#endif
 		}
 
 		void show_about_text() {
