@@ -17,7 +17,7 @@ struct velocity_range_widget : public QWidget {
 			QWidget(parent),
 			gen(g) 
 		{
-			setToolTip("Left Click and Drag to the right to sweep a velocity range (0..127)");
+			setToolTip("Left Click and Drag to the right to sweep a velocity range (0..127) which this generator responds to");
 		}
 
 		void paintEvent(QPaintEvent *)
