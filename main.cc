@@ -91,10 +91,10 @@ int main(int argc, char **argv) {
 		if (vm.count("state")) w.load_setup(vm["state"].as<std::vector<std::string> >()[0]);
 
 		//! Register a timed function to clean the heap
-		timed_functor tf1(boost::bind(&heap::cleanup, heap::get()), 1000);
+		timed_functor tf1(boost::bind(&heap::cleanup, heap::get()), 100);
 
 		//! This function checks for acknowledgements of the engine and reenables the GUI
-		timed_functor tf2(boost::bind(&main_window::check_acknowledgements, &w), 100);
+		timed_functor tf2(boost::bind(&main_window::check_acknowledgements, &w), 10);
 
 		//! This one checks for ladish save signals..
 		timed_functor tf3(boost::bind(check_signalled, boost::ref(w)), 100);

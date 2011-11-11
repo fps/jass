@@ -55,7 +55,7 @@ class main_window : public QMainWindow {
 
 	public slots:
 		void audit_sample_file() {
-			if(!(QApplication::keyboardModifiers() & Qt::ShiftModifier)) return;
+			if(!(QApplication::keyboardModifiers() & Qt::AltModifier)) return;
 
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
@@ -78,7 +78,7 @@ class main_window : public QMainWindow {
 		}
 
 		void load_sample_file() {
-			if(QApplication::keyboardModifiers() & Qt::ShiftModifier) return;
+			if(QApplication::keyboardModifiers() & Qt::AltModifier) return;
 
 			disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
 

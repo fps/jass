@@ -267,4 +267,48 @@
     <ReleaseGain>0.001</ReleaseGain>
   </Generator>
 
+  <Generator>
+    <Name>flat ride - 1</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/flat ride - 1.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>81</Note>
+    <MinNote>81</MinNote>
+    <MaxNote>81</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
+  <Generator>
+    <Name>flat ride - 2</Name>
+    <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/flat ride - 2.wav</Sample>
+    <SampleStart>0</SampleStart>
+    <SampleEnd>0</SampleEnd>
+    <Looping>false</Looping>
+    <LoopStart>0</LoopStart>
+    <LoopEnd>0</LoopEnd>
+    <Gain>1</Gain>
+    <Channel>0</Channel>
+    <Note>83</Note>
+    <MinNote>83</MinNote>
+    <MaxNote>83</MaxNote>
+    <MinVelocity>0</MinVelocity>
+    <MaxVelocity>127</MaxVelocity>
+    <VelocityFactor>1</VelocityFactor>
+    <AttackGain>0.001</AttackGain>
+    <DecayGain>0</DecayGain>
+    <SustainGain>1</SustainGain>
+    <ReleaseGain>0.001</ReleaseGain>
+  </Generator>
+
 </p1:Jass>
