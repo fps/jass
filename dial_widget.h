@@ -77,8 +77,8 @@ struct dial_widget : public QWidget {
 				r.setY(1);
 
 				double x,y;
-				x = e->x() - r.width()/2 + 1;
-				y = e->y() - r.height()/2 + 1;
+				x = e->x() - (r.width()/2 + 1);
+				y = e->y() - (r.height()/2 + 1);
 				double angle =  fmod((270 + 180.0 * atan2(y,x)/M_PI), 360.0);
 				//std::cout << angle << std::endl;
 				val = min_val + (max_val - min_val) * (1.0/300.0) * (std::max(std::min(angle, 330.0), 30.0) - 30.0);
