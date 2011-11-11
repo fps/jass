@@ -424,7 +424,7 @@ class main_window : public QMainWindow {
 				<< "Name"
 				<< "Note-Range"
 				<< "Velocity Factor/Range"
-				<< "Waveform"
+				<< "Waveform/Looping/Ranges"
 				<< "Sample";
 
 			generator_table->setColumnCount(headers.size());

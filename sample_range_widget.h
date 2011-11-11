@@ -18,6 +18,7 @@ struct sample_range_widget : public QWidget {
 	public slots:
 		void loop_changed(bool state) {
 			gen->t.looping = state;
+			update();
 		}
 
 	public:

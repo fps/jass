@@ -55,10 +55,12 @@ struct waveform_widget : public QWidget {
 			painter.setBrush(QColor(0, 0, 128, 64));
 			painter.drawRect(width() * gen->t.sample_start, 0, width() * (gen->t.sample_end - gen->t.sample_start), height());
 	
-			//! Draw loop range
-			painter.setPen(QColor(128, 0, 0, 64));
-			painter.setBrush(QColor(128, 0, 0, 64));
-			painter.drawRect(width() * gen->t.loop_start, 0, width() * (gen->t.loop_end - gen->t.loop_start), height());
+			if (gen->t.looping) {
+				//! Draw loop range
+				painter.setPen(QColor(128, 0, 0, 64));
+				painter.setBrush(QColor(128, 0, 0, 64));
+				painter.drawRect(width() * gen->t.loop_start, 0, width() * (gen->t.loop_end - gen->t.loop_start), height());
+			}
 		}
 
 
