@@ -37,14 +37,15 @@ struct dial_widget : public QWidget {
 			painter.setPen(p);
 
 			QRect r(0,0, 0, 0);
-			r.setWidth(std::min(width(), height()) - 6);
-			r.setHeight(std::min(width(), height()) - 6);	
-			r.setX(3);
-			r.setY(3);
+			r.setWidth(std::min(width(), height()) - 2);
+			r.setHeight(std::min(width(), height()) - 2);	
+			r.setX(1);
+			r.setY(1);
 
 			painter.drawArc(r, -16 * 60, 16 * 300);
 
-			p.setWidth(4);
+			p.setWidth(5);
+			p.setColor(QColor(0,0,0,128));
 			painter.setPen(p);
 			int angle = 300 * 16 - ((val-min_val)/(max_val-min_val) * 300 * 16) - 16 * 60;
 			painter.drawArc(r, angle, 1);
@@ -70,14 +71,14 @@ struct dial_widget : public QWidget {
 		void mouseMoveEvent(QMouseEvent *e) {
 			if (e->buttons() & Qt::LeftButton) {
 				QRect r(0,0, 0, 0);
-				r.setWidth(std::min(width(), height()) - 6);
-				r.setHeight(std::min(width(), height()) - 6);	
-				r.setX(3);
-				r.setY(3);
+				r.setWidth(std::min(width(), height()) - 2);
+				r.setHeight(std::min(width(), height()) - 2);	
+				r.setX(1);
+				r.setY(1);
 
 				double x,y;
-				x = e->x() - r.width()/2 + 3;
-				y = e->y() - r.height()/2 + 3;
+				x = e->x() - r.width()/2 + 1;
+				y = e->y() - r.height()/2 + 1;
 				double angle =  fmod((270 + 180.0 * atan2(y,x)/M_PI), 360.0);
 				//std::cout << angle << std::endl;
 				val = min_val + (max_val - min_val) * (1.0/300.0) * (std::max(std::min(angle, 330.0), 30.0) - 30.0);
