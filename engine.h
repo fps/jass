@@ -8,7 +8,9 @@
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
-#include <jack/session.h>
+#ifndef NO_JACK_SESSION
+	#include <jack/session.h>
+#endif
 
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
@@ -40,7 +42,9 @@ struct engine;
 
 extern "C" {
 	int process_callback(jack_nframes_t, void *p);
+#ifndef NO_JACK_SESSION
 	void session_callback(jack_session_event_t *event, void *arg);
+#endif
 }
 
 
@@ -102,7 +106,9 @@ class engine : public QObject {
 
 			sample_rate = jack_get_sample_rate(jack_client);
 
+#ifndef NO_JACK_SESSION
 			jack_set_session_callback(jack_client, ::session_callback, this);
+#endif
 
 			jack_set_process_callback(jack_client, process_callback, (void*)this);
 			jack_activate(jack_client);
@@ -126,9 +132,11 @@ class engine : public QObject {
 			}
 		}
 
+#ifndef NO_JACK_SESSION
 		void session_callback(jack_session_event_t *event) {
 			emit session_event(event);
 		}
+#endif
 
 		void play_auditor() {
 			assert(auditor_gen.get());
@@ -246,9 +254,11 @@ class engine : public QObject {
 				}
 			}
 		}
-	
+
+#ifndef NO_JACK_SESSION	
 	signals:
 		void session_event(jack_session_event_t *);
+#endif
 };
 
 

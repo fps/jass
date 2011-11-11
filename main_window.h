@@ -108,7 +108,7 @@ class main_window : public QMainWindow {
 			deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
 		}
 		
-
+#ifndef NO_JACK_SESSION
 		void handle_jack_session_event(jack_session_event_t *ev) {
 			//! Copy pasta slightly adapted from the jack session client walkthrough..
 			jack_session_event_t *e = (jack_session_event_t *) ev;
@@ -129,6 +129,7 @@ class main_window : public QMainWindow {
 			
 			jack_session_event_free( ev );
 		}
+#endif
 
 		//! Write command without blocking the GUI
 		void write_command(boost::function<void(void)> f) {

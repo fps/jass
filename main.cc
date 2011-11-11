@@ -73,13 +73,14 @@ int main(int argc, char **argv) {
 		engine &e = *engine::get(uuid);
 
 		main_window w(e);
+#ifndef NO_JACK_SESSION
 		//! The session_signal is received possibly in the process thread thus we need to use a QueuedConnection
 		QObject::connect(
 			&e, SIGNAL(session_event(jack_session_event_t*)), 
 			&w, SLOT(handle_jack_session_event(jack_session_event_t*)), 
 			Qt::QueuedConnection
 		);
-
+#endif
 		//! register SIGUSR1 for ladish session support
 		signal(SIGUSR1, signal_handler);
 
