@@ -9,6 +9,14 @@ add_custom_target(dist
         | bzip2 > ${CMAKE_BINARY_DIR}/${ARCHIVE_NAME}.tar.bz2
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
+add_custom_command(
+	COMMAND ${XSD_BIN} xsdcxx cxx-tree --generate-serialization --generate-ostream --output-dir ${PROJECT_BINARY_DIR}/ ${PROJECT_SOURCE_DIR}/jass.xsd
+	OUTPUT ${PROJECT_BINARY_DIR}/jass.hxx ${PROJECT_BINARY_DIR}/jass.cxx
+	DEPENDS ${PROJECT_SOURCE_DIR}/jass.xsd
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/
+)
+
+
 find_package(PkgConfig)
 
 find_package(Boost COMPONENTS program_options)
