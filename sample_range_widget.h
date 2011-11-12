@@ -7,6 +7,8 @@
 
 #include "generator.h"
 #include "waveform_widget.h"
+#include "engine.h"
+#include "assign.h"
 
 struct sample_range_widget : public QWidget {
 	Q_OBJECT
@@ -17,8 +19,8 @@ struct sample_range_widget : public QWidget {
 
 	public slots:
 		void loop_changed(bool state) {
-			gen->t.looping = state;
-			update();
+			engine::get()->write_command(assign(gen->t.looping, state));
+			engine::get()->deferred_commands.write(boost::bind(&sample_range_widget::update, this));
 		}
 
 	public:
