@@ -22,3 +22,5 @@ To install:
 
 sudo make -C bld install
 
+To build without jack_session support, add -DNO_JACK_SESSION=1 to the cmake commandline
+
