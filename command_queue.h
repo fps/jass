@@ -45,7 +45,7 @@ struct command_queue {
 			--outstanding_acks; 
 		}
 
-		assert(engine_.outstanding_acks >= 0);
+		assert(outstanding_acks >= 0);
 
 		if (outstanding_acks == 0) {
 			while(deferred_commands.can_read()) {
