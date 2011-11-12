@@ -8,7 +8,7 @@
     <Sample>/home/fps/Downloads/Jazz Funk Kit/samples/bop kick - snares off - 1.wav</Sample>
     <SampleStart>0</SampleStart>
     <SampleEnd>0.857421</SampleEnd>
-    <Looping>false</Looping>
+    <Looping>true</Looping>
     <LoopStart>0.158944</LoopStart>
     <LoopEnd>0.017177</LoopEnd>
     <Gain>1</Gain>

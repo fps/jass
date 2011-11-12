@@ -16,6 +16,11 @@ add_custom_command(
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/
 )
 
+if(NO_JACK_SESSION) 
+	add_definitions(-DNO_JACK_SESSION)
+endif()
+
+
 
 find_package(PkgConfig)
 
