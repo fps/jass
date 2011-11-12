@@ -39,8 +39,6 @@
 class main_window : public QMainWindow {
 	Q_OBJECT
 
-	command_ringbuffer deferred_gui_commands;
-
 	QTableWidget *generator_table;
 
 	QFileDialog *file_dialog;
@@ -50,8 +48,6 @@ class main_window : public QMainWindow {
 	QDockWidget *log_text_edit_dock_widget;
 	
 	engine &engine_;
-
-	int outstanding_acks;
 
 	public:
 		std::string setup_file_name;
@@ -69,9 +65,11 @@ class main_window : public QMainWindow {
 						)
 					)
 				);
-				write_blocking_command(assign(engine_.auditor_gen, p));
-				write_blocking_command(boost::bind(&engine::play_auditor, boost::ref(engine_)));
-				
+				setEnabled(false);
+					engine_.write_command(assign(engine_.auditor_gen, p));
+					engine_.write_command(boost::bind(&engine::play_auditor, boost::ref(engine_)));
+				engine_.deferred_commands.write(boost::bind(&main_window::setEnabled, this, true));
+
 				log_text_edit->append("Loaded audit sample: ");
 				log_text_edit->append(file_dialog->selectedFiles()[0]);
 			} catch (...) {
@@ -104,8 +102,10 @@ class main_window : public QMainWindow {
 					log_text_edit->append(file_dialog->selectedFiles()[index]);
 				}
 			}
-			write_blocking_command(assign(engine_.gens, l));
-			deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
+			setEnabled(false);
+			engine_.write_command(assign(engine_.gens, l));
+			engine_.deferred_commands.write(boost::bind(&main_window::update_generator_table, this));
+			engine_.deferred_commands.write(boost::bind(&main_window::setEnabled, this, true));
 		}
 		
 #ifndef NO_JACK_SESSION
@@ -130,23 +130,6 @@ class main_window : public QMainWindow {
 			jack_session_event_free( ev );
 		}
 #endif
-
-		//! Write command without blocking the GUI
-		void write_command(boost::function<void(void)> f) {
-			if (engine_.commands.can_write()) {
-				++outstanding_acks;
-				engine_.commands.write(f);
-			}
-		}
-		
-		void write_blocking_command(boost::function<void(void)> f) {
-			//! Will be reenabled by acknowledgement 
-			if (engine_.commands.can_write()) {
-				++outstanding_acks;
-				setEnabled(false);
-				engine_.commands.write(f);
-			}
-		}
 
 		void save_setup(const std::string &file_name) {
 			try {
@@ -269,32 +252,22 @@ class main_window : public QMainWindow {
 					log_text_edit->append(QString("Done loading sample: %1").arg((*it).Sample().c_str()));
 					QApplication::processEvents();
 				}
-				write_blocking_command(assign(engine_.gens, l));
+
+				setEnabled(false);
+				engine_.write_command(assign(engine_.gens, l));
 
 				disposable_gvoice_vector_ptr voices(disposable_gvoice_vector::create(std::vector<gvoice>(jass_.Polyphony())));
-				write_blocking_command(assign(engine_.voices, voices));
+				engine_.write_command(assign(engine_.voices, voices));
 
 				setup_file_name = file_name;
-				deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
+				engine_.deferred_commands.write(boost::bind(&main_window::update_generator_table, this));
+				engine_.deferred_commands.write(boost::bind(&main_window::setEnabled, this, true));
 				//! Then write them in one go, replacing the whole gens collection
 			} catch(...) {
 				log_text_edit->append(("something went wrong loading file: " + file_name + ". Try fixing your filesystem mounts, etc, then try reloading the setup").c_str());
 			}
 		}
 	
-		void check_acknowledgements() {
-			while(engine_.acknowledgements.can_read()) { 
-				engine_.acknowledgements.read(); 
-				--outstanding_acks; 
-			}
-
-			assert(outstanding_acks >= 0);
-
-			if (outstanding_acks == 0) {
-				while(deferred_gui_commands.can_read()) deferred_gui_commands.read()();
-				setEnabled(true);
-			}
-		}
 
 		void closeEvent(QCloseEvent *event) {
 			QSettings settings;
@@ -310,8 +283,10 @@ class main_window : public QMainWindow {
 				generator_list::iterator it = l->t.begin();
 				std::advance(it, generator_table->currentRow());
 				l->t.erase(it);
-				write_blocking_command(assign(engine_.gens, l));
-				deferred_gui_commands.write(boost::bind(&main_window::update_generator_table, this));
+				setEnabled(false);
+				engine_.write_command(assign(engine_.gens, l));
+				engine_.deferred_commands.write(boost::bind(&main_window::update_generator_table, this));
+				engine_.deferred_commands.write(boost::bind(&main_window::setEnabled, this, true));
 			}
 		}
 
@@ -345,9 +320,7 @@ class main_window : public QMainWindow {
 	public:
 
 		main_window(engine &e) :
-			outstanding_acks(0),
-			engine_(e),
-			deferred_gui_commands(1024)
+			engine_(e)
 		{
 			setWindowTitle("jass - jack simple sampler");
 

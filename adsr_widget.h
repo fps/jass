@@ -19,6 +19,8 @@
 
 #include "generator.h"
 #include "dial_widget.h"
+#include "engine.h"
+#include "assign.h"
 
 struct adsr_widget : public QWidget {
 	Q_OBJECT
@@ -33,11 +35,12 @@ struct adsr_widget : public QWidget {
 		
 	public slots:
 		void changed(double) {
-			gen->t.gain = gain->value();
-			gen->t.attack_g = a->value();
-			gen->t.decay_g = d->value();
-			gen->t.sustain_g = s->value();
-			gen->t.release_g = r->value();
+			engine::get()->write_command(assign(gen->t.gain, gain->value()));
+			engine::get()->write_command(assign(gen->t.attack_g, a->value()));
+			engine::get()->write_command(assign(gen->t.decay_g, d->value()));
+			engine::get()->write_command(assign(gen->t.sustain_g, s->value()));
+			engine::get()->write_command(assign(gen->t.release_g, r->value()));
+			engine::get()->deferred_commands.write(boost::bind(&adsr_widget::update, this));
 		}
 
 

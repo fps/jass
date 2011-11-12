@@ -95,10 +95,10 @@ int main(int argc, char **argv) {
 		timed_functor tf1(boost::bind(&heap::cleanup, heap::get()), 100);
 
 		//! This function checks for acknowledgements of the engine and reenables the GUI
-		timed_functor tf2(boost::bind(&main_window::check_acknowledgements, &w), 10);
+		timed_functor tf2(boost::bind(&engine::check_acknowledgements, &e), 100);
 
 		//! This one checks for ladish save signals..
-		timed_functor tf3(boost::bind(check_signalled, boost::ref(w)), 100);
+		timed_functor tf3(boost::bind(check_signalled, boost::ref(w)), 1000);
 
 		w.setEnabled(true);
 		q_application.exec();

@@ -24,6 +24,7 @@
 #include "xsd_error_handler.h"
 #include "assign.h"
 #include "voice.h"
+#include "command_queue.h"
 
 #include <QObject>
 
@@ -35,8 +36,6 @@ typedef std::list<disposable_generator_ptr> generator_list;
 typedef disposable<generator_list> disposable_generator_list;
 typedef boost::shared_ptr<disposable_generator_list> disposable_generator_list_ptr;
 
-
-typedef ringbuffer<boost::function<void(void)> > command_ringbuffer;
 
 struct engine;
 
@@ -56,16 +55,10 @@ typedef disposable<std::vector<gvoice> > disposable_gvoice_vector;
 typedef boost::shared_ptr<disposable_gvoice_vector> disposable_gvoice_vector_ptr;
 
 
-class engine : public QObject {
+class engine : public QObject, public command_queue {
 	Q_OBJECT
 
 	public:
-		//! The ringbuffer for the commands that have to be passed to the process callback
-		command_ringbuffer commands;
-
-		//! When the engine is done processing a command that possibly alters references, it will signal completion by writing a 0 in this ringbuffer
-		ringbuffer<char> acknowledgements;
-
 		disposable_generator_list_ptr gens;
 
 		//! a single generator to audit a sample
@@ -91,8 +84,7 @@ class engine : public QObject {
 		static engine *instance;
 		engine(const char *uuid = 0) 
 		: 
-			commands(1024),
-			acknowledgements(1024),
+			command_queue(1024, 1024),
 			gens(disposable_generator_list::create(generator_list())),
 			voices(disposable_gvoice_vector::create(std::vector<gvoice>(32))),
 			current_voice(0)

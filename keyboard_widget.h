@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QApplication>
 
 #include <iostream>
 #include <algorithm>
@@ -78,56 +79,48 @@ struct keyboard_widget : public QWidget {
 			return QSize(800, 10);
 		}
 
-		int start_move;
-
 		void mousePressEvent(QMouseEvent *e) {
 			if (e->button() == Qt::LeftButton) {
-				if (e->modifiers() & Qt::ShiftModifier) 
-					gen->t.min_note = std::min((double)(e->x())/width() * 128, (double)(gen->t.max_note));
-				else {
-					gen->t.note = (double)(e->x())/width() * 128;
+				if (e->modifiers() & Qt::ShiftModifier) {
+					engine::get()->write_command(
+						assign(gen->t.min_note, std::min((double)(e->x())/width() * 128, (double)(gen->t.max_note)))
+					);
+				} else {
+					engine::get()->write_command(assign(gen->t.note, (double)(e->x())/width() * 128));
 				}
 			}
 
 			if (e->button() == Qt::RightButton) {
-				if (e->modifiers() & Qt::ShiftModifier) 
-					gen->t.max_note = std::max((double)(e->x())/width() * 128, (double)(gen->t.min_note));
+				if (e->modifiers() & Qt::ShiftModifier) {
+					engine::get()->write_command(
+						assign(gen->t.max_note, std::max((double)(e->x())/width() * 128, (double)(gen->t.min_note)))
+					);
+				}
 			}
 
-			update();
 			e->accept();
+			engine::get()->deferred_commands.write(boost::bind(&keyboard_widget::update, this));
 		}
 
 		void mouseMoveEvent(QMouseEvent *e) {
 			if ((e->buttons() & Qt::LeftButton) && (e->modifiers() & Qt::ShiftModifier)) {
-				gen->t.max_note = std::max((unsigned int)((double)(e->x())/width() * 128), gen->t.min_note);
-			}
-			update();
-			e->accept();
-		}
-
-#if 0
-		void mouseReleaseEvent(QMouseEvent *e) {
-			if (e->modifiers() & Qt::ShiftModifier) {
+				engine::get()->write_command(assign(gen->t.max_note, std::max((unsigned int)((double)(e->x())/width() * 128), gen->t.min_note)));
 				e->accept();
-				return;
+				engine::get()->deferred_commands.write(boost::bind(&keyboard_widget::update, this));
 			}
 
-			if (e->button() == Qt::LeftButton) {
-				gen->t.note = (double)(e->x())/width() * 128;
-				update();
-			}
-			update();
-			e->accept();
+			// QApplication::processEvents();
+
 		}
-#endif
+
 		void mouseDoubleClickEvent(QMouseEvent *e) {
 			if (e->button() == Qt::LeftButton) {
-				gen->t.note = gen->t.min_note = gen->t.max_note = (double)(e->x())/width() * 128;
-				update();
+				engine::get()->write_command(assign(gen->t.note, (double)(e->x())/width() * 128));
+				engine::get()->write_command(assign(gen->t.min_note, (double)(e->x())/width() * 128));
+				engine::get()->write_command(assign(gen->t.max_note, (double)(e->x())/width() * 128));
+				e->accept();
+				engine::get()->deferred_commands.write(boost::bind(&keyboard_widget::update, this));
 			}
-			update();
-			e->accept();
 		}
 
 		
