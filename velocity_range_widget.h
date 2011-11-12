@@ -6,6 +6,8 @@
 #include <QMouseEvent>
 
 #include "generator.h"
+#include "engine.h"
+#include "assign.h"
 
 struct velocity_range_widget : public QWidget {
 	Q_OBJECT
@@ -33,22 +35,22 @@ struct velocity_range_widget : public QWidget {
 
 		void mouseMoveEvent(QMouseEvent *e) {
 			if ((e->buttons() & Qt::LeftButton)) {
-				gen->t.max_velocity = std::max((unsigned int)((double)(e->x())/width() * 128), gen->t.min_velocity);
+				engine::get()->write_command(assign(gen->t.max_velocity, std::max((unsigned int)((double)(e->x())/width() * 128), gen->t.min_velocity)));
 				e->accept();
-				update();
+				engine::get()->deferred_commands.write(boost::bind(&velocity_range_widget::update, this));
 			}
 		}
 
 		void mousePressEvent(QMouseEvent *e) {
 			if (e->button() == Qt::LeftButton) {
-				gen->t.min_velocity = std::min((double)(e->x())/width() * 128, (double)(gen->t.max_velocity));
+				engine::get()->write_command(assign(gen->t.min_velocity, std::min((double)(e->x())/width() * 128, (double)(gen->t.max_velocity))));
 				e->accept();
-				update();
+				engine::get()->deferred_commands.write(boost::bind(&velocity_range_widget::update, this));
 			}
 			if (e->button() == Qt::RightButton) {
-				gen->t.max_velocity = std::max((double)(e->x())/width() * 128, (double)(gen->t.min_velocity));
+				engine::get()->write_command(assign(gen->t.max_velocity, std::max((double)(e->x())/width() * 128, (double)(gen->t.min_velocity))));
 				e->accept();
-				update();
+				engine::get()->deferred_commands.write(boost::bind(&velocity_range_widget::update, this));
 			}
 		}
 

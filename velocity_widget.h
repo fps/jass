@@ -8,6 +8,8 @@
 #include "generator.h"
 #include "velocity_range_widget.h"
 #include "dial_widget.h"
+#include "engine.h"
+#include "assign.h"
 
 struct velocity_widget : public QWidget {
 	Q_OBJECT
@@ -21,7 +23,8 @@ struct velocity_widget : public QWidget {
 
 	public slots:
 		void factor_changed(double v) {
-			gen->t.velocity_factor = v;
+			engine::get()->write_command(assign(gen->t.velocity_factor, v));
+			engine::get()->deferred_commands.write(boost::bind(&velocity_widget::update, this));
 		}
 
 	public:
