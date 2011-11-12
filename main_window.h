@@ -32,7 +32,7 @@
 #include "assign.h"
 #include "generator.h"
 #include "generator_widget.h"
-#include "keyboard_widget.h"
+#include "keyboard_channel_widget.h"
 #include "velocity_widget.h"
 #include "sample_range_widget.h"
 
@@ -194,7 +194,7 @@ class main_window : public QMainWindow {
 				int col = 0;
 				generator_table->setCellWidget(row, col++, new adsr_widget(*it));
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.name.c_str())));
-				generator_table->setCellWidget(row, col++, new keyboard_widget((*it)));
+				generator_table->setCellWidget(row, col++, new keyboard_channel_widget((*it)));
 				generator_table->setCellWidget(row, col++, new velocity_widget((*it)));
 				generator_table->setCellWidget(row, col++, new sample_range_widget((*it)));
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.sample_->t.file_name.c_str())));
