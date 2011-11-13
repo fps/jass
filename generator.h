@@ -16,6 +16,7 @@
 #include "voice.h"
 #include "adsr.h"
 
+
 struct generator {
 	std::string name;
 
@@ -62,7 +63,7 @@ struct generator {
 		bool looping = false,
 		double loop_start = 0,
 		double loop_end = 1.0,
-		double gain = 1.0,
+		double gain = 0.0,
 		unsigned int channel = 0,
 		unsigned int note = 64,
 		unsigned int min_note = 0,
@@ -72,7 +73,7 @@ struct generator {
 		double velocity_factor = 1.0,
 		double attack_g = 0.001,
 		double decay_g = 0.0,
-		double sustain_g = 1.0,
+		double sustain_g = 0.0,
 		double release_g = 0.001
 	) :
 		name(name),
@@ -155,8 +156,10 @@ struct generator {
 				velocity_factor * (((double)v.note_on_velocity-min_velocity)
 					/(double)(max_velocity-min_velocity));
 
-			out_0[frame] += gain_envelope * vel_gain * gain * sample_->t.data_0[current_frame];
-			out_1[frame] += gain_envelope * vel_gain * gain * sample_->t.data_0[current_frame];
+			double g =  pow(10.0, gain_envelope/20.0) * vel_gain * pow(10.0, gain/20.0);
+
+			out_0[frame] += g * sample_->t.data_0[current_frame];
+			out_1[frame] += g * sample_->t.data_0[current_frame];
 		}
 	}
 

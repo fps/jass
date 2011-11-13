@@ -53,8 +53,8 @@ struct adsr_widget : public QWidget {
 			gain = new dial_widget();
 			gain->setToolTip("Gain");
 			gain->set_value(gen->t.gain);
-			gain->set_min_value(0);
-			gain->set_max_value(2);
+			gain->set_min_value(JASS_ADSR_LIMIT);
+			gain->set_max_value(0);
 			connect(gain, SIGNAL(valueChanged(double)), this, SLOT(changed(double)));
 
 			a = new dial_widget();
@@ -74,8 +74,8 @@ struct adsr_widget : public QWidget {
 			s = new dial_widget();
 			s->setToolTip("Sustain");
 			s->set_value(gen->t.sustain_g);
-			s->set_min_value(0);
-			s->set_max_value(1);
+			s->set_min_value(JASS_ADSR_LIMIT);
+			s->set_max_value(0);
 			connect(s, SIGNAL(valueChanged(double)), this, SLOT(changed(double)));
 
 			r = new dial_widget();
