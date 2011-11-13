@@ -144,12 +144,10 @@ struct generator {
 
 			if (v.state == voice::RELEASE) {
 				double release_time = (double)(v.note_off_frame - v.note_on_frame)/(double)sample_rate;
-				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_since_note_on, release_time);
-			}
 
-			if (v.state == voice::RELEASE && gain_envelope == 0.0) {
+				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_since_note_on, release_time);
+				if (release_time - v.note_on_frame/(double)sample_rate >= release_g) 
 				v.state = voice::OFF;
-				return;
 			}
 
 			double vel_gain = 
