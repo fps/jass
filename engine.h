@@ -95,7 +95,7 @@ class engine : public QObject, public command_queue {
 			jack_client = jack_client_open("jass", JackSessionID, NULL, uuid);
 #endif
 #ifdef NO_JACK_SESSION
-			jack_client = jack_client_open("jass", NULL, NULL, uuid);
+			jack_client = jack_client_open("jass", JackNullOption, NULL, uuid);
 #endif
 
 			out_0 = jack_port_register(jack_client, "out_0", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
