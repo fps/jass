@@ -20,7 +20,7 @@ if(NO_JACK_SESSION)
 	add_definitions(-DNO_JACK_SESSION)
 endif()
 
-
+add_definitions(-O3 )
 
 find_package(PkgConfig)
 
