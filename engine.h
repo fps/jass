@@ -91,7 +91,13 @@ class engine : public QObject, public command_queue {
 		{
 			heap *h = heap::get();	
 
+#ifndef NO_JACK_SESSION
 			jack_client = jack_client_open("jass", JackSessionID, NULL, uuid);
+#endif
+#ifdef NO_JACK_SESSION
+			jack_client = jack_client_open("jass", NULL, NULL, uuid);
+#endif
+
 			out_0 = jack_port_register(jack_client, "out_0", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 			out_1 = jack_port_register(jack_client, "out_1", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 			midi_in = jack_port_register(jack_client, "in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
