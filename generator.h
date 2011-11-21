@@ -118,7 +118,7 @@ struct generator {
 			if (((int)v.note - (int)note) != 0) 
 				stretch = pow(pow(2.0, 1.0/12.0), (int)v.note - (int)note);
 
-			unsigned int sample_length = sample_->t.data_0.size();
+			const unsigned int sample_length = sample_->t.data_0.size();
 			unsigned int current_frame = sample_length * sample_start + floor(stretch * (last_frame_time + frame - v.note_on_frame));
 
 			if (looping) {
@@ -134,7 +134,7 @@ struct generator {
 				return;
 			} 
 
-			double time_since_note_on = (double)(last_frame_time + frame - v.note_on_frame)/(double)sample_rate;
+			const double time_since_note_on = (double)(last_frame_time + frame - v.note_on_frame)/(double)sample_rate;
 
 			double gain_envelope = 0.0;
 
@@ -150,11 +150,11 @@ struct generator {
 				v.state = voice::OFF;
 			}
 
-			double vel_gain = 
+			const double vel_gain = 
 				velocity_factor * (((double)v.note_on_velocity-min_velocity)
 					/(double)(max_velocity-min_velocity));
 
-			double g =  pow(10.0, gain_envelope/20.0) * vel_gain * pow(10.0, gain/20.0);
+			const double g =  pow(10.0, gain_envelope/20.0) * vel_gain * pow(10.0, gain/20.0);
 
 			out_0[frame] += g * sample_->t.data_0[current_frame];
 			out_1[frame] += g * sample_->t.data_0[current_frame];
