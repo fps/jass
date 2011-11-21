@@ -47,13 +47,17 @@ struct sample {
 		data.src_ratio = samplerate/sf_info.samplerate;
 		src_simple(&data, SRC_SINC_BEST_QUALITY, sf_info.channels);
 
-		data_0.resize(sf_info.frames * (samplerate/sf_info.samplerate));
-		data_1.resize(sf_info.frames * (samplerate/sf_info.samplerate));
+		//! add one extra frame filled with 0 to make the interpolation in the generator easier
+		data_0.resize(sf_info.frames * (samplerate/sf_info.samplerate) + 1);
+		data_1.resize(sf_info.frames * (samplerate/sf_info.samplerate) + 1);
 
 		if (sf_info.channels == 1) {
 			std::copy(out_frames.begin(), out_frames.end(), data_0.begin());
 			std::copy(out_frames.begin(), out_frames.end(), data_0.begin());
 		}
+
+		data_0[data_0.size() - 1] = 0;
+		data_1[data_1.size() - 1] = 0;
 
 		if (sf_info.channels == 2) {
 			for (unsigned int i = 0; i < sf_info.frames; ++i) {

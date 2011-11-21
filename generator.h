@@ -104,29 +104,29 @@ struct generator {
 	//! Updates voice info
 	inline void process(
 		float *out_0, float *out_1, 
-		jack_nframes_t last_frame_time, 
-		jack_nframes_t frame, 
-		jack_nframes_t 
-		sample_rate, 
+		const jack_nframes_t last_frame_time, 
+		const jack_nframes_t frame, 
+		const jack_nframes_t sample_rate, 
 		voice &v
 	) {
 		//! Overall check if we play at all (short curcuit to save CPU time)
 		if (v.state != voice::OFF) 
 		{
 			//! TODO: replace retarded sample and hold interpolation
-			double stretch = 1.0;
-			if (((int)v.note - (int)note) != 0) 
-				stretch = pow(pow(2.0, 1.0/12.0), (int)v.note - (int)note);
+			const double stretch = (((int)v.note - (int)note) != 0) ? 
+				pow(pow(2.0, 1.0/12.0), (int)v.note - (int)note) : 1.0;
 
 			const unsigned int sample_length = sample_->t.data_0.size();
-			unsigned int current_frame = sample_length * sample_start + floor(stretch * (last_frame_time + frame - v.note_on_frame));
+			double current_frame = sample_length * sample_start + (stretch * (last_frame_time + frame - v.note_on_frame));
 
 			if (looping) {
 				if (current_frame >= loop_end * sample_length) 
 					current_frame = 
 						(unsigned int)(loop_start * sample_length) + 
-							(current_frame - (unsigned int)(loop_start * sample_length)) % (unsigned int)(sample_length * 
-								(loop_end - loop_start));
+							fmod(
+								(current_frame - (unsigned int)(loop_start * sample_length)), 
+								(unsigned int)(sample_length * (loop_end - loop_start))
+							);
 			}
 					
 			if (current_frame < 0 || current_frame >= sample_length * sample_end) {
@@ -156,8 +156,14 @@ struct generator {
 
 			const double g =  pow(10.0, gain_envelope/20.0) * vel_gain * pow(10.0, gain/20.0);
 
-			out_0[frame] += g * sample_->t.data_0[current_frame];
-			out_1[frame] += g * sample_->t.data_0[current_frame];
+			float *data_0 = &(sample_->t.data_0[0]);
+			float *data_1 = &(sample_->t.data_1[0]);
+
+			const double mix = fmod(current_frame, 1.0);
+			const double one_minus_mix = 1.0 - mix;
+
+			out_0[frame] += g * (one_minus_mix * data_0[(unsigned int)floor(current_frame)] + mix * data_0[(unsigned int)ceil(current_frame)]);
+			out_1[frame] += g * (one_minus_mix * data_1[(unsigned int)floor(current_frame)] + mix * data_1[(unsigned int)ceil(current_frame)]);
 		}
 	}
 
