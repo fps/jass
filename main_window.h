@@ -377,7 +377,7 @@ class main_window : public QMainWindow {
 					connect(file_menu->addAction("&Open..."), SIGNAL(triggered(bool)), this, SLOT(load_setup()));
 					file_menu->addSeparator();
 					QAction *save_action = file_menu->addAction("&Save");
-					save_action->setShortcut(QString("Ctrl-S"));
+					save_action->setShortcut(QString("Ctrl+S"));
 					save_action->setShortcutContext(Qt::ApplicationShortcut);
 
 					connect(save_action, SIGNAL(triggered(bool)), this, SLOT(save_setup()));
