@@ -139,7 +139,7 @@ struct generator {
 			double gain_envelope = 0.0;
 
 			if (v.state == voice::ATTACK) {
-				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_since_note_on, time_since_note_on + 1000000.0);
+				gain_envelope = adsr_attack(attack_g, decay_g, sustain_g, release_g, time_since_note_on);
 			}
 
 			if (v.state == voice::RELEASE) {
