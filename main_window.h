@@ -376,9 +376,15 @@ class main_window : public QMainWindow {
 				menu_bar->addMenu(file_menu);
 					connect(file_menu->addAction("&Open..."), SIGNAL(triggered(bool)), this, SLOT(load_setup()));
 					file_menu->addSeparator();
-					connect(file_menu->addAction("&Save"), SIGNAL(triggered(bool)), this, SLOT(save_setup()));
+					QAction *save_action = file_menu->addAction("&Save");
+					save_action->setShortcut(QString("Ctrl-S"));
+					save_action->setShortcutContext(Qt::ApplicationShortcut);
+
+					connect(save_action, SIGNAL(triggered(bool)), this, SLOT(save_setup()));
+
 					connect(file_menu->addAction("Save &As..."), SIGNAL(triggered(bool)), this, SLOT(save_setup_as()));
 					file_menu->addSeparator();
+
 					connect(file_menu->addAction("&Quit"), SIGNAL(triggered(bool)), this, SLOT(close()));
 
 				QMenu *generator_menu = new QMenu("&Generator");
