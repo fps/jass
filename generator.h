@@ -65,7 +65,7 @@ struct generator {
 		double loop_end = 1.0,
 		double gain = 0.0,
 		unsigned int channel = 0,
-		unsigned int note = 64,
+		unsigned int note = 60,
 		unsigned int min_note = 0,
 		unsigned int max_note = 127,
 		unsigned int min_velocity = 0,
