@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 2.6)
 set(CMAKE_BUILD_TYPE Release)
 project (jass)
 
-set(PROJECT_VERSION "0.9.4")
+set(PROJECT_VERSION "0.9.5")
 set(ARCHIVE_NAME ${CMAKE_PROJECT_NAME}-${PROJECT_VERSION})
 add_custom_target(dist
     COMMAND git archive --prefix=${ARCHIVE_NAME}/ HEAD
