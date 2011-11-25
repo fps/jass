@@ -41,6 +41,7 @@ struct engine;
 
 extern "C" {
 	int process_callback(jack_nframes_t, void *p);
+	void shutdown_callback(void *arg);
 #ifndef NO_JACK_SESSION
 	void session_callback(jack_session_event_t *event, void *arg);
 #endif
@@ -74,6 +75,8 @@ class engine : public QObject, public command_queue {
 
 		disposable_gvoice_vector_ptr voices;
 		unsigned int current_voice;
+
+		volatile bool active;
 		
 		static engine *get(const char *uuid = 0) {
 			if (instance) return instance;
@@ -87,7 +90,8 @@ class engine : public QObject, public command_queue {
 			command_queue(1024, 1024),
 			gens(disposable_generator_list::create(generator_list())),
 			voices(disposable_gvoice_vector::create(std::vector<gvoice>(32))),
-			current_voice(0)
+			current_voice(0),
+			active(false)
 		{
 			heap *h = heap::get();	
 
@@ -109,7 +113,10 @@ class engine : public QObject, public command_queue {
 #endif
 
 			jack_set_process_callback(jack_client, process_callback, (void*)this);
-			jack_activate(jack_client);
+			jack_on_shutdown(jack_client, shutdown_callback, (void *)this);
+
+			if (0 == jack_activate(jack_client))
+				active = true;
 		}
 
 	public:
@@ -253,10 +260,17 @@ class engine : public QObject, public command_queue {
 			}
 		}
 
+	void shutdown() {
+		active = false;
+	}
+
 #ifndef NO_JACK_SESSION	
 	signals:
 		void session_event(jack_session_event_t *);
 #endif
+
+	signals:
+		void deactivated();
 };
 
 

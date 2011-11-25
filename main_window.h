@@ -78,6 +78,13 @@ class main_window : public QMainWindow {
 
 		}
 
+		//! Only allow disabling if the engine is still active
+		void setEnabled(bool enable) {
+			if (enable) QMainWindow::setEnabled(enable);
+
+			if (!enable && engine_.active) QMainWindow::setEnabled(enable);
+		}
+
 		void load_sample_file() {
 			if(QApplication::keyboardModifiers() & Qt::AltModifier) return;
 
@@ -103,8 +110,8 @@ class main_window : public QMainWindow {
 				}
 			}
 			setEnabled(false);
-			engine_.write_command(assign(engine_.gens, l));
-			engine_.deferred_commands.write(boost::bind(&main_window::update_generator_table, this));
+				engine_.write_command(assign(engine_.gens, l));
+				engine_.deferred_commands.write(boost::bind(&main_window::update_generator_table, this));
 			engine_.deferred_commands.write(boost::bind(&main_window::setEnabled, this, true));
 		}
 		
@@ -223,7 +230,6 @@ class main_window : public QMainWindow {
 				Jass::Jass jass_ = *j;
 				Jass::Jass_(std::cout, jass_);
  				int i = 0;
-				setEnabled(false);
 				for(Jass::Jass::Generator_const_iterator it = jass_.Generator().begin(); it != jass_.Generator().end(); ++it) {
 					log_text_edit->append(QString("Loading sample: %1").arg((*it).Sample().c_str()));
 					disposable_generator_ptr p = disposable_generator::create(
@@ -253,13 +259,12 @@ class main_window : public QMainWindow {
 					QApplication::processEvents();
 				}
 
-				setEnabled(false);
-				engine_.write_command(assign(engine_.gens, l));
-
-				disposable_gvoice_vector_ptr voices(disposable_gvoice_vector::create(std::vector<gvoice>(jass_.Polyphony())));
-				engine_.write_command(assign(engine_.voices, voices));
-
 				setup_file_name = file_name;
+
+				setEnabled(false);
+					engine_.write_command(assign(engine_.gens, l));
+					disposable_gvoice_vector_ptr voices(disposable_gvoice_vector::create(std::vector<gvoice>(jass_.Polyphony())));
+					engine_.write_command(assign(engine_.voices, voices));
 				engine_.deferred_commands.write(boost::bind(&main_window::update_generator_table, this));
 				engine_.deferred_commands.write(boost::bind(&main_window::setEnabled, this, true));
 				//! Then write them in one go, replacing the whole gens collection
@@ -284,8 +289,8 @@ class main_window : public QMainWindow {
 				std::advance(it, generator_table->currentRow());
 				l->t.erase(it);
 				setEnabled(false);
-				engine_.write_command(assign(engine_.gens, l));
-				engine_.deferred_commands.write(boost::bind(&main_window::update_generator_table, this));
+					engine_.write_command(assign(engine_.gens, l));
+					engine_.deferred_commands.write(boost::bind(&main_window::update_generator_table, this));
 				engine_.deferred_commands.write(boost::bind(&main_window::setEnabled, this, true));
 			}
 		}

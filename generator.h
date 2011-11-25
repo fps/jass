@@ -143,7 +143,7 @@ struct generator {
 			}
 
 			if (v.state == voice::RELEASE) {
-				double release_time = (double)(v.note_off_frame - v.note_on_frame)/(double)sample_rate;
+				const double release_time = (double)(v.note_off_frame - v.note_on_frame)/(double)sample_rate;
 
 				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_since_note_on, release_time);
 				if (release_time - v.note_on_frame/(double)sample_rate >= release_g) 
@@ -162,8 +162,11 @@ struct generator {
 			const double mix = fmod(current_frame, 1.0);
 			const double one_minus_mix = 1.0 - mix;
 
-			out_0[frame] += g * (one_minus_mix * data_0[(unsigned int)floor(current_frame)] + mix * data_0[(unsigned int)ceil(current_frame)]);
-			out_1[frame] += g * (one_minus_mix * data_1[(unsigned int)floor(current_frame)] + mix * data_1[(unsigned int)ceil(current_frame)]);
+			const unsigned int floor_current_frame = std::min((unsigned int)floor(current_frame), sample_length - 1);
+			const unsigned int ceil_current_frame = std::min((unsigned int)ceil(current_frame), sample_length - 1);
+
+			out_0[frame] += g * (one_minus_mix * data_0[floor_current_frame] + mix * data_0[ceil_current_frame]);
+			out_1[frame] += g * (one_minus_mix * data_1[floor_current_frame] + mix * data_1[ceil_current_frame]);
 		}
 	}
 
