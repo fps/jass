@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
-set(CMAKE_BUILD_TYPE RelWithDebInfo)
+#set(CMAKE_BUILD_TYPE RelWithDebInfo)
+set(CMAKE_BUILD_TYPE Release)
 project (jass)
 
 set(PROJECT_VERSION "0.9.4")
