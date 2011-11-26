@@ -16,6 +16,7 @@
 		<xsd:element name="Looping" type="xsd:boolean"/>
 		<xsd:element name="LoopStart" type="xsd:float"/>
 		<xsd:element name="LoopEnd" type="xsd:float"/>
+		<xsd:element name="Muted" type="xsd:boolean"/>
 		<xsd:element name="Gain" type="xsd:float"/>
 		<xsd:element name="Channel" type="xsd:nonNegativeInteger"/>
 		<xsd:element name="Note" type="xsd:nonNegativeInteger"/>
