@@ -29,7 +29,9 @@ struct generator {
 	bool looping;
 	double loop_start;
 	double loop_end;
-	
+
+
+	bool muted;	
 	double gain;
 
 	unsigned int channel;
@@ -83,6 +85,7 @@ struct generator {
 		looping(looping),
 		loop_start(loop_start),
 		loop_end(loop_end),
+		muted(false),
 		gain(gain),
 		channel(channel),
 		note(note),
@@ -109,6 +112,8 @@ struct generator {
 		const jack_nframes_t sample_rate, 
 		voice &v
 	) {
+		if (muted) return;
+
 		//! Overall check if we play at all (short curcuit to save CPU time)
 		if (v.state != voice::OFF) 
 		{

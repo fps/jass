@@ -35,6 +35,7 @@
 #include "keyboard_channel_widget.h"
 #include "velocity_widget.h"
 #include "sample_range_widget.h"
+#include "mute_widget.h"
 
 class main_window : public QMainWindow {
 	Q_OBJECT
@@ -199,6 +200,7 @@ class main_window : public QMainWindow {
 			int row = 0;
 			for (generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
 				int col = 0;
+				generator_table->setCellWidget(row, col++, new mute_widget(*it));
 				generator_table->setCellWidget(row, col++, new adsr_widget(*it));
 				generator_table->setItem(row, col++, new QTableWidgetItem(QString((*it)->t.name.c_str())));
 				generator_table->setCellWidget(row, col++, new keyboard_channel_widget((*it)));
@@ -312,13 +314,13 @@ class main_window : public QMainWindow {
 		}
 
 		void show_keyboard(bool show) {
-			generator_table->setColumnHidden(2, !show);
+			generator_table->setColumnHidden(3, !show);
 
 		}
 
 
 		void show_waveform(bool show) {
-			generator_table->setColumnHidden(4, !show);
+			generator_table->setColumnHidden(5, !show);
 
 		}
 
@@ -332,6 +334,7 @@ class main_window : public QMainWindow {
 			generator_table = new QTableWidget();
 			QStringList headers;
 			headers 
+				<< "Mute"
 				<< "Gain/ADSR"
 				<< "Name"
 				<< "Note-Range"
