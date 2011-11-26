@@ -74,7 +74,8 @@ class main_window : public QMainWindow {
 				log_text_edit->append("Loaded audit sample: ");
 				log_text_edit->append(file_dialog->selectedFiles()[0]);
 			} catch (...) {
-				std::cout << "something went wrong" << std::endl;
+				log_text_edit->append(std::string("Something went wrong auditing sample: ") + file_dialog->selectedFiles()[0].c_str());
+				// std::cout << "something went wrong" << std::endl;
 			}
 
 		}
@@ -185,7 +186,7 @@ class main_window : public QMainWindow {
 		}
 
 		void save_setup() {
-			std::cout << "save_setup" << std::endl;
+			// std::cout << "save_setup" << std::endl;
 			if (setup_file_name == "") {
 				save_setup_as();
 				return;
@@ -287,7 +288,7 @@ class main_window : public QMainWindow {
 
 		void remove_generator() {
 			if (generator_table->currentRow() >= 0 && generator_table->currentRow() < generator_table->rowCount()) {
-				std::cout << "current row: " << generator_table->currentRow() << std::endl;
+				// std::cout << "current row: " << generator_table->currentRow() << std::endl;
 				disposable_generator_list_ptr l = disposable_generator_list::create(engine_.gens->t);
 				generator_list::iterator it = l->t.begin();
 				std::advance(it, generator_table->currentRow());
