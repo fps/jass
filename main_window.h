@@ -74,7 +74,8 @@ class main_window : public QMainWindow {
 				log_text_edit->append("Loaded audit sample: ");
 				log_text_edit->append(file_dialog->selectedFiles()[0]);
 			} catch (...) {
-				log_text_edit->append(std::string("Something went wrong auditing sample: ") + file_dialog->selectedFiles()[0].c_str());
+				log_text_edit->append("Something went wrong auditing sample: ");
+				log_text_edit->append(file_dialog->selectedFiles()[0]);
 				// std::cout << "something went wrong" << std::endl;
 			}
 

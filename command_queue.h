@@ -49,7 +49,7 @@ struct command_queue {
 
 		if (outstanding_acks == 0) {
 			while(deferred_commands.can_read()) {
-				std::cout << "deferred" << std::endl;
+				// std::cout << "deferred" << std::endl;
 				deferred_commands.read()();
 			}
 
