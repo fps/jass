@@ -31,7 +31,7 @@ find_package(Qt4)
 #qt4_automoc("main_window.cc qfunctor.cc")
 qt4_wrap_cpp(moc_srcs keyboard_channel_widget.h mute_widget.h sample_range_widget.h main_window.h velocity_widget.h velocity_range_widget.h dial_widget.h keyboard_widget.h  adsr_widget.h qfunctor.h engine.h generator_widget.h waveform_widget.h)
 include(${QT_USE_FILE})
-add_executable(jass voice.cc adsr_widget.cc keyboard_widget.cc generator_widget.cc waveform_widget.cc disposable.cc  engine.cc  heap.cc  main.cc  main_window.cc  test_stuff.cc ${PROJECT_BINARY_DIR}/jass.cxx ${moc_srcs})
+add_executable(jass voice.cc adsr_widget.cc keyboard_widget.cc generator_widget.cc waveform_widget.cc disposable.cc  engine.cc  heap.cc  main.cc  main_window.cc  ${PROJECT_BINARY_DIR}/jass.cxx ${moc_srcs})
 
 pkg_check_modules(JASS samplerate sndfile jack)
 find_library(XERCES_C xerces-c)
