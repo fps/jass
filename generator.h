@@ -74,10 +74,10 @@ struct generator {
 		unsigned int min_velocity = 0,
 		unsigned int max_velocity = 127,
 		double velocity_factor = 1.0,
-		double attack_g = 0.001,
+		double attack_g = 0.01,
 		double decay_g = 0.0,
 		double sustain_g = 0.0,
-		double release_g = 0.001
+		double release_g = 0.01
 	) :
 		name(name),
 		sample_(s),
