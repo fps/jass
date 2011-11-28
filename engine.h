@@ -155,7 +155,7 @@ class engine : public QObject, public command_queue {
 			current_voice = (++current_voice) % voices->t.size();
 		}
 
-		void process_note_on(jack_nframes_t nframes, unsigned int note, unsigned int velocity, unsigned int channel) {
+		inline void process_note_on(jack_nframes_t nframes, unsigned int note, unsigned int velocity, unsigned int channel) {
 			// find responsible generator
 			for (generator_list::iterator it = gens->t.begin(); it != gens->t.end(); ++it) {
 				if (
@@ -181,7 +181,7 @@ class engine : public QObject, public command_queue {
 		}
 
 		//! switch envelope states of voices responsible for this note to RELEASE
-		void process_note_off(jack_nframes_t nframes, unsigned int note, unsigned int channel) {
+		inline void process_note_off(jack_nframes_t nframes, unsigned int note, unsigned int channel) {
 			for (unsigned int voice = 0; voice != voices->t.size(); ++voice) {
 				if (
 					voices->t[voice].v.state == voice::ATTACK && 
@@ -195,7 +195,7 @@ class engine : public QObject, public command_queue {
 		}
 
 
-		void process(jack_nframes_t nframes) {
+		inline void process(jack_nframes_t nframes) {
 			//! Execute commands passed in through ringbuffer
 			while(commands.can_read()) { /* std::cout << "read()()" << std::endl; */ 
 				commands.read()(); 
