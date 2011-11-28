@@ -21,7 +21,7 @@ if(NO_JACK_SESSION)
 	add_definitions(-DNO_JACK_SESSION)
 endif()
 
-add_definitions(-O3)
+add_definitions(-O3 -ffast-math -march=native -mtune=native -funsafe-math-optimizations -funroll-loops)
 #add_definitions(-pg)
 set(CMAKE_EXE_LINKER_FLAGS -pg)
 

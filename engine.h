@@ -51,6 +51,9 @@ extern "C" {
 struct gvoice {
 	disposable_generator_ptr g;
 	voice v;
+
+	//! we use a singly linked list to mark active voices
+	gvoice *next;
 };
 typedef disposable<std::vector<gvoice> > disposable_gvoice_vector;
 typedef boost::shared_ptr<disposable_gvoice_vector> disposable_gvoice_vector_ptr;
@@ -216,7 +219,7 @@ class engine : public QObject, public command_queue {
 				//auditor_gen->t.process(out_0_buf, out_1_buf, midi_in_buf, nframes, jack_client);
 			}
 
-			jack_nframes_t last_frame_time = jack_last_frame_time(jack_client);
+			const jack_nframes_t last_frame_time = jack_last_frame_time(jack_client);
 
 			jack_nframes_t midi_in_event_index = 0;
 			jack_nframes_t midi_in_event_count = jack_midi_get_event_count(midi_in_buf);
