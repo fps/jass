@@ -124,7 +124,9 @@ struct generator {
 		const double stretch = stretch_factors[(v.note - note) + 128];
 
 		const unsigned int sample_length = sample_->t.data_0.size();
-		double current_frame = sample_length * sample_start + (stretch * (last_frame_time + frame - v.note_on_frame));
+		const unsigned int frames_since_note_on = (last_frame_time + frame - v.note_on_frame);
+
+		double current_frame = sample_length * sample_start + (stretch * frames_since_note_on);
 
 		if (looping) {
 			if (current_frame >= loop_end * sample_length) 
@@ -141,7 +143,7 @@ struct generator {
 			return;
 		} 
 
-		const double time_since_note_on = (double)(last_frame_time + frame - v.note_on_frame)/(double)sample_rate;
+		const double time_since_note_on = (double)(frames_since_note_on)/(double)sample_rate;
 		double gain_envelope = 0.0;
 
 		if (v.state == voice::ATTACK) {
