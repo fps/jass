@@ -16,7 +16,6 @@
 #include "voice.h"
 #include "adsr.h"
 
-
 struct generator {
 	std::string name;
 
@@ -51,6 +50,10 @@ struct generator {
 	double release_g;
 	
 	unsigned int current_voice;
+
+	//! precalculated stretch table for different note differences
+	//! stretch[128] == 1.0
+	double stretch_factors[256];
 
 	virtual ~generator()
 	{ 
@@ -101,7 +104,9 @@ struct generator {
 		release_g(release_g),
 		current_voice(0)
 	{ 
-		// std::cout << "generator()" << std::endl; 
+		//! initialize stretch factors lookup table
+		for (int i = 0; i < 256; ++i)
+			stretch_factors[i] = (i - 128 != 0) ? pow(pow(2.0, 1.0/12.0), i - 128) : 1.0;
 	}
 
 	//! Process a single frame
@@ -113,67 +118,61 @@ struct generator {
 		const jack_nframes_t sample_rate, 
 		voice &v
 	) {
-		if (muted) return;
+		if (muted || v.state == voice::OFF) return;
 
-		//! Overall check if we play at all (short curcuit to save CPU time)
-		if (v.state != voice::OFF) 
-		{
-			//! TODO: replace retarded sample and hold interpolation
-			const double stretch = (((int)v.note - (int)note) != 0) ? 
-				pow(pow(2.0, 1.0/12.0), (int)v.note - (int)note) : 1.0;
 
-			const unsigned int sample_length = sample_->t.data_0.size();
-			double current_frame = sample_length * sample_start + (stretch * (last_frame_time + frame - v.note_on_frame));
+		const double stretch = stretch_factors[(v.note - note) + 128];
 
-			if (looping) {
-				if (current_frame >= loop_end * sample_length) 
-					current_frame = 
-						(unsigned int)(loop_start * sample_length) + 
-							fmod(
-								(current_frame - (unsigned int)(loop_start * sample_length)), 
-								(unsigned int)(sample_length * (loop_end - loop_start))
-							);
-			}
-					
-			if (current_frame < 0 || current_frame >= sample_length * sample_end) {
-				v.state = voice::OFF;
-				return;
-			} 
+		const unsigned int sample_length = sample_->t.data_0.size();
+		double current_frame = sample_length * sample_start + (stretch * (last_frame_time + frame - v.note_on_frame));
 
-			const double time_since_note_on = (double)(last_frame_time + frame - v.note_on_frame)/(double)sample_rate;
-
-			double gain_envelope = 0.0;
-
-			if (v.state == voice::ATTACK) {
-				gain_envelope = adsr_attack(attack_g, decay_g, sustain_g, release_g, time_since_note_on);
-			}
-
-			if (v.state == voice::RELEASE) {
-				const double release_time = (double)(v.note_off_frame - v.note_on_frame)/(double)sample_rate;
-
-				gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_since_note_on, release_time);
-				if (release_time - v.note_on_frame/(double)sample_rate >= release_g) 
-				v.state = voice::OFF;
-			}
-
-			const double vel_gain = 
-				velocity_factor * (((double)v.note_on_velocity-min_velocity)
-					/(double)(max_velocity-min_velocity));
-
-			const double g =  pow(10.0, gain_envelope/20.0) * vel_gain * pow(10.0, gain/20.0);
-
-			float *data_0 = &(sample_->t.data_0[0]);
-			float *data_1 = &(sample_->t.data_1[0]);
-
-			const double mix = fmod(current_frame, 1.0);
-			const double one_minus_mix = 1.0 - mix;
-
-			const unsigned int floor_current_frame = std::min((unsigned int)floor(current_frame), sample_length - 1);
-			const unsigned int ceil_current_frame = std::min((unsigned int)ceil(current_frame), sample_length - 1);
-
-			out_0[frame] += g * (one_minus_mix * data_0[floor_current_frame] + mix * data_0[ceil_current_frame]);
-			out_1[frame] += g * (one_minus_mix * data_1[floor_current_frame] + mix * data_1[ceil_current_frame]);
+		if (looping) {
+			if (current_frame >= loop_end * sample_length) 
+				current_frame = 
+					(unsigned int)(loop_start * sample_length) + 
+						fmod(
+							(current_frame - (unsigned int)(loop_start * sample_length)), 
+							(unsigned int)(sample_length * (loop_end - loop_start))
+						);
 		}
+					
+		if (current_frame < 0 || current_frame >= sample_length * sample_end) {
+			v.state = voice::OFF;
+			return;
+		} 
+
+		const double time_since_note_on = (double)(last_frame_time + frame - v.note_on_frame)/(double)sample_rate;
+		double gain_envelope = 0.0;
+
+		if (v.state == voice::ATTACK) {
+			gain_envelope = adsr_attack(attack_g, decay_g, sustain_g, release_g, time_since_note_on);
+		}
+
+		if (v.state == voice::RELEASE) {
+			const double release_time = (double)(v.note_off_frame - v.note_on_frame)/(double)sample_rate;
+
+			gain_envelope = adsr(attack_g, decay_g, sustain_g, release_g, time_since_note_on, release_time);
+			if (release_time - v.note_on_frame/(double)sample_rate >= release_g) 
+			v.state = voice::OFF;
+		}
+
+		const double vel_gain = 
+			velocity_factor * (((double)v.note_on_velocity-min_velocity)
+				/(double)(max_velocity-min_velocity));
+
+		const double g =  pow(10.0, gain_envelope/20.0) * vel_gain * pow(10.0, gain/20.0);
+
+		float *data_0 = &(sample_->t.data_0[0]);
+		float *data_1 = &(sample_->t.data_1[0]);
+
+		const double mix = fmod(current_frame, 1.0);
+		const double one_minus_mix = 1.0 - mix;
+
+		const unsigned int floor_current_frame = std::min((unsigned int)floor(current_frame), sample_length - 1);
+		const unsigned int ceil_current_frame = std::min((unsigned int)ceil(current_frame), sample_length - 1);
+
+		out_0[frame] += g * (one_minus_mix * data_0[floor_current_frame] + mix * data_0[ceil_current_frame]);
+		out_1[frame] += g * (one_minus_mix * data_1[floor_current_frame] + mix * data_1[ceil_current_frame]);
 	}
 
 	protected:
