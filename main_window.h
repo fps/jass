@@ -145,7 +145,30 @@ class main_window : public QMainWindow {
 			try {
 				std::ofstream f(file_name.c_str());
 				Jass::Jass j(engine_.voices->t.size());
-				for(generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) 
+				for(generator_list::iterator it = engine_.gens->t.begin(); it != engine_.gens->t.end(); ++it) {
+					Jass::Generator jg((*it)->t.name, (*it)->t.sample_->t.file_name);
+					jg.Name() = (*it)->t.name;
+					jg.Sample() = (*it)->t.sample_->t.file_name;
+					jg.SampleStart() = (*it)->t.sample_start;
+					jg.SampleEnd() = (*it)->t.sample_end;
+					jg.Looping() = (*it)->t.looping;
+					jg.LoopStart() = (*it)->t.loop_start;
+					jg.LoopEnd() = (*it)->t.loop_end;
+					jg.Muted() = (*it)->t.muted;
+					jg.Gain() = (*it)->t.gain;
+					jg.Channel() = (*it)->t.channel;
+					jg.Note() = (*it)->t.note;
+					jg.MinNote() = (*it)->t.min_note;
+					jg.MaxNote() = (*it)->t.max_note;
+					jg.MinVelocity() = (*it)->t.min_velocity;
+					jg.MaxVelocity() = (*it)->t.max_velocity;
+					jg.VelocityFactor() = (*it)->t.velocity_factor;
+					jg.AttackGain() = (*it)->t.attack_g;
+					jg.DecayGain() = (*it)->t.decay_g;
+					jg.SustainGain() = (*it)->t.sustain_g;
+					jg.ReleaseGain() = (*it)->t.release_g;
+
+#if 0
 					j.Generator().push_back(Jass::Generator(
 						(*it)->t.name,
 						(*it)->t.sample_->t.file_name,
@@ -168,6 +191,9 @@ class main_window : public QMainWindow {
 						(*it)->t.sustain_g,
 						(*it)->t.release_g
 					));
+#endif
+					j.Generator().push_back(jg);
+				}
 				Jass::Jass_(f, j);
 			} catch (...) {
 				log_text_edit->append(("something went wrong saving the setup: " + file_name).c_str());
@@ -240,26 +266,28 @@ class main_window : public QMainWindow {
 					disposable_generator_ptr p = disposable_generator::create(
 						generator(
 							(*it).Name(),
-							disposable_sample::create(sample((*it).Sample(), jack_get_sample_rate(engine_.jack_client))),
-							(*it).SampleStart(),
-							(*it).SampleEnd(),
-							(*it).Looping(),
-							(*it).LoopStart(),
-							(*it).LoopEnd(),
-							(*it).Muted(),
-							(*it).Gain(),
-							(*it).Channel(),
-							(*it).Note(),
-							(*it).MinNote(),
-							(*it).MaxNote(),
-							(*it).MinVelocity(),
-							(*it).MaxVelocity(),
-							(*it).VelocityFactor(),
-							(*it).AttackGain(),
-							(*it).DecayGain(),
-							(*it).SustainGain(),
-							(*it).ReleaseGain()
-						));
+							disposable_sample::create(sample((*it).Sample(), jack_get_sample_rate(engine_.jack_client)))
+						)
+					);
+					if ((*it).SampleStart()) p->t.sample_start = *(*it).SampleStart();
+					if ((*it).SampleEnd()) p->t.sample_end = *(*it).SampleEnd();
+					if ((*it).Looping()) p->t.looping = *(*it).Looping();
+					if ((*it).LoopStart()) p->t.loop_start = *(*it).LoopStart();
+					if ((*it).LoopEnd()) p->t.loop_end = *(*it).LoopEnd();
+					if ((*it).Muted()) p->t.muted = *(*it).Muted();
+					if ((*it).Gain()) p->t.gain = *(*it).Gain();
+					if ((*it).Channel()) p->t.channel = *(*it).Channel();
+					if ((*it).Note()) p->t.note = *(*it).Note();
+					if ((*it).MinNote()) p->t.min_note = *(*it).MinNote();
+					if ((*it).MaxNote()) p->t.max_note = *(*it).MaxNote();
+					if ((*it).MinVelocity()) p->t.min_velocity = *(*it).MinVelocity();
+					if ((*it).MaxVelocity()) p->t.max_velocity = *(*it).MaxVelocity();
+					if ((*it).VelocityFactor()) p->t.velocity_factor = *(*it).VelocityFactor();
+					if ((*it).AttackGain()) p->t.attack_g = *(*it).AttackGain();
+					if ((*it).DecayGain()) p->t.decay_g = *(*it).DecayGain();
+					if ((*it).SustainGain()) p->t.sustain_g = *(*it).SustainGain();
+					if ((*it).ReleaseGain()) p->t.release_g = *(*it).ReleaseGain();
+
 					l->t.push_back(p);
 					log_text_edit->append(QString("Done loading sample: %1").arg((*it).Sample().c_str()));
 					QApplication::processEvents();
