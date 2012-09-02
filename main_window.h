@@ -54,15 +54,15 @@ class main_window : public QMainWindow {
 		std::string setup_file_name;
 
 	public slots:
-		void audit_sample_file() {
-			if(!(QApplication::keyboardModifiers() & Qt::AltModifier)) return;
+		void audit_sample_file(const QString &path) {
+			if(!(QApplication::keyboardModifiers() & Qt::ControlModifier)) return;
 
 			try {
 				disposable_generator_ptr p = disposable_generator::create(
 					generator(
-						std::string(file_dialog->selectedFiles()[0].toLatin1()),
+						std::string(path.toLatin1()),
 						disposable_sample::create(
-							sample(std::string(file_dialog->selectedFiles()[0].toLatin1()), jack_get_sample_rate(engine_.jack_client))
+							sample(std::string(path.toLatin1()), jack_get_sample_rate(engine_.jack_client))
 						)
 					)
 				);
@@ -72,10 +72,10 @@ class main_window : public QMainWindow {
 				engine_.deferred_commands.write(boost::bind(&main_window::setEnabled, this, true));
 
 				log_text_edit->append("Loaded audit sample: ");
-				log_text_edit->append(file_dialog->selectedFiles()[0]);
+				log_text_edit->append(path);
 			} catch (...) {
 				log_text_edit->append("Something went wrong auditing sample: ");
-				log_text_edit->append(file_dialog->selectedFiles()[0]);
+				log_text_edit->append(path);
 				// std::cout << "something went wrong" << std::endl;
 			}
 
@@ -385,11 +385,11 @@ class main_window : public QMainWindow {
 			file_dialog_dock_widget->setObjectName("FileDialogDockWidget");
 			file_dialog = new QFileDialog(this, Qt::SubWindow);
 			file_dialog->setOption(QFileDialog::DontUseNativeDialog);
-			file_dialog->setFileMode(QFileDialog::ExistingFiles);
+			file_dialog->setFileMode(QFileDialog::ExistingFile);
 			
 			connect(file_dialog, SIGNAL(finished(int)), file_dialog, SLOT(open()));
 			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(load_sample_file()));
-			connect(file_dialog, SIGNAL(finished(int)), this, SLOT(audit_sample_file()));
+			connect(file_dialog, SIGNAL(currentChanged(const QString&)), this, SLOT(audit_sample_file(const QString&)));
 
 			file_dialog_dock_widget->setWidget(file_dialog);
 			addDockWidget(Qt::LeftDockWidgetArea, file_dialog_dock_widget);
