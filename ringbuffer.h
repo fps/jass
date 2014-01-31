@@ -6,42 +6,42 @@
 
 /**
 	T needs to be a default constructable type.. And it has to have valid
-	copy constructor/assignment operator
+	copy constructor/assignment operator.
+	
+	Note that if you want to use this ringbuffer in a realtime context then the
+	assignment operator and copy constructor must be realtime safe.
 
 	Note that this class needs to construct n objects of type T (with n == size)  so 
 	that the places in the ringbuffer become assignable
 
 	Note that the objects remain in the ringbuffer until they are overwritten again
 	when the ringbuffer returns to the current position the next time around. I.e. a
-	read() does not assign a T() to the read object as that could cause destructors
-	to be called, etc..
-
-	Note that read() creates a copy of the T, so the T(const T&) should be non blocking
+	read() does not assign a T() to the read object that was read.
 */
 template <class T> 
 struct ringbuffer {
 	unsigned int size;
 
 	jack_ringbuffer_t *jack_ringbuffer;
+	
+	std::vector<T> elements;
 
-	ringbuffer(unsigned int size) : size(size) {
-		jack_ringbuffer = jack_ringbuffer_create(sizeof(T) * size);
+	size_t elements_write_pos;
 
-		for (unsigned int i = 0; i < size; ++i) {
-			T *t = new (jack_ringbuffer->buf + sizeof(T) * i) T();
-		}
+	ringbuffer(unsigned int size) : 
+		size(size),
+		elements(size), 
+		elements_write_pos(0)
+	{
+		jack_ringbuffer = jack_ringbuffer_create(sizeof(size_t) * size);
 	}
 
 	~ringbuffer() {
-		for (unsigned int i = 0; i < size; ++i) {
-			((T*)(jack_ringbuffer->buf + sizeof(T) * i))->~T();
-		}
-
 		jack_ringbuffer_free(jack_ringbuffer);
 	}
 
 	bool can_write() {
-		if (jack_ringbuffer_write_space(jack_ringbuffer) >= sizeof(T)) {
+		if (jack_ringbuffer_write_space(jack_ringbuffer) >= sizeof(size_t)) {
 			return true;
 		}
 
@@ -49,25 +49,39 @@ struct ringbuffer {
 	}
 
 	void write(const T &t) {
-		jack_ringbuffer_data_t rb_data[2];
-		jack_ringbuffer_get_write_vector(jack_ringbuffer, rb_data);
-		*((T*)rb_data->buf) = t;
-		jack_ringbuffer_write_advance(jack_ringbuffer, sizeof(T));
+		elements[elements_write_pos] = t;
+		jack_ringbuffer_write(jack_ringbuffer, (char *)&elements_write_pos, sizeof(size_t));
+		++elements_write_pos;
+		elements_write_pos = elements_write_pos % size;
 	}
 
 	bool can_read() {
-		if (jack_ringbuffer_read_space(jack_ringbuffer) >= sizeof(T)) {
+		if (jack_ringbuffer_read_space(jack_ringbuffer) >= sizeof(size_t)) {
 			return true;
 		}
 
 		return false;
 	}
 
-	T& read() {
-		jack_ringbuffer_data_t rb_data[2];
-		jack_ringbuffer_get_read_vector(jack_ringbuffer, rb_data);
-		jack_ringbuffer_read_advance(jack_ringbuffer, sizeof(T));
-		return *((T*)rb_data->buf);
+	void read_advance()
+	{
+		jack_ringbuffer_read_advance(jack_ringbuffer, sizeof(size_t));
+	}
+	
+	T read() {
+		size_t n;
+		jack_ringbuffer_read(jack_ringbuffer, (char*)&n, sizeof(size_t));
+		return elements[n];
+	}
+
+	/**
+		The reference returned here must only be used until the next
+		read() call.
+	*/
+	T& snoop() {
+		size_t n;	
+		jack_ringbuffer_peek(jack_ringbuffer, (char*)&n, sizeof(size_t));
+		return elements[n];
 	}
 };
 
